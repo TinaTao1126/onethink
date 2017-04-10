@@ -1,0 +1,47 @@
+/* 普通表单 */
+.form-column-2 .form-item {
+	margin-bottom: 5px;
+	display:inline-block;
+}
+
+.form-column-2 .form-item .row{
+	margin-bottom: 5px;
+	display:block;
+}
+.form-column-2 .item-label {
+	display: block;
+	margin-right: 5px;
+	height: 30px;
+	line-height: 30px;
+	font-weight: bold;
+}
+.form-column-2 .item-label .check-tips {
+	margin-left: 8px;
+	color: #aaa;
+	font-weight: normal;
+}
+.form-column-2 .controls {
+	overflow: hidden;
+	padding: 5px 5px 5px 0;
+}
+.form-column-2 .controls label + label {
+	margin-left: 15px;
+}
+.form-column-2 .controls .check-tips {
+	margin-left: 20px;
+	color: #999;
+}
+label.textarea ~ .check-tips {
+	margin-left: 0;
+}
+.form-column-2 .controls .block.check-tips,
+.form-column-2 .controls .block.textarea {
+	display: block;
+	margin-left: 0;
+	margin-bottom: 10px;
+}
+
+
+.color{
+	font-color:red
+}

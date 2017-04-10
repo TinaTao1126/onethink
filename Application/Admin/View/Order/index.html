@@ -1,0 +1,119 @@
+<extend name="Public/base" />
+
+<block name="body">
+	<!-- 标题栏 -->
+	<div class="main-title">
+		<h2>{$meta_title}</h2>
+	</div>
+	<div class="cf">
+		<div class="fl">
+            <a class="btn" href="{:U('Order/add')}">开单</a>
+        </div>
+
+        <!-- 高级搜索 -->
+		<div class="search-form fr cf">
+			<div class="sleft">
+				<select name="district_id" class="select">
+					<option value="100">大区</option>
+				</select>
+				<select name="city_id" class="select">
+					<option value="200">城市</option>
+				</select>
+				<select name="store_id" class="select">
+					<option value="300">门店</option>
+				</select>
+				
+				
+			</div>
+			<a class="sch-btn" href="javascript:;" id="search" url="{:U('index')}"><i class="btn-search"></i></a>
+		</div>
+    </div>
+    <!-- 数据列表 -->
+    <div class="data-table table-striped">
+	<table class="">
+    <thead>
+        <tr>
+		<th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
+		<th class="">车牌号</th>
+		<th class="">客户名称</th>
+		<th class="">工位</th>
+		<th class="">状态</th>
+		<th class="">应收金额</th>
+		<th class="">实收金额</th>
+		<th class="">日期</th>
+		<th class="">单号</th>
+		<th class="">操作员</th>
+		<th class="">行驶里程</th>
+		<th class="">操作</th>
+		</tr>
+    </thead>
+    <tbody>
+		<notempty name="_list">
+		<volist name="_list" id="vo">
+		<tr>
+            <td><input class="ids" type="checkbox" name="id[]" value="{$vo.id}" /></td>
+            <td>{$vo.car_number} </td>
+			<td>{$vo.car_owner} </td>
+			<td>{$vo.station}</td>
+			<td>{$vo.order_status_name}</td>
+			<td>{$vo.pay_amount}</td>
+			<td>{$vo.purchase_amount}</td>
+			<td><span>{$vo.createtime|time_format}</span></td>
+			<td>{$vo.order_no}</td>
+			<td>{$vo.operator}</td>
+			<td>{$vo.driving_distance}</td>
+			
+			<td><if condition="vo.order_status eq 100">
+				<a href="{:U('Order/edit?id='.$vo['id'])}">开单</a>
+				<elseif condition="vo.order_status eq 200"/>
+				<a href="{:U('Order/detail?id='.$vo['id'])}" class="ajax-get">查看明细</a>
+				<a href="{:U('Order/settlement?id='.$vo['id'])}" class="ajax-get">结算</a>
+				<a href="{:U('Order/print?id='.$vo['id'])}" class="ajax-get">打印</a>
+				<a href="{:U('Order/del?id='.$vo['id'])}">删除</a>
+				</else>
+				<a href="{:U('Order/detail?id='.$vo['id'])}" class="ajax-get">查看明细</a>
+				<a href="{:U('Order/print?id='.$vo['id'])}" class="ajax-get">打印</a>
+				</if>
+				
+                </td>
+		</tr>
+		</volist>
+		<else/>
+		<td colspan="9" class="text-center"> aOh! 暂时还没有内容! </td>
+		</notempty>
+	</tbody>
+    </table>
+	</div>
+    <div class="page">
+        {$_page}
+    </div>
+</block>
+
+<block name="script">
+	<script src="__STATIC__/thinkbox/jquery.thinkbox.js"></script>
+
+	<script type="text/javascript">
+	//搜索功能
+	$("#search").click(function(){
+		var url = $(this).attr('url');
+        var query  = $('.search-form').find('select').serialize();
+        query = query.replace(/(&|^)(\w*?\d*?\-*?_*?)*?=?((?=&)|(?=$))/g,'');
+        query = query.replace(/^&/g,'');
+        if( url.indexOf('?')>0 ){
+            url += '&' + query;
+        }else{
+            url += '?' + query;
+        }
+		window.location.href = url;
+	});
+	//回车搜索
+	$(".search-input").keyup(function(e){
+		if(e.keyCode === 13){
+			$("#search").click();
+			return false;
+		}
+	});
+    //导航高亮
+    highlight_subnav('{:U('Store/index')}');
+	</script>
+</block>

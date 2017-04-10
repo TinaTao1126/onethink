@@ -1,0 +1,59 @@
+<extend name="Public/base"/>
+
+<block name="body">
+    <div class="main-title">
+        <h2>{$meta_title}</h2>
+    </div>
+    <form action="{:U()}" method="post" class="form-horizontal">
+
+        <div class="form-item">
+        	
+            <label class="item-label">类别</label>
+            <div class="controls">
+                <select class="select" name="item_type">
+                	<option value="1">维修</option>
+                	<option value="2">保养</option>
+                	<option value="3">美容</option>
+                	<option value="4">检查</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">项目描述</label>
+            <div class="controls">
+                <textarea class="textarea input-large" name="item_name">{$data.item_name}</textarea>
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">零件费</label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="item_price" value="{$data.item_price}">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">数量</label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="item_num" value="{$data.item_num}">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">工时费</label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="hour_price" value="{$data.hour_price}">
+            </div>
+        </div>
+        <div class="form-item">
+        	<input type="hidden"  name="id" value="{$data.id}">
+        	<input type="hidden"  name="car_order_id" value="{$data.car_order_id}">
+            <button class="btn submit-btn ajax-post" id="submit" type="submit" target-form="form-horizontal">确 定</button>
+            <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+        </div>
+    </form>
+</block>
+
+<block name="script">
+    <script type="text/javascript">
+        //导航高亮
+        highlight_subnav('{:U('Order/index')}');
+    </script>
+</block>

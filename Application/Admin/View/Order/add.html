@@ -1,0 +1,184 @@
+<extend name="Public/base"/>
+
+<block name="body">
+    <div class="main-title">
+        <h2>开单</h2>
+    </div>
+    <form action="{:U('Car/add')}" method="post" class="form-column-2">
+        <div class="form-item">
+            <label class="item-label">门店</label>
+            <div class="controls">
+            	<div class="text input-large"> 爱一行（中关村店） {$vo.createtime|time_format}</div>
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label"><span class="required">*</span>单号</label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="" value="">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label "><span class="required">*</span>工位号</label>
+            <div class="controls">
+            	<div class="text input-large">
+            	<select class="select" name="store_station_id" >
+                	<option value="100">001</option>
+                </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label"><span class="required">*</span>车牌号</label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="car_number" value="">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label"><span class="required">*</span>车主姓名</label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="car_owner" value="">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label"><span class="required">*</span>车主电话</label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="owner_phone" value="">
+            </div>
+            
+        </div>
+        <div class="form-item">
+            <label class="item-label">行驶里程</label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="driving_distance" value="">
+            </div>
+            
+        </div>
+        <div class="form-item">
+            <label class="item-label">品牌</label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="car_brand" value="">
+            </div>
+            
+        </div>
+        <div class="form-item">
+            <label class="item-label">车型(型号？？？)</label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="car_model" value="">
+            </div>
+            
+        </div>
+        <div class="form-item">
+            <label class="item-label">颜色</label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="car_color" value="">
+            </div>
+            
+        </div>
+        <div class="form-item">
+            <label class="item-label">发动机号</label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="car_engine_num" value="">
+            </div>
+            
+        </div>
+        <div class="form-item">
+            <label class="item-label">VIN</label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="car_vin" value="">
+            </div>
+            
+        </div>
+        <div class="row">
+        	<input type="hidden" name="store_id" value="1"/><!-- FIXME -->
+            <button class="btn submit-btn"  id="submit" type="submit" target-form="form-column-2">确 定</button>
+            <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+        </div>
+    </form>
+    <div class="cf">
+		<div class="fl">
+			<input type="hidden" name="car_id" id="car_id" value=""/>
+            <a class="btn" href="{:U('OrderItem/add')}" id="order-item-add">新 增</a>
+            <button class="btn ajax-post confirm" url="{:U('OrderItem/delete',array('method'=>'del'))}" target-form="ids">删 除</button>
+        </div>
+
+        
+    </div>
+    <div class="data-table table-striped">
+	<table class="">
+    <thead>
+        <tr>
+		<th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
+		<th class="">类别</th>
+		<th class="">描述</th>
+		<th class="">工时费</th>
+		<th class="">零件</th>
+		<th class="">数量</th>
+		<th class="">合计</th>
+		<th class="">操作</th>
+		</tr>
+    </thead>
+    <tbody>
+		<notempty name="_list">
+		<volist name="_list" id="vo">
+		<tr>
+            <td><input class="ids" type="checkbox" name="id[]" value="{$vo.id}" /></td>
+            <td>{$vo.item_type_name} </td>
+			<td>{$vo.item_name} </td>
+			<td>{$vo.hour_price}</td>
+			<td>{$vo.item_price}</td>
+			<td>{$vo.item_num}</td>
+			<td>{$vo.hour_price+$vo.item_price*$vo.item_num}</td>
+			<td>
+				<a title="编辑" href="{:U('OrderItem/edit?id='.$vo['id'])}">编辑</a>
+				<a class="confirm ajax-get" title="删除" href="{:U('OrderItem/del?id='.$vo['id'])}">删除</a>
+            </td>
+		</tr>
+		</volist>
+		<else/>
+		<td colspan="9" class="text-center"> 无记录！ </td>
+		</notempty>
+	</tbody>
+    </table>
+	</div>
+    <div class="page">
+        {$_page}
+    </div>
+</block>
+
+
+
+<block name="script">
+    <script type="text/javascript">
+  	//表单提交
+	$(document)
+    	.ajaxStart(function(){
+    		$("button:submit").addClass("log-in").attr("disabled", true);
+    	})
+    	.ajaxStop(function(){
+    		$("button:submit").removeClass("log-in").attr("disabled", false);
+    	});
+  	
+	$("#order-item-add").click(function(){
+		
+	    $(this).attr("href",$(this).attr("href")+"/id/"+$("#car_id").val());
+	});
+
+	$("form").submit(function(){
+		var self = $(this);
+		$.post(self.attr("action"), self.serialize(), success, "json");
+		return false;
+
+		function success(data){
+			console.log(data);
+			if(data.code == 200){
+				$("#car_id").val(data.data);
+				//$("button:submit").attr("disabled", false);
+			} else {
+				alert(data.msg);
+			}
+		}
+	});
+        //导航高亮
+        //highlight_subnav('{:U('Order/index')}');
+    </script>
+</block>
