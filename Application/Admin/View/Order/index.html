@@ -63,15 +63,15 @@
 			<td>{$vo.operator}</td>
 			<td>{$vo.driving_distance}</td>
 			
-			<td><if condition="vo.order_status eq 100">
+			<td><if condition="$vo.order_status eq 100">
 				<a href="{:U('Order/edit?id='.$vo['id'])}">开单</a>
-				<elseif condition="vo.order_status eq 200"/>
-				<a href="{:U('Order/detail?id='.$vo['id'])}" class="ajax-get">查看明细</a>
+				<elseif condition="$vo.order_status eq 200"/>
+				<a href="{:U('Order/detail?id='.$vo['id'])}">查看明细</a>
 				<a href="{:U('Order/settlement?id='.$vo['id'])}" class="ajax-get">结算</a>
 				<a href="{:U('Order/print?id='.$vo['id'])}" class="ajax-get">打印</a>
 				<a href="{:U('Order/del?id='.$vo['id'])}">删除</a>
-				</else>
-				<a href="{:U('Order/detail?id='.$vo['id'])}" class="ajax-get">查看明细</a>
+				<else/>
+				<a href="{:U('Order/detail?id='.$vo['id'])}">查看明细</a>
 				<a href="{:U('Order/print?id='.$vo['id'])}" class="ajax-get">打印</a>
 				</if>
 				

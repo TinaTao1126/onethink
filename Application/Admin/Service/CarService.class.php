@@ -137,9 +137,8 @@ class CarService{
 		
 		$param   =   I('post.');
 		$Car = M('Car');
-		$Car->car_number=$param['car_number'];
-		$data = $Car->find();
-		//print_r($data);
+		//$Car->car_number=$param['car_number'];
+		$data = $Car->where('car_number='.$param['car_number'])->select();
 		$response = array("code"=>500);
 		
 		if(isset($data) && !empty($data)) {
@@ -167,10 +166,12 @@ class CarService{
 				$response['data'] = $id;
 				$response['msg'] = "新增成功";
 			} else {
+				print_r($Car->getDbError());
 				$response['msg'] = '新增失败！';
 			}
 		
 		} 
+		print_r($response);exit;
 		return $response;
 	}
 }

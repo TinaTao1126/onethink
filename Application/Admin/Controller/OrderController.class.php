@@ -169,7 +169,30 @@ class OrderController extends AdminController {
     	
     }
     
-  
+    public function detail($id = 0){
+
+    		if($id == 0) {
+    			$this->error('无效的参数');
+    		}
+    		$order = M('Order')->field(true)->find($id);
+    		if(false === $order){
+    			$this->error("请检查参数，不能获取到有效的数据！");
+    		}
+    		$car_id = $order['car_id'];
+    		$car = M('Car')->field(true)->find($car_id);
+    		if(false === $order){
+    			$this->error("无法获取到车辆信息！");
+    		}
+    		$orderItemList = M('OrderItem')->field(true)->where(array("car_order_id"=>$order["id"]))->select();
+    
+    		$this->assign('car_order_id',$order['id']);
+    		$this->assign('data',$car);
+    		$this->assign('_list',$orderItemList);
+    		 
+    		$this->meta_title = '修改门店信息';
+    		$this->display();
+    	 
+    }
     
   
    
