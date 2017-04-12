@@ -90,14 +90,16 @@
         </div>
         <div class="row">
         	<input type="hidden" name="store_id" value="1"/><!-- FIXME -->
+        	<input type="hidden" name="id" id="car_id" value=""/>
+			
             <button class="btn submit-btn"  id="submit" type="submit" target-form="form-column-2">确 定</button>
             <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
         </div>
     </form>
     <div class="cf">
 		<div class="fl">
-			<input type="hidden" name="car_id" id="car_id" value=""/>
-            <a class="btn" href="{:U('OrderItem/add')}" id="order-item-add">新 增</a>
+			<input type="hidden" name="order_id" id="order_id" value=""/>
+            <a class="btn" href="{:U('OrderItem/add?id=order_id')}" id="order-item-add">新 增</a>
             <button class="btn ajax-post confirm" url="{:U('OrderItem/delete',array('method'=>'del'))}" target-form="ids">删 除</button>
         </div>
 
@@ -159,8 +161,10 @@
     	});
   	
 	$("#order-item-add").click(function(){
-		
-	    $(this).attr("href",$(this).attr("href")+"/id/"+$("#car_id").val());
+		//console.log($(this).attr("href"));
+		var url = $(this).attr("href").replace('order_id',$("#order_id").val());
+		//console.log(url);
+	    $(this).attr("href",url);
 	});
 
 	$("form").submit(function(){
@@ -168,10 +172,11 @@
 		$.post(self.attr("action"), self.serialize(), success, "json");
 		return false;
 
-		function success(data){
-			console.log(data);
-			if(data.code == 200){
-				$("#car_id").val(data.data);
+		function success(response){
+			console.log(response);
+			if(response.code == 200){
+				$("#car_id").attr('value',response.data.car_id);
+				$("#order_id").attr('value',response.data.order_id);
 				//$("button:submit").attr("disabled", false);
 			} else {
 				alert(data.msg);

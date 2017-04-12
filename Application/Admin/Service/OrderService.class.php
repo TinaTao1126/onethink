@@ -20,10 +20,10 @@ class OrderService {
 		$order['store_station_id'] = $param['store_station_id'];
 		
 		$Order = M('Order');
-		$data = $Order->add($order);
-		if($data) {
+		$id = $Order->add($order);
+		if($id) {
 			$result['code'] = 200;
-			$result['data'] = $data['id'];
+			$result['data'] = $id;
 			$result['msg'] = "新增成功";
 		} else {
 			//print_r($Order->getError());

@@ -134,15 +134,14 @@ class CarService{
 	 * @return 
 	 */
 	public function editCar() {
-		
 		$param   =   I('post.');
 		$Car = M('Car');
 		//$Car->car_number=$param['car_number'];
 		$data = $Car->where('car_number='.$param['car_number'])->select();
 		$response = array("code"=>500);
-		
+		//var_dump($data);exit;
 		if(isset($data) && !empty($data)) {
-			//echo 'edit';
+			echo 'edit';
 			//如果存在，则修改否则添加
 			$result = $Car->save();
 			if($result) {
@@ -157,7 +156,7 @@ class CarService{
 		} else {
 			//echo 'add';
 			//不存在则新增
-			$id = $Car->add();
+			$id = M('Car')->add($param);
 			if($id){
 				S('DB_CONFIG_DATA',null);
 				//记录行为
@@ -171,7 +170,7 @@ class CarService{
 			}
 		
 		} 
-		print_r($response);exit;
+		//print_r($response);exit;
 		return $response;
 	}
 }
