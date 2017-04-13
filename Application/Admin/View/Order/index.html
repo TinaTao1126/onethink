@@ -68,11 +68,11 @@
 				<elseif condition="$vo.order_status eq 200"/>
 				<a href="{:U('Order/detail?id='.$vo['id'])}">查看明细</a>
 				<a href="{:U('Order/settlement?id='.$vo['id'])}" class="ajax-get">结算</a>
-				<a href="{:U('Order/print?id='.$vo['id'])}" class="ajax-get">打印</a>
+				<a href="{:U('Order/printer?id='.$vo['id'])}" target="_blank">打印</a>
 				<a href="{:U('Order/del?id='.$vo['id'])}">删除</a>
 				<else/>
 				<a href="{:U('Order/detail?id='.$vo['id'])}">查看明细</a>
-				<a href="{:U('Order/print?id='.$vo['id'])}" class="ajax-get">打印</a>
+				<a href="{:U('Order/printer?id='.$vo['id'])}" target="_blank">打印</a>
 				</if>
 				
                 </td>

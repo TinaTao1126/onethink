@@ -23,20 +23,22 @@ class OrderItemController extends AdminController {
      * 删除
      */
     public function del(){
+       //echo 123;
     	$id = array_unique((array)I('id',0));
-    
+    	$id = is_array($id) ? implode(',',$id) : $id;
     	if ( empty($id) ) {
     		$this->error('请选择要操作的数据!');
     	}
-    
     	$map = array('id' => array('in', $id) );
+    	$msg   = array_merge( array( 'success'=>'删除成功！', 'error'=>'删除失败！', 'url'=>'' ,'ajax'=>IS_AJAX) , (array)$msg );
+    	 
     	if(M('OrderItem')->where($map)->delete()){
     		S('DB_CONFIG_DATA',null);
     		//记录行为
     		action_log('delete_order_item','order_item',$id,UID);
-    		$this->success('删除成功');
+    		$this->success($msg['success'], $msg['url'],$msg['ajax']);
     	} else {
-    		$this->error('删除失败！');
+    		$this->error($msg['error']);
     	}
     }
     
@@ -106,7 +108,7 @@ class OrderItemController extends AdminController {
     				S('DB_CONFIG_DATA',null);
     				//记录行为
     				action_log('add_order_item', 'OrderItem', $id, UID);
-    				$this->success('新增成功', Cookie('__forward__'));
+    				$this->success('新增成功', "Admin/Order/detail?id=".$data['car_order_id']);
     			} else {
     				$this->error('新增失败');
     			}

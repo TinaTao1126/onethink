@@ -9,6 +9,7 @@
 
 namespace Admin\Controller;
 use Admin\Conf\OrderConstant;
+use Admin\Service\OrderItemService;
 
 /**
  * 汽车管理
@@ -90,13 +91,19 @@ class OrderController extends AdminController {
     	$Order->pay_time = time();
     	$Order->payee = UID;
     	$Order->pay_status = OrderConstant::$PAY_STATUS_1;
+    	
+    	$msg   = array_merge( array( 'success'=>' 结算成功！', 'error'=>'结算失败！', 'url'=>'' ,'ajax'=>IS_AJAX) , (array)$msg );
     	if($Order->where($map)->save()){
     		S('DB_CONFIG_DATA',null);
     		//记录行为
     		action_log('add_order', 'Order', $id, UID);
-    		$this->success('结算成功', 'index');
+    		
+    		
+    		$this->success($msg['success'],$msg['url'],$msg['ajax']);
+    		
+    	    //$this->success('结算成功', 'Admin/Order/index');
     	} else {
-    		$this->error('结算失败！');
+    		$this->error($msg['error']);
     	}
     	
     	
@@ -157,7 +164,9 @@ class OrderController extends AdminController {
     		if(false === $order){
     			$this->error("无法获取到车辆信息！");
     		}
-    		$orderItemList = M('OrderItem')->field(true)->where(array("car_order_id"=>$order["id"]))->select();
+    		$orderItemService = new OrderItemService();
+    		$orderItemList = $orderItemService->listByOrderId($order["id"]);
+    		
     		
   			$this->assign('car_order_id',$order['id']);
     		$this->assign('data',$car);
@@ -169,7 +178,15 @@ class OrderController extends AdminController {
     	
     }
     
+    public function printer($id = 0){
+        $this->get($id);
+    }
+    
     public function detail($id = 0){
+        $this->get($id);
+    }
+    
+    public function get($id = 0){
 
     		if($id == 0) {
     			$this->error('无效的参数');
@@ -183,18 +200,19 @@ class OrderController extends AdminController {
     		if(false === $order){
     			$this->error("无法获取到车辆信息！");
     		}
-    		$orderItemList = M('OrderItem')->field(true)->where(array("car_order_id"=>$order["id"]))->select();
-    
+    		$orderItemService = new OrderItemService();
+    		$orderItemList = $orderItemService->listByOrderId($order['id']);
+    		
     		$this->assign('car_order_id',$order['id']);
     		$this->assign('data',$car);
     		$this->assign('_list',$orderItemList);
-    		 
     		$this->meta_title = '修改门店信息';
     		$this->display();
     	 
     }
     
   
+   
    
   
    

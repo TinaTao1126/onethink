@@ -63,5 +63,13 @@ class OrderConstant {
 	 */
 	public static $PAY_STATUS_1 = 1;	//已支付
 	
+	
+	public static $ITEM_TYPE = array(
+		3=>"美容",
+	    1=>"维修",
+	    2=>"保养",
+	    4=>"检查"
+	);
+	
 }
 

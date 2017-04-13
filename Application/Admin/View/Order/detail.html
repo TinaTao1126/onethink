@@ -96,7 +96,7 @@
     <div class="cf">
 		<div class="fl">
             <a class="btn" href="{:U('OrderItem/add',array('id'=>$car_order_id))}">新 增</a>
-            <button class="btn ajax-post confirm" url="{:U('CarItem/delete',array('method'=>'deleteStore'))}" target-form="ids">删 除</button>
+            <button class="btn ajax-post confirm" url="{:U('OrderItem/del')}" target-form="ids">删 除</button>
         </div>
 
         
@@ -125,7 +125,7 @@
 			<td>{$vo.hour_price}</td>
 			<td>{$vo.item_price}</td>
 			<td>{$vo.item_num}</td>
-			<td>{$vo.hour_price+$vo.item_price*$vo.item_num}</td>
+			<td>{$vo.total_price}</td>
 			<td>
 				<a title="编辑" href="{:U('OrderItem/edit?id='.$vo['id'].'&car_order_id='.$car_order_id)}">编辑</a>
 				<a class="confirm ajax-get" title="删除" href="{:U('OrderItem/del?id='.$vo['id'])}">删除</a>
