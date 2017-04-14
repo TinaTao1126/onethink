@@ -3,11 +3,14 @@
 <block name="body">
 	<!-- 标题栏 -->
 	<div class="main-title">
-		<h2>{$meta_title}</h2>
+		<h2>车位信息</h2>
 	</div>
 	<div class="cf">
 		<div class="fl">
-            <a class="btn" href="{:U('Order/add')}">开单</a>
+            <a class="btn" href="{:U('StoreStation/add')}">新 增</a>
+            <button class="btn ajax-post" url="{:U('StoreStation/changeStatus',array('method'=>'enabled'))}" target-form="ids">启 用</button>
+            <button class="btn ajax-post" url="{:U('StoreStation/changeStatus',array('method'=>'disabled'))}" target-form="ids">禁 用</button>
+            <button class="btn ajax-post confirm" url="{:U('StoreStation/del')}" target-form="ids">删 除</button>
         </div>
 
         <!-- 高级搜索 -->
@@ -34,16 +37,11 @@
     <thead>
         <tr>
 		<th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
-		<th class="">车牌号</th>
-		<th class="">客户名称</th>
-		<th class="">工位</th>
+		<th class="">ID</th>
+		<th class="">车位</th>
+		<th class="">门店</th>
+		<th class="">创建时间</th>
 		<th class="">状态</th>
-		<th class="">应收金额</th>
-		<th class="">实收金额</th>
-		<th class="">日期</th>
-		<th class="">单号</th>
-		<th class="">操作员</th>
-		<th class="">行驶里程</th>
 		<th class="">操作</th>
 		</tr>
     </thead>
@@ -52,28 +50,18 @@
 		<volist name="_list" id="vo">
 		<tr>
             <td><input class="ids" type="checkbox" name="id[]" value="{$vo.id}" /></td>
-            <td>{$vo.car_number} </td>
-			<td>{$vo.car_owner} </td>
-			<td>{$vo.station}</td>
-			<td>{$vo.order_status_name}</td>
-			<td>{$vo.pay_amount}</td>
-			<td>{$vo.purchase_amount}</td>
+            <td>{$vo.id} </td>
+			<td>{$vo.name} </td>
+			<td>{$vo.store_name}</td>
 			<td><span>{$vo.createtime|time_format}</span></td>
-			<td>{$vo.order_no}</td>
-			<td>{$vo.operator}</td>
-			<td>{$vo.driving_distance}</td>
-			
-			<td><if condition="$vo.order_status eq 100">
-				<a href="{:U('Order/edit?id='.$vo['id'])}">开单</a>
-				<elseif condition="$vo.order_status eq 200"/>
-				<a href="{:U('Order/detail?id='.$vo['id'])}">查看明细</a>
-				<a href="{:U('Order/settlement?id='.$vo['id'])}" class="ajax-get">结算</a>
-				<a href="{:U('Order/printer?id='.$vo['id'])}" target="_blank">打印</a>
-				<a href="{:U('Order/del?id='.$vo['id'])}" class="ajax-get">删除</a>
+			<td>{$vo.status}</td>
+			<td><eq name="vo.status" value="1">
+				<a href="{:U('StoreStation/changeStatus?method=disabled&id='.$vo['id'])}" class="ajax-get">禁用</a>
+				<a title="编辑" href="{:U('edit?id='.$vo['id'])}">编辑</a>
+				<a class="confirm ajax-get" title="删除" href="{:U('del?id='.$vo['id'])}">删除</a>
 				<else/>
-				<a href="{:U('Order/detail?id='.$vo['id'])}">查看明细</a>
-				<a href="{:U('Order/printer?id='.$vo['id'])}" target="_blank">打印</a>
-				</if>
+				<a href="{:U('StoreStation/changeStatus?method=enabled&id='.$vo['id'])}" class="ajax-get">启用</a>
+				</eq>
 				
                 </td>
 		</tr>
@@ -114,6 +102,6 @@
 		}
 	});
     //导航高亮
-    highlight_subnav('{:U('Store/index')}');
+    highlight_subnav('{:U('StoreStation/index')}');
 	</script>
 </block>

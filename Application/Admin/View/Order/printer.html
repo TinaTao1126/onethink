@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>打印订单</title>
+	<link href="__ROOT__/Public/favicon.ico" type="image/x-icon" rel="shortcut icon">
+    <!-- Bootstrap -->
+    <link href="__STATIC__/bootstrap/css/bootstrap.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+
+	</style>
+  </head>
+  <body>
+  	
+    <div class="container">
+  		<div class="row">
+    		<div class="col-sm-8 col-sm-offset-2">
+    			<h3>订单详情</h3>
+    		</div>
+  		</div>
+  		<div class="row">
+    		<div class="col-sm-8 col-sm-offset-2">
+    			<table class="table">
+				   <thead>
+				      <tr>
+				         <th>门店</th>
+						 <td>爱一行（中关村店） {$vo.createtime|time_format}</td>
+				         
+				      </tr>
+				      <tr>
+				      	 <th>品牌</th>
+						 <td>{$data.car_brand}</td>
+				         <th>单号</th>
+						 <td>{$data.order_no}</td>
+				      </tr>
+				      <tr>
+				         <th>车牌号</th>
+						 <td>{$data.car_number}</td>
+				         <th>颜色</th>
+						 <td>{$data.car_color}</td>
+				      </tr>
+				      <tr>
+				         <th>车主姓名</th>
+						 <td>{$data.car_owner}</td>
+				         <th>发动机号</th>
+						 <td>{$data.car_color}</td>
+				      </tr>
+				      <tr>
+				         <th>车主姓名</th>
+						 <td>{$data.owner_phone}</td>
+				         <th>VIN</th>
+						 <td>{$data.car_vin}</td>
+				      </tr>
+				      <tr>
+				      	<th>车型</th>
+						 <td>{$data.car_model}</td>
+				         <th>行驶里程</th>
+						 <td>{$data.driving_distance}</td>
+				      </tr>
+				   </thead>
+				   
+				</table>
+    		</div>
+  		</div>
+	</div>
+    
+    <div class="container">
+    	<div class="row">
+    		<div class="col-sm-8 col-sm-offset-2">
+    			<div style="height:20px;"></div>
+    		</div>
+  		</div>
+   	 <div class="row">
+    		<div class="col-sm-8 col-sm-offset-2">
+    	<table class="table table-bordered">
+   		 <thead>
+        <tr>
+		
+		<th>类别</th>
+		<th>描述</th>
+		<th>工时费</th>
+		<th>零件</th>
+		<th>数量</th>
+		<th>合计</th>
+		</tr>
+    </thead>
+    <tbody>
+		<notempty name="_list">
+		<volist name="_list" id="vo">
+		<tr>
+            <td>{$vo.item_type_name} </td>
+			<td>{$vo.item_name} </td>
+			<td>{$vo.hour_price}</td>
+			<td>{$vo.item_price}</td>
+			<td>{$vo.item_num}</td>
+			<td>{$vo.total_price}</td>
+			
+		</tr>
+		</volist>
+		<else/>
+		<td colspan="9" class="text-center"> 无记录！ </td>
+		</notempty>
+	</tbody>
+    </table>
+    </div>
+    </div>
+    </div>
+    
+	<script>
+		window.print();
+	</script>
+   
+    <script src="__STATIC__/bootstrap/js/bootstrap.min.js"></script>
+  </body>
+</html>

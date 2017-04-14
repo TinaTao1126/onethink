@@ -163,8 +163,9 @@
 	$("#order-item-add").click(function(){
 		//console.log($(this).attr("href"));
 		var order_id = $("#order_id").val();
-		if(order_id == 'order_id') {
+		if(order_id == '') {
 			alert("请先添加车辆信息");
+			return false;
 		}
 		var url = $(this).attr("href").replace('order_id',order_id);
 		//console.log(url);

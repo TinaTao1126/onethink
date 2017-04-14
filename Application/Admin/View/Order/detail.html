@@ -1,135 +1,97 @@
 <extend name="Public/base"/>
 
 <block name="body">
-    <div class="main-title">
-        <h2>开单</h2>
-    </div>
-    <form action="{:U('Car/add')}" method="post" class="form-column-2">
-        <div class="form-item">
-            <label class="item-label">门店</label>
-            <div class="controls">
-            	<div class="text input-large"> 爱一行（中关村店） {$vo.createtime|time_format}</div>
-            </div>
-        </div>
-        <div class="form-item">
-            <label class="item-label">单号</label>
-            <div class="controls">
-                <input type="text" class="text input-large" name="" value="">
-            </div>
-        </div>
-        <div class="form-item">
-            <label class="item-label">工位号</label>
-            <div class="controls">
-            	<div class="text input-large">
-            	<select class="select" name="store_station_id" >
-                	<option value="100">001</option>
-                </select>
-                </div>
-            </div>
-        </div>
-        <div class="form-item">
-            <label class="item-label">车牌号</label>
-            <div class="controls">
-                <input type="text" class="text input-large" name="car_number" value="{$data.car_number}">
-            </div>
-        </div>
-        <div class="form-item">
-            <label class="item-label">车主姓名</label>
-            <div class="controls">
-                <input type="text" class="text input-large" name="car_owner" value="{$data.car_owner}">
-            </div>
-        </div>
-        <div class="form-item">
-            <label class="item-label">车主电话</label>
-            <div class="controls">
-                <input type="text" class="text input-large" name="owner_phone" value="{$data.owner_phone}">
-            </div>
-            
-        </div>
-        <div class="form-item">
-            <label class="item-label">行驶里程</label>
-            <div class="controls">
-                <input type="text" class="text input-large" name="driving_distance" value="{$data.driving_distance}">
-            </div>
-            
-        </div>
-        <div class="form-item">
-            <label class="item-label">品牌</label>
-            <div class="controls">
-                <input type="text" class="text input-large" name="car_brand" value="{$data.car_brand}">
-            </div>
-            
-        </div>
-        <div class="form-item">
-            <label class="item-label">车型(型号？？？)</label>
-            <div class="controls">
-                <input type="text" class="text input-large" name="car_model" value="{$data.car_model}">
-            </div>
-            
-        </div>
-        <div class="form-item">
-            <label class="item-label">颜色</label>
-            <div class="controls">
-                <input type="text" class="text input-large" name="car_color" value="{$data.car_color}">
-            </div>
-            
-        </div>
-        <div class="form-item">
-            <label class="item-label">发动机号</label>
-            <div class="controls">
-                <input type="text" class="text input-large" name="car_engine_num" value="{$data.car_engine_num}">
-            </div>
-            
-        </div>
-        <div class="form-item">
-            <label class="item-label">VIN</label>
-            <div class="controls">
-                <input type="text" class="text input-large" name="car_vin" value="{$data.car_vin}">
-            </div>
-            
-        </div>
-        <div class="form-item">
-            <button class="btn submit-btn"  type="submit" target-form="form-column-2">确 定</button>
-            <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
-        </div>
-    </form>
-    <div class="cf">
-		<div class="fl">
-            <a class="btn" href="{:U('OrderItem/add',array('id'=>$car_order_id))}">新 增</a>
-            <button class="btn ajax-post confirm" url="{:U('OrderItem/del')}" target-form="ids">删 除</button>
-        </div>
-
-        
-    </div>
-    <div class="data-table table-striped">
-	<table class="">
-    <thead>
+	<link href="__STATIC__/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <div class="container">
+  		<div class="row">
+    		<div class="col-sm-10">
+    			<h3>订单详情</h3>
+    		</div>
+  		</div>
+  		<div class="row">
+    		<div class="col-sm-10">
+    			<table class="table">
+				   <thead>
+				      <tr>
+				         <th>门店</th>
+						 <td>爱一行（中关村店） {$vo.createtime|time_format}</td>
+				         <th></th>
+				         <td></td>
+				      </tr>
+				      <tr>
+				      	 <th>品牌</th>
+						 <td>{$data.car_brand}</td>
+				         <th>单号</th>
+						 <td>{$data.order_no}</td>
+				      </tr>
+				      <tr>
+				         <th>车牌号</th>
+						 <td>{$data.car_number}</td>
+				         <th>颜色</th>
+						 <td>{$data.car_color}</td>
+				      </tr>
+				      <tr>
+				         <th>车主姓名</th>
+						 <td>{$data.car_owner}</td>
+				         <th>发动机号</th>
+						 <td>{$data.car_color}</td>
+				      </tr>
+				      <tr>
+				         <th>车主姓名</th>
+						 <td>{$data.owner_phone}</td>
+				         <th>VIN</th>
+						 <td>{$data.car_vin}</td>
+				      </tr>
+				      <tr>
+				      	<th>车型</th>
+						 <td>{$data.car_model}</td>
+				         <th>行驶里程</th>
+						 <td>{$data.driving_distance}</td>
+				      </tr>
+				      <tr>
+				      	<td></td>
+				      	<td></td>
+				      	<td></td>
+				      	<td></td>
+				      </tr>
+				   </thead>
+				   
+				</table>
+    		</div>
+  		</div>
+	</div>
+    
+    <div class="container">
+    	<div class="row">
+    		<div class="col-sm-10">
+    			<div style="height:20px;"></div>
+    		</div>
+  		</div>
+   	 <div class="row">
+    		<div class="col-sm-10">
+    	<table class="table table-bordered">
+   		 <thead>
         <tr>
-		<th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
-		<th class="">类别</th>
-		<th class="">描述</th>
-		<th class="">工时费</th>
-		<th class="">零件</th>
-		<th class="">数量</th>
-		<th class="">合计</th>
-		<th class="">操作</th>
+		
+		<th>类别</th>
+		<th>描述</th>
+		<th>工时费</th>
+		<th>零件</th>
+		<th>数量</th>
+		<th>合计</th>
 		</tr>
     </thead>
     <tbody>
 		<notempty name="_list">
 		<volist name="_list" id="vo">
 		<tr>
-            <td><input class="ids" type="checkbox" name="id[]" value="{$vo.id}" /></td>
             <td>{$vo.item_type_name} </td>
 			<td>{$vo.item_name} </td>
 			<td>{$vo.hour_price}</td>
 			<td>{$vo.item_price}</td>
 			<td>{$vo.item_num}</td>
 			<td>{$vo.total_price}</td>
-			<td>
-				<a title="编辑" href="{:U('OrderItem/edit?id='.$vo['id'].'&car_order_id='.$car_order_id)}">编辑</a>
-				<a class="confirm ajax-get" title="删除" href="{:U('OrderItem/del?id='.$vo['id'])}">删除</a>
-            </td>
+			
 		</tr>
 		</volist>
 		<else/>
@@ -137,42 +99,11 @@
 		</notempty>
 	</tbody>
     </table>
-	</div>
-    <div class="page">
-        {$_page}
+    </div>
+    </div>
     </div>
 </block>
 
 
 
-<block name="script">
-    <script type="text/javascript">
-  //表单提交
-	$(document)
-    	.ajaxStart(function(){
-    		$("button:submit").addClass("log-in").attr("disabled", true);
-    	})
-    	.ajaxStop(function(){
-    		$("button:submit").removeClass("log-in").attr("disabled", false);
-    	});
 
-	$("form").submit(function(){
-		var self = $(this);
-		$.post(self.attr("action"), self.serialize(), success, "json");
-		return false;
-
-		function success(data){
-			console.log(data);
-			if(data.status){
-				
-			} else {
-				self.find(".check-tips").text(data.info);
-				//刷新验证码
-				$(".reloadverify").click();
-			}
-		}
-	});
-        //导航高亮
-        highlight_subnav('{:U('Order/index')}');
-    </script>
-</block>
