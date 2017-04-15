@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 
 namespace Admin\Controller;
-
+use Admin\Service\OrderItemService;
 
 /**
  * 订单明细管理
@@ -43,26 +43,23 @@ class OrderItemController extends AdminController {
     }
     
     /**
-     * 修改初始化
+     * 修改初始化和修改操作
      * @author tina
      */
     public function edit($id = 0,$car_order_id=0){
     	if(IS_POST) {
-    		$OrderItem = D('OrderItem');
-    		$data = $OrderItem->create();
-    		//print_r($data);exit;
-    		if($data){
-    			if($OrderItem->save()){
-    				S('DB_CONFIG_DATA',null);
-    				//记录行为
-    				action_log('update_order_item','order_item',$data['id'],UID);
-    				$this->success('更新成功', "Admin/Order/edit?id=".$data['car_order_id']);
-    			} else {
-    				$this->error('无更新');
-    			}
-    		} else {
-    			$this->error($OrderItem->getError());
-    		}
+    	   $orderItemService = new OrderItemService();
+    	   try{
+    	      $data =  $orderItemService->editOrderItem();
+    	      if($data){
+    	      	$this->success('更新成功', "Admin/Order/edit?id=".$data['car_order_id']);
+    	      } else {
+    	      	$this->error('无更新');
+    	      }
+    	       
+    	   }catch(\Exception $e){
+    	       $this->error($e->getMessage());
+    	   }
     	} else {
     		if($id == 0) {
     			$this->error('无效的参数');

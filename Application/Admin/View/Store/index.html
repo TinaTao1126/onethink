@@ -8,25 +8,30 @@
 	<div class="cf">
 		<div class="fl">
             <a class="btn" href="{:U('Store/add')}">新 增</a>
-            <button class="btn ajax-post" url="{:U('Store/changeStatus',array('method'=>'resumeStore'))}" target-form="ids">启 用</button>
-            <button class="btn ajax-post" url="{:U('Store/changeStatus',array('method'=>'forbidStore'))}" target-form="ids">禁 用</button>
-            <button class="btn ajax-post confirm" url="{:U('Store/changeStatus',array('method'=>'deleteStore'))}" target-form="ids">删 除</button>
+            <button class="btn ajax-post" url="{:U('Store/changeStatus',array('method'=>'enabled'))}" target-form="ids">启 用</button>
+            <button class="btn ajax-post" url="{:U('Store/changeStatus',array('method'=>'disabled'))}" target-form="ids">禁 用</button>
+            <button class="btn ajax-post confirm" url="{:U('Store/del')}" target-form="ids">删 除</button>
         </div>
 
         <!-- 高级搜索 -->
 		<div class="search-form fr cf">
 			<div class="sleft">
-				<select name="district_id" class="select">
-					<option value="100">大区</option>
-				</select>
-				<select name="city_id" class="select">
-					<option value="200">城市</option>
-				</select>
-				<select name="store_id" class="select">
-					<option value="300">门店</option>
-				</select>
-				
-				
+				<select class="select" name="district_id">
+                	<option value="0">大区</option>
+                	<notempty name="_district">
+						<volist name="_district" id="vo" >
+							<option value="{$vo.id}" {$vo.id eq $_district_id ? selected : ''}>{$vo.name}</option>
+						</volist>
+					</notempty>
+                </select>
+                <select class="select" name="city_id">
+                	<option value="0">城市</option>
+                	<notempty name="_city">
+						<volist name="_city" id="vo" >
+							<option value="{$vo.id}" {$vo.id eq $_city_id ? selected : ''}>{$vo.name}</option>
+						</volist>
+					</notempty>
+                </select>				
 			</div>
 			<a class="sch-btn" href="javascript:;" id="search" url="{:U('index')}"><i class="btn-search"></i></a>
 		</div>
@@ -41,7 +46,6 @@
 		<th class="">门店名称</th>
 		<th class="">大区</th>
 		<th class="">城市</th>
-		<th class="">门店</th>
 		<th class="">创建时间</th>
 		<th class="">状态</th>
 		<th class="">操作</th>
@@ -54,11 +58,10 @@
             <td><input class="ids" type="checkbox" name="id[]" value="{$vo.id}" /></td>
             <td>{$vo.id} </td>
 			<td>{$vo.name} </td>
-			<td>{$vo.district_id}</td>
-			<td>{$vo.city_id}</td>
-			<td>{$vo.store_id}</td>
-			<td><span>{$vo.createtime|time_format}</span></td>
-			<td>{$vo.status}</td>
+			<td>{$vo.district_name}</td>
+			<td>{$vo.city_name}</td>
+			<td><span>{$vo.create_time}</span></td>
+			<td>{$vo.status_name}</td>
 			<td><eq name="vo.status" value="1">
 				<a href="{:U('Store/changeStatus?method=disabled&id='.$vo['id'])}" class="ajax-get">禁用</a>
 				<a title="编辑" href="{:U('edit?id='.$vo['id'])}">编辑</a>
@@ -107,5 +110,21 @@
 	});
     //导航高亮
     highlight_subnav('{:U('Store/index')}');
+    $(function(){
+    	$("select[name=district_id]").change(function(){
+    		var district_id = $(this).val();
+    		var url = Think.U('Admin/District/list_by_type','type=2&pid='+district_id);
+
+    		$.get(url, function(response){
+    			var data = response.info;
+    			for(var i = 0 ; i < data.length; i++) {
+    				
+    				$("select[name=city_id]").append('<option value="'+data[i].id+'">'+data[i].name+'</option>');
+    			}
+    		    
+    		 });
+    	});
+    	
+    });
 	</script>
 </block>

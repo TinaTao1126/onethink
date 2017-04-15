@@ -15,13 +15,15 @@
             <label class="item-label">门店地址</label>
             <div class="controls">
                 <select class="select" name="district_id">
-                	<option value="100">华东</option>
+                	<option value="0">大区</option>
+                	<notempty name="_district">
+						<volist name="_district" id="vo" >
+							<option value="{$vo.id}">{$vo.name}</option>
+						</volist>
+					</notempty>
                 </select>
                 <select class="select" name="city_id">
-                	<option value="200">北京</option>
-                </select>
-                <select class="select" name="store_id">
-                	 <option value="300">通州</option>
+                	<option value="0">城市</option>
                 </select>
             </div>
         </div>
@@ -54,5 +56,22 @@
     <script type="text/javascript">
         //导航高亮
         highlight_subnav('{:U('Store/index')}');
+        
+        $(function(){
+        	$("select[name=district_id]").change(function(){
+        		var district_id = $(this).val();
+        		var url = Think.U('Admin/District/list_by_type','type=2&pid='+district_id);
+
+        		$.get(url, function(response){
+        			var data = response.info;
+        			for(var i = 0 ; i < data.length; i++) {
+        				
+        				$("select[name=city_id]").append('<option value="'+data[i].id+'">'+data[i].name+'</option>');
+        			}
+        		    
+        		 });
+        	});
+        	
+        });
     </script>
 </block>

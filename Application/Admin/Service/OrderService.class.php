@@ -1,7 +1,7 @@
 <?php
 
 namespace Admin\Service;
-use Admin\Conf\OrderConstant;
+use Admin\Enums\Order;
 
 class OrderService {
 	
@@ -10,9 +10,9 @@ class OrderService {
 		$result = array("code"=>500);
 		$order['car_id'] = $param['car_id'];
 		$order['store_id'] = $param['store_id'];
-		$order['order_status'] = OrderConstant::$ORDER_STATUS_200;//开单
+		$order['order_status'] = Order::$ORDER_STATUS_200;//开单
 		$order['creator'] = UID;	//创建人
-		$order['create_time'] = time();
+		$order['create_time'] = date('Y-m-d H:i:s');
 		//生成订单号
 		$orderNo = date('Ymdhis').rand(1000);
 		$order['order_no'] = $orderNo;

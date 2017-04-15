@@ -89,53 +89,30 @@ class CarController extends AdminController {
     }
     
     /**
-     * 修改初始化
+     * 修改汽车信息
      * @author tina
      */
     public function edit($id = 0){
     	if(IS_POST) {
-    		$Store = D('Store');
-    		$data = $Store->create();
+    		$Car = D('Car');
+    		$data = $Car->create();
     		if($data){
-    			if($Store->save()){
+    			if($Car->save()){
     				S('DB_CONFIG_DATA',null);
     				//记录行为
-    				action_log('update_store','store',$data['id'],UID);
-    				$this->success('更新成功', Cookie('__forward__'));
+    				action_log('update_car','car',$data['id'],UID);
+    				$this->ajaxReturn("更新成功");
     			} else {
     				$this->error('更新失败');
     			}
     		} else {
-    			$this->error($Store->getError());
+    			$this->error($Car->getError());
     		}
-    	} else {
-    		if($id == 0) {
-    			$this->error('无效的参数');
-    		}
-    		$data = M('Store')->field(true)->find($id);
-    		if(false === $data){
-    			$this->error("获取门店信息错误");
-    		}
-    		$this->assign('data',$data);
-    		$this->meta_title = '修改门店信息';
-    		$this->display();
-    	}
+    	} 
     	
     }
     
-    /**
-     * 更新
-     * @author tina
-     */
-    public function save(){
-    	$res = D('Store')->update();
-    	if(!$res){
-    		//print_r(D('Store')->getError());exit;
-    		$this->error(D('Store')->getError());
-    	}else{
-    		$this->success($res['id']?'更新成功！':'新增成功！', Cookie('__forward__'));
-    	}
-    }
+   
     
     /**
      * 开单操作，填写完汽车信息，保存时进行以下操作

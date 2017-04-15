@@ -773,6 +773,7 @@ class Db {
     public function select($options=array()) {
         $this->model  =   $options['model'];
         $sql        =   $this->buildSelectSql($options);
+        //echo $sql.'<br/>';
         $result     =   $this->query($sql,$this->parseBind(!empty($options['bind'])?$options['bind']:array()));
         return $result;
     }

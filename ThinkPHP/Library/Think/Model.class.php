@@ -944,6 +944,8 @@ class Model {
             'integer'   =>  '/^[-\+]?\d+$/',
             'double'    =>  '/^[-\+]?\d+(\.\d+)?$/',
             'english'   =>  '/^[A-Za-z]+$/',
+            //add by tina大于0
+            'positive_integer'  => '/^[0-9]*[1-9][0-9]*$/',
         );
         // 检查是否有内置的正则表达式
         if(isset($validate[strtolower($rule)]))

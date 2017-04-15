@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 
 namespace Admin\Controller;
-use Admin\Conf\OrderConstant;
+use Admin\Enums\Order;
 use Admin\Service\OrderItemService;
 
 /**
@@ -60,7 +60,7 @@ class OrderController extends AdminController {
         	}
         	
         	//设置状态对应的名称
-        	$order_status_name = OrderConstant::$ORDER_STATUS[$val['order_status']];
+        	$order_status_name = Order::$ORDER_STATUS[$val['order_status']];
         	$list[$key]['order_status_name'] = isset($order_status_name) ? $order_status_name : "";
         	
         	//设置操作人 FIXME
@@ -87,10 +87,10 @@ class OrderController extends AdminController {
     	
     	$map = array('id'=>$id);
     	$Order = M('Order');
-    	$Order->order_status = OrderConstant::$ORDER_STATUS_201;
-    	$Order->pay_time = time();
+    	$Order->order_status = Order::$ORDER_STATUS_201;
+    	$Order->pay_time = date('Y-m-d H:i:s');
     	$Order->payee = UID;
-    	$Order->pay_status = OrderConstant::$PAY_STATUS_1;
+    	$Order->pay_status = Order::$PAY_STATUS_1;
     	
     	$msg   = array_merge( array( 'success'=>' 结算成功！', 'error'=>'结算失败！', 'url'=>'' ,'ajax'=>IS_AJAX) , (array)$msg );
     	if($Order->where($map)->save()){
@@ -131,52 +131,7 @@ class OrderController extends AdminController {
     	}
     }
     
-    /**
-     * 修改初始化
-     * @author tina
-     */
-    public function edit($id = 0){
-    	if(IS_POST) {
-    		$Store = D('Store');
-    		$data = $Store->create();
-    		if($data){
-    			if($Store->save()){
-    				S('DB_CONFIG_DATA',null);
-    				//记录行为
-    				action_log('update_store','store',$data['id'],UID);
-    				$this->success('更新成功', Cookie('__forward__'));
-    			} else {
-    				$this->error('更新失败');
-    			}
-    		} else {
-    			$this->error($Store->getError());
-    		}
-    	} else {
-    		if($id == 0) {
-    			$this->error('无效的参数');
-    		}
-    		$order = M('Order')->field(true)->find($id);
-    		if(false === $order){
-    			$this->error("请检查参数，不能获取到有效的数据！");
-    		}
-    		$car_id = $order['car_id'];
-    		$car = M('Car')->field(true)->find($car_id);
-    		if(false === $order){
-    			$this->error("无法获取到车辆信息！");
-    		}
-    		$orderItemService = new OrderItemService();
-    		$orderItemList = $orderItemService->listByOrderId($order["id"]);
-    		
-    		
-  			$this->assign('car_order_id',$order['id']);
-    		$this->assign('data',$car);
-    		$this->assign('_list',$orderItemList);
-        	
-    		$this->meta_title = '修改门店信息';
-    		$this->display();
-    	}
-    	
-    }
+    
     
     public function printer($id = 0){
         $this->get($id);
@@ -202,6 +157,9 @@ class OrderController extends AdminController {
     		}
     		$orderItemService = new OrderItemService();
     		$orderItemList = $orderItemService->listByOrderId($order['id']);
+    		
+    		$car['order_no'] = $order['order_no'];
+    		$car['pay_status'] = $order['pay_status'];
     		
     		$this->assign('car_order_id',$order['id']);
     		$this->assign('data',$car);

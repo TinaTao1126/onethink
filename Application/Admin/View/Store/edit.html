@@ -15,14 +15,18 @@
             <label class="item-label">门店地址</label>
             <div class="controls">
                 <select class="select" name="district_id">
-                	
-                	<option value="100">华东</option>
+                	<notempty name="_district">
+						<volist name="_district" id="vo" >
+							<option value="{$vo.id}" {$vo.id eq $data.district_id ? selected : ''}>{$vo.name}</option>
+						</volist>
+					</notempty>
                 </select>
                 <select class="select" name="city_id">
-                	<option value="200">北京</option>
-                </select>
-                <select class="select" name="store_id">
-                	 <option value="300">通州</option>
+                	<notempty name="_city">
+						<volist name="_city" id="vo" >
+							<option value="{$vo.id}" {$vo.id eq $data.city_id ? selected : ''}>{$vo.name}</option>
+						</volist>
+					</notempty>
                 </select>
             </div>
         </div>
@@ -55,8 +59,24 @@
 <block name="script">
 <script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
 <script type="text/javascript" charset="utf-8">
-	Think.setValue('type',{$type|default=1});
+	//Think.setValue('type',{$type|default=1});
     //导航高亮
     highlight_subnav('{:U('Store/index')}');
+    $(function(){
+    	$("select[name=district_id]").change(function(){
+    		var district_id = $(this).val();
+    		var url = Think.U('Admin/District/list_by_type','type=2&pid='+district_id);
+
+    		$.get(url, function(response){
+    			var data = response.info;
+    			for(var i = 0 ; i < data.length; i++) {
+    				
+    				$("select[name=city_id]").append('<option value="'+data[i].id+'">'+data[i].name+'</option>');
+    			}
+    		    
+    		 });
+    	});
+    	
+    });
 </script>
 </block>

@@ -151,14 +151,6 @@
 
 <block name="script">
     <script type="text/javascript">
-  	//表单提交
-	$(document)
-    	.ajaxStart(function(){
-    		$("button:submit").addClass("log-in").attr("disabled", true);
-    	})
-    	.ajaxStop(function(){
-    		$("button:submit").removeClass("log-in").attr("disabled", false);
-    	});
   	
 	$("#order-item-add").click(function(){
 		//console.log($(this).attr("href"));
@@ -188,7 +180,7 @@
 			}
 		}
 	});
-        //导航高亮
-        //highlight_subnav('{:U('Order/index')}');
+    //导航高亮
+    highlight_subnav('{:U('Order/index')}');
     </script>
 </block>

@@ -8,7 +8,8 @@
 // +----------------------------------------------------------------------
 
 namespace Admin\Controller;
-
+use Admin\Service\DistrictService;
+use Admin\Enums\Store;
 
 /**
  * 门店管理
@@ -24,7 +25,6 @@ class StoreController extends AdminController {
     public function index(){
     	$district_id       =   I('district_id');
     	$city_id       =   I('city_id');
-    	$store_id       =   I('store_id');
     	$map = array();
     	if($district_id > 0) {
     		$map['district_id']=$district_id;
@@ -32,15 +32,43 @@ class StoreController extends AdminController {
     	if($city_id > 0) {
     		$map['city_id']=$city_id;
     	}
-    	if($store_id > 0) {
-    		$map['store_id']=$store_id;
-    	}
-        
 
         $list   = $this->lists('Store', $map);
-        int_to_string($list);
+        
+        //获取所有门店的大区id和城市id
+        $district_ids = getFieldMap($list,$field="district_id");
+        $city_ids = getFieldMap($list, $field='city_id');
+        $ids = array_merge($district_ids,$city_ids);
+       
+        
+        if(isset($ids) && !empty($ids)) {
+            
+        	//根据汽车id，批量取出汽车信息
+            $districtService = new DistrictService();
+            $districtList = $districtService->listByIds($ids);
+        	 
+            //php 5.4 array_combine(array_column($districtList,'id'),$districtList);
+        	$districtMap = array();
+        	foreach ($districtList as $key => $val) {
+        		$districtMap[$val['id']] = $val['name'];
+        	}
+        }
+        
+       
+        foreach ($list as $key => $store) {
+            $list[$key]['district_name'] = $districtMap[$store['district_id']];
+            $list[$key]['city_name'] = $districtMap[$store['city_id']];
+            $list[$key]['status_name'] = Store::$STATUS[$store['status']];
+        }
+        
+        $districtService = new DistrictService();
+        $district = $districtService->select($type=1, $pid=0);
+        
         $this->assign('_list', $list);
-//         print_r($list);exit;
+        $this->assign('_district',$district);
+        //缓存数据 FIXME 目前没起作用
+        $this->assign('_district_id',$district_id);
+        $this->assign('_city_id',$city_id);
         $this->meta_title = '门店信息';
         $this->display();
     }
@@ -69,13 +97,15 @@ class StoreController extends AdminController {
      * 删除
      */
     public function del(){
-    	$id = array_unique((array)I('id',0));
     
+    	$id = array_unique((array)I('id',0));
+
+    	$id = is_array($id) ? implode(',',$id) : $id;
     	if ( empty($id) ) {
     		$this->error('请选择要操作的数据!');
     	}
-    
     	$map = array('id' => array('in', $id) );
+    	
     	if(M('Store')->where($map)->delete()){
     		S('DB_CONFIG_DATA',null);
     		//记录行为
@@ -94,12 +124,13 @@ class StoreController extends AdminController {
     	if(IS_POST) {
     		$Store = D('Store');
     		$data = $Store->create();
+    		
     		if($data){
     			if($Store->save()){
     				S('DB_CONFIG_DATA',null);
     				//记录行为
     				action_log('update_store','store',$data['id'],UID);
-    				$this->success('更新成功', Cookie('__forward__'));
+    				$this->success('更新成功', 'Admin/Store/index');
     			} else {
     				$this->error('更新失败');
     			}
@@ -115,6 +146,11 @@ class StoreController extends AdminController {
     			$this->error("获取门店信息错误");
     		}
     		$this->assign('data',$data);
+    		$districtService = new DistrictService();
+    		$district = $districtService->select($type=1, $pid=0);
+    		$city = $districtService->select($type=2, $pid=$data['city_id']);
+    		$this->assign('_district',$district);
+    		$this->assign('_city',$city);
     		$this->meta_title = '修改门店信息';
     		$this->display();
     	}
@@ -131,66 +167,21 @@ class StoreController extends AdminController {
     		//print_r(D('Store')->getError());exit;
     		$this->error(D('Store')->getError());
     	}else{
-    		$this->success($res['id']?'更新成功！':'新增成功！', Cookie('__forward__'));
+    		$this->success($res['id']?'更新成功！':'新增成功！', 'Admin/Store/index');
     	}
     }
     
-// 	/**
-//      * 新增行为
-//      * @author tina
-//      */
-//     public function addAction(){
-//         $this->meta_title = '新增行为';
-//         $data = array("storename"=>"test");
-//         $this->assign('data',$data);
-//         $this->display('editaction');
-//     }
-    
-    
+
+
+  
     /**
-     * 用户行为列表
-     * @author huajie <banhuajie@163.com>
-     */
-    public function action(){
-    	//获取列表数据
-    	$Action =   M('Action')->where(array('status'=>array('gt',-1)));
-    	$list   =   $this->lists($Action);
-    	int_to_string($list);
-    	// 记录当前列表页的cookie
-    	Cookie('__forward__',$_SERVER['REQUEST_URI']);
-    
-    	$this->assign('_list', $list);
-    	$this->meta_title = '用户行为';
-    	$this->display();
-    }
-    
-    /**
-     * 编辑行为
-     * @author huajie <banhuajie@163.com>
-     */
-    public function editAction(){
-    	$id = I('get.id');
-    	empty($id) && $this->error('参数不能为空！');
-    	$data = M('Action')->field(true)->find($id);
-    
-    	$this->assign('data',$data);
-    	$this->meta_title = '编辑行为';
-    	$this->display();
-    }
-    
+     * 新增门店
+     */  
     public function add(){
 
     	if(IS_POST){
-    		$param = I('post.');
-    		$storename = $param['name'];
     		
-    		/** 判断参数*/
-    		if(empty($storename)) {
-    			$this->error("门店名称不能为空！");
-    		}
-    		
-    
-    		/* 调用注册接口注册用户 */
+    		/* 添加门店 */
     		$Store = D('Store');
     		$data = $Store->create();
     		if($data){
@@ -199,7 +190,7 @@ class StoreController extends AdminController {
     				// S('DB_CONFIG_DATA',null);
     				//记录行为
     				action_log('add_store', 'Store', $id, UID);
-    				$this->success('新增成功', Cookie('__forward__'));
+    				$this->success('新增成功', 'Admin/Store/index');
     			} else {
     				$this->error('新增失败');
     			}
@@ -208,7 +199,12 @@ class StoreController extends AdminController {
     		}
     		
     	} else {
-    		$this->meta_title = '新增用户';
+    		$this->meta_title = '新增门店';
+    		
+    		//获取大区数据
+    		$districtService = new DistrictService();
+    		$district = $districtService->select();
+    		$this->assign('_district',$district);
     		$this->display();
     	}
     }

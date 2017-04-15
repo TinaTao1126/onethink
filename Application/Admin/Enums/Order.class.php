@@ -1,8 +1,8 @@
 <?php
 
-namespace Admin\Conf;
+namespace Admin\Enums;
 
-class OrderConstant {
+class Order {
 	
 	/**
 	 * 
