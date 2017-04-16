@@ -64,10 +64,11 @@ class StoreController extends AdminController {
         
         $districtService = new DistrictService();
         $district = $districtService->select($type=1, $pid=0);
+        $city = $districtService->select($type=2, $district_id);
         
         $this->assign('_list', $list);
         $this->assign('_district',$district);
-        //缓存数据 FIXME 目前没起作用
+        $this->assign('_city',$city);
         $this->assign('_district_id',$district_id);
         $this->assign('_city_id',$city_id);
         $this->meta_title = '门店信息';
@@ -164,6 +165,8 @@ class StoreController extends AdminController {
     		$city = $districtService->select($type=2, $pid=$data['district_id']);
     		$this->assign('_district',$district);
     		$this->assign('_city',$city);
+    		$this->assign('_district_id',$data['district_id']);
+    		$this->assign('_city_id',$data['city_id']);
     		$this->meta_title = '修改门店信息';
     		$this->display();
     	}

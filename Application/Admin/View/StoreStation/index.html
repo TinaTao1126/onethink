@@ -20,15 +20,37 @@
                 	<option value="0">大区</option>
                 	<notempty name="_district">
 						<volist name="_district" id="vo" >
-							<option value="{$vo.id}">{$vo.name}</option>
+							<if condition="$vo.id eq $_district_id">
+								<option value="{$vo.id}" selected>{$vo.name}</option>
+							<else/>
+								<option value="{$vo.id}">{$vo.name}</option>
+							</if>
 						</volist>
 					</notempty>
                 </select>
                 <select class="select" name="city_id">
                 	<option value="0">城市</option>
+                	<notempty name="_city">
+						<volist name="_city" id="vo" >
+							<if condition="$vo.id eq $_city_id">
+								<option value="{$vo.id}" selected>{$vo.name}</option>
+							<else/>
+								<option value="{$vo.id}">{$vo.name}</option>
+							</if>
+						</volist>
+					</notempty>
                 </select>
                 <select class="select" name="store_id">
                 	<option value="0">门店</option>
+                	<notempty name="_store">
+						<volist name="_store" id="vo" >
+							<if condition="$vo.id eq $_store_id">
+								<option value="{$vo.id}" selected>{$vo.name}</option>
+							<else/>
+								<option value="{$vo.id}">{$vo.name}</option>
+							</if>
+						</volist>
+					</notempty>
                 </select>
             </div>
 				
@@ -59,8 +81,14 @@
 			<td>{$vo.name} </td>
 			<td>{$vo.store_name}</td>
 			<td>{$vo.create_time}</td>
-			<td>{$vo.status_name}</td>
-			<td><eq name="vo.status" value="1">
+			<td>
+				<eq name="vo.disabled" value="1">
+					启用
+				<else/>
+					禁用
+				</eq>
+			</td>
+			<td><eq name="vo.disabled" value="1">
 				<a href="{:U('StoreStation/changeStatus?method=disabled&id='.$vo['id'])}" class="ajax-get">禁用</a>
 				<a title="编辑" href="{:U('edit?id='.$vo['id'])}">编辑</a>
 				<a class="confirm ajax-get" title="删除" href="{:U('del?id='.$vo['id'])}">删除</a>
@@ -83,7 +111,7 @@
 </block>
 
 <block name="script">
-	<script src="__STATIC__/thinkbox/jquery.thinkbox.js"></script>
+<script type="text/javascript" src="__STATIC__/js/district.js"></script>
 
 	<script type="text/javascript">
 	//搜索功能
@@ -109,32 +137,6 @@
     //导航高亮
     highlight_subnav('{:U('StoreStation/index')}');
     
-    $(function(){
-    	var getDistrict=function(type, name, parent){
-    		var district = $("select[name="+parent+"]");
-    		var pid = $(district).find("option:selected").val();
-    		console.log(pid);
-    		var url = Think.U('Admin/District/list_by_type','type='+type+'&pid='+pid);
-
-    		$.get(url, function(response){
-    			$("select[name="+name+"] option").remove();
-    			var data = response.info;
-    			for(var i = 0 ; i < data.length; i++) {
-    				$("select[name="+name+"]").append('<option value="'+data[i].id+'">'+data[i].name+'</option>');
-    			}
-    		    
-    		 });
-    	};
-
-    	
-    	$("select[name=district_id]").bind('change',function(){
-    		getDistrict(2,'city_id', 'district_id');
-    		
-    	});
-    	
-    	$("select[name=city_id]").bind('change',function(){
-    		getDistrict(3,'store_id', 'city_id');
-    	});
-    });
+   
 	</script>
 </block>

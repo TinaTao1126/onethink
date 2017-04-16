@@ -72,9 +72,15 @@ class StoreStationController extends AdminController {
         
         $this->assign('_list', $list);
         $districtService = new DistrictService();
-        $district = $districtService->select();
+        $district = $districtService->select($type=1, $pid=0);
+        $city = $districtService->select($type=2, $pid=$district_id);
+        $store = $districtService->select($type=3, $pid=$city_id);
         $this->assign('_district',$district);
-//         print_r($list);exit;
+        $this->assign('_city',$city);
+        $this->assign('_store',$store);
+        $this->assign('_district_id',$map['district_id']);
+        $this->assign('_city_id',$map['city_id']);
+        $this->assign('_store_id',$map['store_id']);
         $this->meta_title = '车位信息';
         $this->display();
     }
@@ -157,6 +163,9 @@ class StoreStationController extends AdminController {
     		$this->assign('_city',$district);
     		$district = $districtService->select($type=3, $pid=$data['city_id']);
     		$this->assign('_store',$district);
+    		$this->assign('_district_id',$data['district_id']);
+    		$this->assign('_city_id',$data['city_id']);
+    		$this->assign('_store_id',$data['store_id']);
     		
     		$this->meta_title = '修改车位信息';
     		$this->display();
@@ -184,6 +193,8 @@ class StoreStationController extends AdminController {
     	if(IS_POST){
     		$param = I('post.');
     		$param['creator'] = UID;
+    		$param['disabled'] = 1;   //启用
+    		print_r($param);exit;
     		$id = M('StoreStation')->add($param);
     		if($id){
     				S('DB_CONFIG_DATA',null);
@@ -196,9 +207,13 @@ class StoreStationController extends AdminController {
     		
     		
     	} else {
+    	    //根据权限获取数据
+    	    
+    	    
     	    $districtService = new DistrictService();
     	    $district = $districtService->select();
     	    $this->assign('_district',$district);
+    	    //$this->assign('store_id',session('store_id'));
     	    
     		$this->meta_title = '新增工位';
     		$this->display();

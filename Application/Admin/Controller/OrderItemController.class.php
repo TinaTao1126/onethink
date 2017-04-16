@@ -9,6 +9,7 @@
 
 namespace Admin\Controller;
 use Admin\Service\OrderItemService;
+use Admin\Service\OrderService;
 
 /**
  * 订单明细管理
@@ -32,7 +33,11 @@ class OrderItemController extends AdminController {
     	$map = array('id' => array('in', $id) );
     	$msg   = array_merge( array( 'success'=>'删除成功！', 'error'=>'删除失败！', 'url'=>'' ,'ajax'=>IS_AJAX) , (array)$msg );
     	 
+    	$data = M('OrderItem')->where($map)->find();
     	if(M('OrderItem')->where($map)->delete()){
+    	    //计算订单应收金额
+    	    $orderService = new OrderService();
+    	    $orderService->updateAmount($data['car_order_id']);
     		S('DB_CONFIG_DATA',null);
     		//记录行为
     		action_log('delete_order_item','order_item',$id,UID);
@@ -52,7 +57,11 @@ class OrderItemController extends AdminController {
     	   try{
     	      $data =  $orderItemService->editOrderItem();
     	      if($data){
-    	      	$this->success('更新成功', "Admin/Order/edit?id=".$data['car_order_id']);
+    	          //计算订单应收金额
+    	          $orderService = new OrderService();
+    	          $car_order_id = I("post.car_order_id");
+    	          $orderService->updateAmount($car_order_id);
+    	      	  $this->success('更新成功', "Admin/Order/detail?id=".$car_order_id);
     	      } else {
     	      	$this->error('无更新');
     	      }
@@ -101,6 +110,11 @@ class OrderItemController extends AdminController {
     		$data = $OrderItem->create();
     		if($data){
     			$id = $OrderItem->add();
+    			
+    			//计算订单应收金额
+    			$orderService = new OrderService();
+    			$orderService->updateAmount($data['car_order_id']);
+    			
     			if($id){
     				S('DB_CONFIG_DATA',null);
     				//记录行为

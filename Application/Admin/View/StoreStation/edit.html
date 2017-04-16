@@ -12,21 +12,25 @@
                 	<option value="0">大区</option>
                 	<notempty name="_district">
 						<volist name="_district" id="vo" >
-							<option value="{$vo.id}" {$vo.id eq $data.district_id ? selected : ''}>{$vo.name}</option>
+							<if condition="$vo.id eq $_district_id">
+								<option value="{$vo.id}" selected>{$vo.name}</option>
+							<else/>
+								<option value="{$vo.id}">{$vo.name}</option>
+							</if>
 						</volist>
 					</notempty>
                 </select>
                 <select class="select" name="city_id">
                 	<notempty name="_city">
 						<volist name="_city" id="vo" >
-							<option value="{$vo.id}" {$vo.id eq $data.city_id ? selected : ''}>{$vo.name}</option>
+							<option value="{$vo.id}" {$vo.id eq $_city_id ? selected : ''}>{$vo.name}</option>
 						</volist>
 					</notempty>
                 </select>
                 <select class="select" name="store_id">
                 	<notempty name="_store">
 						<volist name="_store" id="vo" >
-							<option value="{$vo.id}" {$vo.id eq $data.store_id ? selected : ''}>{$vo.name}</option>
+							<option value="{$vo.id}" {$vo.id eq $_store_id ? selected : ''}>{$vo.name}</option>
 						</volist>
 					</notempty>
                 </select>

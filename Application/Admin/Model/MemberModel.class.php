@@ -76,10 +76,13 @@ class MemberModel extends Model {
             'uid'             => $user['uid'],
             'username'        => $user['nickname'],
             'last_login_time' => $user['last_login_time'],
+            'store_id'        => $user['store_id'],
+            'auth_group_id'    => $user['auth_group_id'],
         );
-
+       
         session('user_auth', $auth);
         session('user_auth_sign', data_auth_sign($auth));
+        
 
     }
 

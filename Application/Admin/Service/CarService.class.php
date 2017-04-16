@@ -142,13 +142,15 @@ class CarService{
 		$data = $Car->where($where)->find();
 		$response = array("code"=>500);
 		if(isset($data) && !empty($data)) {
-			//echo 'edit';
 			//如果存在，则修改否则添加
-			$result = $Car->save();
-			if($result) {
+			$DCar = D('Car');
+			if($DCar->create()) {
 				S('DB_CONFIG_DATA',null);
 				//记录行为
 				action_log('edit_car', 'Car', $data['id'], UID);
+			}else {
+			    $response['msg'] = $DCar->getError();
+			    return $response;
 			}
 			
 			$response['code'] = 200;

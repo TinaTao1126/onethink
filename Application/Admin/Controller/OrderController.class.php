@@ -27,11 +27,16 @@ class OrderController extends AdminController {
     	$order_no       	=   I('order_no');
     	$create_time_begin	=   I('create_time_begin');
     	$create_end      	=   I('create_time_end');
+    	$district_id       =   I('district_id');
+    	$city_id       =   I('city_id');
+    	$store_id       =   I('store_id');
     	$map = array();
+    	if($store_id > 0) {
+    		$map['store_id']=$store_id;
+    	}
     	if(isset($order_no) && !empty($order_no)) {
     		$map['order_no']=$order_no;
     	}
-    	
 
         $list   = $this->lists('Order', $map);
         
@@ -72,10 +77,17 @@ class OrderController extends AdminController {
         
         
         //获取大区数据
-        $districtService = new DistrictService();
-        $district = $districtService->select();
-        $this->assign('_district',$district);
         $this->assign('_list', $list);
+        $districtService = new DistrictService();
+        $district = $districtService->select($type=1, $pid=0);
+        $city = $districtService->select($type=2, $pid=$district_id);
+        $store = $districtService->select($type=3, $pid=$city_id);
+        $this->assign('_district',$district);
+        $this->assign('_city',$city);
+        $this->assign('_store',$store);
+        $this->assign('_district_id',$district_id);
+        $this->assign('_city_id',$city_id);
+        $this->assign('_store_id',$store_id);
         $this->meta_title = '客户接待';
         $this->display();
     }
@@ -176,7 +188,34 @@ class OrderController extends AdminController {
     	 
     }
     
-  
+    public function add(){
+        //从session获取门店信息
+        
+        $store_name = session("user_auth.store_name");
+        $store_id = session('user_auth.store_id');
+        if(is_null($store_id) || !isset($store_id)) {
+            
+            $this->display();
+        } else {
+            if(is_null($store_name) || !isset($store_name)) {
+                $Store = M('District')->where('id='.$store_id)->find();
+                $store_name = $Store['name'];
+            }
+            
+            session('store_name',$store_name);
+            $this->assign("store_id", $Store['id']);
+            $this->assign("store_name", $store_name);
+        }
+        
+        //获取工位信息
+        $where = array(
+        	"store_id"=> $store_id,
+            "status"=>0 //   空闲
+        );
+        $store_station = M('StoreStation')->where($where)->select();
+        $this->assign("_store_station", $store_station);
+        $this->display();
+    }
    
    
   

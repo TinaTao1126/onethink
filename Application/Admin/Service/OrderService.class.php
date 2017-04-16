@@ -31,5 +31,28 @@ class OrderService {
 		}
 		return $result;
 	}
+	
+	/**
+	 * 更新各种金额
+	 * @param unknown $id
+	 */
+	public function updateAmount($id) {
+	    $order = M('Order')->where('id='.$id)->select();
+	    $orderItemList = M('OrderItem')->where('car_order_id='.$id)->select();
+	    if(empty($orderItemList)) {
+	        return;
+	    }
+	    $total_price = 0;
+	    foreach ($orderItemList as $key => $orderItem) {
+	        $orderItemList[$key]['item_type_name'] = Order::$ITEM_TYPE[$orderItem['item_type']];
+	        $hour_price = isset($orderItem['hour_price']) ? $orderItem['hour_price'] : 0;
+	        $item_price = isset($orderItem['item_price']) ? $orderItem['item_price'] : 0;
+	        $item_num = isset($orderItem['item_num']) ? $orderItem['item_num'] : 0;
+	        $total_price = $total_price + $hour_price + $item_price * $item_num;
+	    }
+	     
+	    $order['purchase_amount'] = $total_price;
+	    M("Order")->where('id='.$id)->save($order);
+	}
 }
 

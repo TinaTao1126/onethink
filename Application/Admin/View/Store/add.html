@@ -53,26 +53,11 @@
 </block>
 
 <block name="script">
+<script type="text/javascript" src="__STATIC__/js/district.js"></script>
     <script type="text/javascript">
         //导航高亮
         highlight_subnav('{:U('Store/index')}');
         
-        $(function(){
-        	$("select[name=district_id]").change(function(){
-        		var district_id = $(this).val();
-        		var url = Think.U('Admin/District/list_by_type','type=2&pid='+district_id);
-
-        		$.get(url, function(response){
-        			$("select[name=city_id] option").remove();
-        			var data = response.info;
-        			for(var i = 0 ; i < data.length; i++) {
-        				
-        				$("select[name=city_id]").append('<option value="'+data[i].id+'">'+data[i].name+'</option>');
-        			}
-        		    
-        		 });
-        	});
-        	
-        });
+       
     </script>
 </block>

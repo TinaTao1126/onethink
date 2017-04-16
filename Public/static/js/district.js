@@ -9,15 +9,21 @@ $(function() {
 		$.get(url, function(response) {
 			$("select[name=" + name + "] option").remove();
 			var data = response.info;
-			for ( var i = 0; i < data.length; i++) {
-				$("select[name=" + name + "]").append(
-						'<option value="' + data[i].id + '">' + data[i].name
-								+ '</option>');
-			}
+			console.log(data);
+//			if(data && data.length) {
+				for ( var i = 0; i < data.length; i++) {
+					$("select[name=" + name + "]").append(
+							'<option value="' + data[i].id + '">' + data[i].name
+									+ '</option>');
+				}
 
-			if (child != '') {
-				$("select[name=" + child + "]").trigger('change');
-			}
+				if (child != '') {
+					$("select[name=" + child + "]").trigger('change');
+				}
+//			} else {
+//				$("select[name=" + name + "]").append('<option value="0">无数据</option>');
+//			}
+			
 		});
 
 	};

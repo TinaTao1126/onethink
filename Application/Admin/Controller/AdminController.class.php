@@ -22,6 +22,7 @@ class AdminController extends Controller {
     protected function _initialize(){
         // 获取当前用户ID
         define('UID',is_login());
+        
         if( !UID ){// 还没登录 跳转到登录页面
             $this->redirect('Public/login');
         }
@@ -421,6 +422,7 @@ class AdminController extends Controller {
                 return true;
             }
         });
+        
         if( empty($options['where'])){
             unset($options['where']);
         }
