@@ -22,10 +22,14 @@
 			</div>
 			<div class="form-group">
 				<label class="col-sm-1 control-label">工位号</label>
-				<div class="col-sm-4">
-					<input type="text" class="form-control" name="store_station_id" value="{$data.store_station_name}" />
+				<div class="col-sm-2">
+				
+					<select class="form-control" name="store_station_id">
+						<option value="1">001</option>
+						
+					</select>
 				</div>
-				<label class="col-sm-1 control-label">品牌</label>
+				<label class="col-sm-1 col-sm-offset-2 control-label">品牌</label>
 				<div class="col-sm-4">
 					<input type="text" class="form-control" name="car_brand" value="{$data.car_brand}" />
 				</div>
@@ -124,10 +128,8 @@
 			<td>{$vo.item_num}</td>
 			<td>{$vo.total_price}</td>
 			<td>
-				<eq name="data.pay_status" value="0">
 				<a title="编辑" href="{:U('OrderItem/edit?id='.$vo['id'])}">编辑</a>
 				<a class="confirm ajax-get" title="删除" href="{:U('OrderItem/del?id='.$vo['id'])}">删除</a>
-				</eq>
 			</td>
 		</tr>
 		</volist>

@@ -141,7 +141,6 @@ class CarService{
 		$where = array('car_number'=>$param['car_number']);
 		$data = $Car->where($where)->find();
 		$response = array("code"=>500);
-		print_r($data);exit;
 		if(isset($data) && !empty($data)) {
 			//echo 'edit';
 			//如果存在，则修改否则添加
