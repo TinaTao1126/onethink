@@ -125,6 +125,7 @@ class CarController extends AdminController {
     	if(IS_POST){
     		$param = I('post.');
     		
+    		//echo 'edit';
     		//添加汽车信息
     		$carService = new CarService();
     		$response = $carService->editCar();

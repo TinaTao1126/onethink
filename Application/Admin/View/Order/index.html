@@ -13,14 +13,19 @@
         <!-- 高级搜索 -->
 		<div class="search-form fr cf">
 			<div class="sleft">
-				<select name="district_id" class="select">
-					<option value="100">大区</option>
-				</select>
-				<select name="city_id" class="select">
-					<option value="200">城市</option>
-				</select>
+				<select class="select" name="district_id">
+                	<option value="0">大区</option>
+                	<notempty name="_district">
+						<volist name="_district" id="vo" >
+							<option value="{$vo.id}">{$vo.name}</option>
+						</volist>
+					</notempty>
+                </select>
+                <select class="select" name="city_id">
+                	<option value="0">城市</option>
+                </select>
 				<select name="store_id" class="select">
-					<option value="300">门店</option>
+					<option value="0">门店</option>
 				</select>
 				
 				
@@ -34,6 +39,7 @@
     <thead>
         <tr>
 		<th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
+		<th class="">ID</th>
 		<th class="">车牌号</th>
 		<th class="">客户名称</th>
 		<th class="">工位</th>
@@ -52,6 +58,7 @@
 		<volist name="_list" id="vo">
 		<tr>
             <td><input class="ids" type="checkbox" name="id[]" value="{$vo.id}" /></td>
+            <td>{$vo.id} </td>
             <td>{$vo.car_number} </td>
 			<td>{$vo.car_owner} </td>
 			<td>{$vo.station}</td>
@@ -113,6 +120,37 @@
 			return false;
 		}
 	});
+	
+	$(function(){
+    	$("select[name=district_id]").change(function(){
+    		var district_id = $(this).val();
+    		var url = Think.U('Admin/District/list_by_type','type=2&pid='+district_id);
+
+    		$.get(url, function(response){
+    			var data = response.info;
+    			for(var i = 0 ; i < data.length; i++) {
+    				
+    				$("select[name=city_id]").append('<option value="'+data[i].id+'">'+data[i].name+'</option>');
+    			}
+    		    
+    		 });
+    	});
+    	
+    	$("select[name=city_id]").change(function(){
+    		var district_id = $(this).val();
+    		var url = Think.U('Admin/District/list_by_type','type=3&pid='+district_id);
+
+    		$.get(url, function(response){
+    			var data = response.info;
+    			for(var i = 0 ; i < data.length; i++) {
+    				
+    				$("select[name=store_id]").append('<option value="'+data[i].id+'">'+data[i].name+'</option>');
+    			}
+    		    
+    		 });
+    	});
+    	
+    });
     //导航高亮
     highlight_subnav('{:U('Store/index')}');
 	</script>

@@ -9,6 +9,7 @@
 
 namespace Admin\Controller;
 use Admin\Enums\Order;
+use Admin\Service\DistrictService;
 use Admin\Service\OrderItemService;
 
 /**
@@ -68,6 +69,12 @@ class OrderController extends AdminController {
         	$list[$key]['station'] = '001';
         	
         }
+        
+        
+        //获取大区数据
+        $districtService = new DistrictService();
+        $district = $districtService->select();
+        $this->assign('_district',$district);
         $this->assign('_list', $list);
         $this->meta_title = '客户接待';
         $this->display();

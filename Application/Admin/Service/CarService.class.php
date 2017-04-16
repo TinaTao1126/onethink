@@ -135,13 +135,15 @@ class CarService{
 	 */
 	public function editCar() {
 		$param   =   I('post.');
+		//print_r($param);exit;
 		$Car = M('Car');
 		//$Car->car_number=$param['car_number'];
-		$data = $Car->where('car_number='.$param['car_number'])->select();
+		$where = array('car_number'=>$param['car_number']);
+		$data = $Car->where($where)->find();
 		$response = array("code"=>500);
-		//var_dump($data);exit;
+		print_r($data);exit;
 		if(isset($data) && !empty($data)) {
-			echo 'edit';
+			//echo 'edit';
 			//如果存在，则修改否则添加
 			$result = $Car->save();
 			if($result) {
