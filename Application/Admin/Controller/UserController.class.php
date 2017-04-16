@@ -9,6 +9,8 @@
 
 namespace Admin\Controller;
 use User\Api\UserApi;
+use Admin\Service\DistrictService;
+use Admin\Model\AuthGroupModel;
 
 /**
  * 后台用户控制器
@@ -200,8 +202,14 @@ class UserController extends AdminController {
         }
     }
 
-    public function add($username = '', $password = '', $repassword = '', $email = ''){
+    public function add(){
         if(IS_POST){
+            $param = I('post.');
+            $username = $param['nickname'];
+            $password = $param['password']; 
+            $repassword = $param['repassword'];
+            $email = $param['email'];
+            $mobile = $param['mobile'];
             /* 检测密码 */
             if($password != $repassword){
                 $this->error('密码和重复密码不一致！');
@@ -209,10 +217,11 @@ class UserController extends AdminController {
 
             /* 调用注册接口注册用户 */
             $User   =   new UserApi;
-            $uid    =   $User->register($username, $password, $email);
+            $uid    =   $User->register($username, $password, $email, $mobile);
             if(0 < $uid){ //注册成功
-                $user = array('uid' => $uid, 'nickname' => $username, 'status' => 1);
-                if(!M('Member')->add($user)){
+                $param['uid'] = $uid;
+                $param['status'] = 1;
+                if(!M('Member')->add($param)){
                     $this->error('用户添加失败！');
                 } else {
                     $this->success('用户添加成功！',U('index'));
@@ -221,6 +230,15 @@ class UserController extends AdminController {
                 $this->error($this->showRegError($uid));
             }
         } else {
+            //所属大区
+            $districtService = new DistrictService();
+            $district = $districtService->select();
+            $this->assign('_district',$district);
+            
+             //角色
+            $auth_group = M('AuthGroup')->where( array('module'=>'admin','type'=>AuthGroupModel::TYPE_ADMIN) )->select();
+            $this->assign('auth_group',$auth_group);
+            
             $this->meta_title = '新增用户';
             $this->display();
         }

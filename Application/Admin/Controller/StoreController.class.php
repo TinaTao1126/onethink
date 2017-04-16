@@ -10,6 +10,7 @@
 namespace Admin\Controller;
 use Admin\Service\DistrictService;
 use Admin\Enums\Store;
+use Admin\Enums\District;
 
 /**
  * 门店管理
@@ -122,11 +123,22 @@ class StoreController extends AdminController {
      */
     public function edit($id = 0){
     	if(IS_POST) {
+    		
+    		$store = M('Store')->where('id='. I('post.id'))->find();
+    		if(!isset($store)) {
+    		    $this->error('未找到门店信息！');
+    		}
     		$Store = D('Store');
     		$data = $Store->create();
     		
     		if($data){
     			if($Store->save()){
+    			    
+    			    //修改字段值
+    			    $district['name'] = $data['name'];
+    			    $district['pid'] = $data['city_id'];
+    			    M('District')->where('id='.$store['store_id'])->save($district);
+    			    
     				S('DB_CONFIG_DATA',null);
     				//记录行为
     				action_log('update_store','store',$data['id'],UID);
@@ -145,10 +157,11 @@ class StoreController extends AdminController {
     		if(false === $data){
     			$this->error("获取门店信息错误");
     		}
+    		
     		$this->assign('data',$data);
     		$districtService = new DistrictService();
     		$district = $districtService->select($type=1, $pid=0);
-    		$city = $districtService->select($type=2, $pid=$data['city_id']);
+    		$city = $districtService->select($type=2, $pid=$data['district_id']);
     		$this->assign('_district',$district);
     		$this->assign('_city',$city);
     		$this->meta_title = '修改门店信息';
@@ -157,22 +170,6 @@ class StoreController extends AdminController {
     	
     }
     
-    /**
-     * 更新
-     * @author tina
-     */
-    public function save(){
-    	$res = D('Store')->update();
-    	if(!$res){
-    		//print_r(D('Store')->getError());exit;
-    		$this->error(D('Store')->getError());
-    	}else{
-    		$this->success($res['id']?'更新成功！':'新增成功！', 'Admin/Store/index');
-    	}
-    }
-    
-
-
   
     /**
      * 新增门店
@@ -180,20 +177,25 @@ class StoreController extends AdminController {
     public function add(){
 
     	if(IS_POST){
+    	    $param = I('post.');
+    	    //step-1: 先保存district字典表中
+    	    $district['type'] = District::$TYPE_STORE;
+    	    $district['name'] = $param['name'];
+    	    $district['pid'] = $param['city_id'];
+    	    $store_id = M('District')->add($district);
+    	    
+    		//step-2: 保存门店信息
+    		$Store = M('Store');
+    		$param['store_id'] = $store_id;
+    		$id = $Store->add($param);
     		
-    		/* 添加门店 */
-    		$Store = D('Store');
-    		$data = $Store->create();
-    		if($data){
-    			$id = $Store->add();
-    			if($id){
-    				// S('DB_CONFIG_DATA',null);
-    				//记录行为
-    				action_log('add_store', 'Store', $id, UID);
-    				$this->success('新增成功', 'Admin/Store/index');
-    			} else {
-    				$this->error('新增失败');
-    			}
+    		if($id){
+    		  
+    		  //step-3: 记录日志
+    		  S('DB_CONFIG_DATA',null);
+    	      action_log('add_store', 'Store', $id, UID);
+    		  $this->success('新增成功', 'Admin/Store/index');
+    			
     		} else {
     			$this->error($Store->getError());
     		}

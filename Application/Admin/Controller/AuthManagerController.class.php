@@ -116,7 +116,7 @@ class AuthManagerController extends AdminController{
      */
     public function editGroup(){
         $auth_group = M('AuthGroup')->where( array('module'=>'admin','type'=>AuthGroupModel::TYPE_ADMIN) )
-                                    ->find( (int)$_GET['id'] );
+                                    ->select();
         $this->assign('auth_group',$auth_group);
         $this->meta_title = '编辑用户组';
         $this->display();

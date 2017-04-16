@@ -70,7 +70,7 @@
     		$.get(url, function(response){
     			var data = response.info;
     			for(var i = 0 ; i < data.length; i++) {
-    				
+    				$("select[name=city_id] option").remove();
     				$("select[name=city_id]").append('<option value="'+data[i].id+'">'+data[i].name+'</option>');
     			}
     		    

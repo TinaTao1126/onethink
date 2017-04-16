@@ -6,9 +6,23 @@
     </div>
     <form action="{:U()}" method="post" class="form-horizontal">
         <div class="form-item">
-            <label class="item-label">门店名称</label>
-            <div class="controls">
-                <div class="text input-large"> 爱一行（中关村店） {$vo.createtime|time_format}</div>
+        	
+            <label class="item-label">门店</label>
+            <div class="controls selectList">
+                <select class="select" name="district_id">
+                	<option value="0">大区</option>
+                	<notempty name="_district">
+						<volist name="_district" id="vo" >
+							<option value="{$vo.id}">{$vo.name}</option>
+						</volist>
+					</notempty>
+                </select>
+                <select class="select" name="city_id">
+                	<option value="0">城市</option>
+                </select>
+                <select class="select" name="store_id">
+                	<option value="0">门店</option>
+                </select>
             </div>
         </div>
         <div class="form-item">
@@ -27,8 +41,11 @@
 </block>
 
 <block name="script">
+<script type="text/javascript" src="__STATIC__/js/district.js"></script>
     <script type="text/javascript">
         //导航高亮
         highlight_subnav('{:U('StoreStation/index')}');
+        
+        
     </script>
 </block>

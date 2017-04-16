@@ -8,7 +8,8 @@
 // +----------------------------------------------------------------------
 
 namespace Admin\Controller;
-
+use Admin\Service\DistrictService;
+use Admin\Enums\StoreStation;
 
 /**
  * 门店车位管理
@@ -38,8 +39,41 @@ class StoreStationController extends AdminController {
         
 
         $list   = $this->lists('StoreStation', $map);
-        int_to_string($list);
+        
+        //获取所有车辆信息
+        $storeIdList = getFieldMap($list,$field="store_id");
+        
+        if(isset($storeIdList) && !empty($storeIdList)) {
+        	//根据汽车id，批量取出汽车信息
+        	$where['id'] = array('in',$storeIdList);
+        	$storeList = M('District')->where($where)->select();
+        	 
+        	//key:id, val:car
+        	//$carMap＝array_combine(array_column($carList,"id"), $carList);
+        	$storeMap = array();
+        	foreach ($storeList as $key => $val) {
+        		$storeMap[$val['id']] = $val['name'];
+        	}
+        	 
+        }
+        
+        foreach ($list as $key=>$val) {
+        	//设置汽车信息
+        	if(isset($storeMap)) {
+        		$list[$key]['store_name'] = $storeMap[$val['store_id']];
+        	}
+        	 
+        	//设置状态对应的名称
+        	$order_status_name = StoreStation::$STATUS[$val['status']];
+        	$list[$key]['status_name'] = isset($order_status_name) ? $order_status_name : "";
+        	
+        	 
+        }
+        
         $this->assign('_list', $list);
+        $districtService = new DistrictService();
+        $district = $districtService->select();
+        $this->assign('_district',$district);
 //         print_r($list);exit;
         $this->meta_title = '车位信息';
         $this->display();
@@ -115,6 +149,15 @@ class StoreStationController extends AdminController {
     			$this->error("获取车位信息错误");
     		}
     		$this->assign('data',$data);
+    		
+    		$districtService = new DistrictService();
+    		$district = $districtService->select($type=1, $pid=0);
+    		$this->assign('_district',$district);
+    		$district = $districtService->select($type=2, $pid=$data['district_id']);
+    		$this->assign('_city',$district);
+    		$district = $districtService->select($type=3, $pid=$data['city_id']);
+    		$this->assign('_store',$district);
+    		
     		$this->meta_title = '修改车位信息';
     		$this->display();
     	}
@@ -140,22 +183,24 @@ class StoreStationController extends AdminController {
 
     	if(IS_POST){
     		$param = I('post.');
-    		//print_r($param);
-    		/* 调用注册接口注册用户 */
-    		
-    			$id = M('StoreStation')->add($param);
-    			if($id){
-    				// S('DB_CONFIG_DATA',null);
+    		$param['creator'] = UID;
+    		$id = M('StoreStation')->add($param);
+    		if($id){
+    				S('DB_CONFIG_DATA',null);
     				//记录行为
     				action_log('add_store_station', 'store_station', $id, UID);
-    				$this->success('新增成功', Cookie('__forward__'));
+    				$this->success('新增成功', 'Admin/StoreStation/index');
     			} else {
     				$this->error('新增失败');
     			}
     		
     		
     	} else {
-    		$this->meta_title = '新增车位';
+    	    $districtService = new DistrictService();
+    	    $district = $districtService->select();
+    	    $this->assign('_district',$district);
+    	    
+    		$this->meta_title = '新增工位';
     		$this->display();
     	}
     }

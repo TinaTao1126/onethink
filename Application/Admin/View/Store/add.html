@@ -14,7 +14,7 @@
         <div class="form-item">
             <label class="item-label">门店地址</label>
             <div class="controls">
-                <select class="select" name="district_id">
+                <select class="form-control" name="district_id">
                 	<option value="0">大区</option>
                 	<notempty name="_district">
 						<volist name="_district" id="vo" >
@@ -22,7 +22,7 @@
 						</volist>
 					</notempty>
                 </select>
-                <select class="select" name="city_id">
+                <select class="form-control" name="city_id">
                 	<option value="0">城市</option>
                 </select>
             </div>
@@ -63,6 +63,7 @@
         		var url = Think.U('Admin/District/list_by_type','type=2&pid='+district_id);
 
         		$.get(url, function(response){
+        			$("select[name=city_id] option").remove();
         			var data = response.info;
         			for(var i = 0 ; i < data.length; i++) {
         				

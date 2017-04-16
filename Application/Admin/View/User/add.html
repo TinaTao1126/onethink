@@ -1,44 +1,172 @@
 <extend name="Public/base"/>
 
 <block name="body">
-    <div class="main-title">
-        <h2>新增用户</h2>
-    </div>
-    <form action="{:U()}" method="post" class="form-horizontal">
-        <div class="form-item">
-            <label class="item-label">用户名<span class="check-tips">（用户名会作为默认的昵称）</span></label>
-            <div class="controls">
-                <input type="text" class="text input-large" name="username" value="">
-            </div>
-        </div>
-        <div class="form-item">
-            <label class="item-label">密码<span class="check-tips">（用户密码不能少于6位）</span></label>
-            <div class="controls">
-                <input type="password" class="text input-large" name="password" value="">
-            </div>
-        </div>
-        <div class="form-item">
-            <label class="item-label">确认密码</label>
-            <div class="controls">
-                <input type="password" class="text input-large" name="repassword" value="">
-            </div>
-        </div>
-        <div class="form-item">
-            <label class="item-label">邮箱<span class="check-tips">（用户邮箱，用于找回密码等安全操作）</span></label>
-            <div class="controls">
-                <input type="text" class="text input-large" name="email" value="">
-            </div>
-        </div>
-        <div class="form-item">
-            <button class="btn submit-btn ajax-post" id="submit" type="submit" target-form="form-horizontal">确 定</button>
-            <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
-        </div>
-    </form>
+    <link href="__STATIC__/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <div class="container">
+  		<div class="row">
+    		<div class="col-sm-4 col-sm-offset-1">
+    			<h3>新增用户</h3>
+    		</div>
+  		</div>
+  	</div>
+  	<form action="{:U()}" method="post" class="form-horizontal">
+  	<div class="container">
+  		<div class="row">
+  			<div class="col-sm-6">
+  			<!-- 新加字段 -->
+  			<div class="form-group">
+  				<label class="col-sm-3 control-label">编号</label>
+				<div class="col-sm-6">
+					<input type="text" class="form-control"  name="user_no" value=""/>
+				</div>
+  			</div>
+  			<div class="form-group">
+  				<label class="col-sm-3 control-label">姓名</label>
+				<div class="col-sm-6">
+					<input type="text" class="form-control"  name="username" value=""/>
+				</div>
+  			</div>
+  			<div class="form-group">
+  				<label class="col-sm-3 control-label">电话</label>
+				<div class="col-sm-6">
+					<input type="text" class="form-control"  name="mobile" value=""/>
+				</div>
+  			</div>
+  			<div class="form-group">
+  				<label class="col-sm-3 control-label">角色</label>
+				<div class="col-sm-6">
+					<select class="form-control"  name="auth_group">
+						<notempty name="auth_group">
+						<volist name="auth_group" id="vo" >
+							<option value="{$vo.id}">{$vo.title}</option>
+						</volist>
+						</notempty>
+					</select>
+				</div>
+  			</div>
+  			<div class="form-group">
+  				<label class="col-sm-3 control-label">所属大区</label>
+				<div class="col-sm-6">
+					<select class="form-control" name="district_id">
+	                	<option value="0">大区</option>
+	                	<notempty name="_district">
+							<volist name="_district" id="vo" >
+								<option value="{$vo.id}">{$vo.name}</option>
+							</volist>
+						</notempty>
+	                </select>
+				</div>
+  			</div>
+  			<div class="form-group">
+  				<label class="col-sm-3 control-label">所属城市</label>
+				<div class="col-sm-6">
+					<select class="form-control" name="city_id">
+	                	<option value="0">城市</option>
+	                </select>
+				</div>
+  			</div>
+  			<div class="form-group">
+  				<label class="col-sm-3 control-label">所属门店</label>
+				<div class="col-sm-6">
+	                <select class="form-control" name="store_id">
+	                	<option value="0">门店</option>
+	                </select>
+				</div>
+			</div>
+			
+				<div class="form-group">
+  					<label class="col-sm-3 control-label">证件号</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control"  name="id_no" value=""/>
+					</div>
+  				</div>
+  				<div class="form-group">
+  					<label class="col-sm-3 control-label">通信地址</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control"  name="address" value=""/>
+					</div>
+  				</div>
+  				<div class="form-group">
+  					<label class="col-sm-3 control-label">备注</label>
+					<div class="col-sm-6">
+						<textarea class="textarea input-large" name="remark">
+                
+                		</textarea>
+					</div>
+  				</div>
+  			
+  			</div>
+  			<div class="col-sm-6">
+  				<!-- 原有字段 -->
+  				<div class="form-group">
+  					<label class="col-sm-2 control-label">登录名</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control"  name="nickname" value=""/>
+					</div>
+  				</div>
+  				<div class="form-group">
+  					<label class="col-sm-2 control-label">密码</label>
+					<div class="col-sm-6">
+						<input type="password" class="form-control"  name="password" value=""/>
+					</div>
+  				</div>
+  				<div class="form-group">
+  					<label class="col-sm-2 control-label">确认密码</label>
+					<div class="col-sm-6">
+						<input type="password" class="form-control"  name="repassword" value=""/>
+					</div>
+  				</div>
+  				<div class="form-group">
+  					<label class="col-sm-2 control-label">邮箱</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control"  name="email" value=""/>
+					</div>
+  				</div>
+  			
+  			</div>
+  			
+  		</div>
+  	</div>
+  	<div class="row">
+  		<div class="col-sm-6 col-sm-offset-4">
+  				<button class="btn submit-btn ajax-post" id="submit" type="submit" target-form="form-horizontal">确 定</button>
+            	<button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+  			</div>
+  	</div>
+  	</form>
+
 </block>
 
 <block name="script">
     <script type="text/javascript">
         //导航高亮
         highlight_subnav('{:U('User/index')}');
+        $(function(){
+        	var getDistrict=function(type, name, parent){
+        		var district = $("select[name="+parent+"]");
+        		var pid = $(district).find("option:selected").val();
+        		console.log(pid);
+        		var url = Think.U('Admin/District/list_by_type','type='+type+'&pid='+pid);
+
+        		$.get(url, function(response){
+        			$("select[name="+name+"] option").remove();
+        			var data = response.info;
+        			for(var i = 0 ; i < data.length; i++) {
+        				$("select[name="+name+"]").append('<option value="'+data[i].id+'">'+data[i].name+'</option>');
+        			}
+        		    
+        		 });
+        	};
+
+        	
+        	$("select[name=district_id]").bind('change',function(){
+        		getDistrict(2,'city_id', 'district_id');
+        		
+        	});
+        	
+        	$("select[name=city_id]").bind('change',function(){
+        		getDistrict(3,'store_id', 'city_id');
+        	});
+        });
     </script>
 </block>
