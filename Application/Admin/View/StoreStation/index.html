@@ -16,7 +16,7 @@
         <!-- 高级搜索 -->
 		<div class="search-form fr cf">
 			<div class="sleft">
-                <select class="select" name="district_id">
+                <select class="select" name="district_id" {$_disabled}>
                 	<option value="0">大区</option>
                 	<notempty name="_district">
 						<volist name="_district" id="vo" >
@@ -28,7 +28,7 @@
 						</volist>
 					</notempty>
                 </select>
-                <select class="select" name="city_id">
+                <select class="select" name="city_id" {$_disabled}>
                 	<option value="0">城市</option>
                 	<notempty name="_city">
 						<volist name="_city" id="vo" >
@@ -40,7 +40,7 @@
 						</volist>
 					</notempty>
                 </select>
-                <select class="select" name="store_id">
+                <select class="select" name="store_id" {$_disabled}>
                 	<option value="0">门店</option>
                 	<notempty name="_store">
 						<volist name="_store" id="vo" >

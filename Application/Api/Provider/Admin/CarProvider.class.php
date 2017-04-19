@@ -1,7 +1,7 @@
 <?php
 namespace Api\Provider\Admin;
 use Api\Provider\IndexProvider;
-use Admin\CarService;
+use Admin\Service\CarService;
 use Think\Exception; 
 
 /**
@@ -43,28 +43,28 @@ class CarProvider extends IndexProvider
         }
         
         //保存图片
-//         try{
-//         	$carService->uploadImage($data['imageFile']);
-//         } catch (Exception $e) {
-//         	//记录日志 TODO
-//         	//Log::write($message);
-//         }
+        try{
+        	$carService->uploadImage($data['imageFile']);
+        } catch (\Exception $e) {
+        	//记录日志 TODO
+        	//Log::write($message);
+        }
 
         // 保存汽车信息
-        $carInfo = $data['carInfo'];
-        //print_r($carInfo);exit;
-        if(isset($carInfo['car_number'])) {
-        	$carInDb = M('Car')->where(array('car_number'=>$carInfo['car_number']))->find();
-        	if(!empty($carInDb)) {
-        		//TODO
-        		$this->fail('600', $data=array(), $msg=array("车辆信息已经存在！"));
+//         $carInfo = $data['carInfo'];
+//         //print_r($carInfo);exit;
+//         if(isset($carInfo['car_number'])) {
+//         	$carInDb = M('Car')->where(array('car_number'=>$carInfo['car_number']))->find();
+//         	if(!empty($carInDb)) {
+//         		//TODO
+//         		$this->fail('600', $data=array(), $msg=array("车辆信息已经存在！"));
         
-        	}
-        }
+//         	}
+//         }
         
-        //FIXME 加上异常
-        $car = M('Car')->add($carInfo);
-        $this->success($carInfo);
+//         //FIXME 加上异常
+//         $car = M('Car')->add($carInfo);
+//         $this->success($carInfo);
     }
 
 }

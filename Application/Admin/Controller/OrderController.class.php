@@ -9,6 +9,7 @@
 
 namespace Admin\Controller;
 use Admin\Enums\Order;
+use Admin\Enums\District;
 use Admin\Service\DistrictService;
 use Admin\Service\OrderItemService;
 
@@ -77,11 +78,12 @@ class OrderController extends AdminController {
         
         
         //获取大区数据
-        $this->assign('_list', $list);
         $districtService = new DistrictService();
-        $district = $districtService->select($type=1, $pid=0);
-        $city = $districtService->select($type=2, $pid=$district_id);
-        $store = $districtService->select($type=3, $pid=$city_id);
+        $district = $districtService->select(District::$TYPE_DISTRICT, $pid=0);
+        $city = $districtService->select(District::$TYPE_CITY, $pid=$district_id);
+        $store = $districtService->select(District::$TYPE_STORE, $pid=$city_id);
+        
+        $this->assign('_list', $list);
         $this->assign('_district',$district);
         $this->assign('_city',$city);
         $this->assign('_store',$store);

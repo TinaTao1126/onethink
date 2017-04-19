@@ -10,6 +10,7 @@
 namespace Admin\Controller;
 use Admin\Service\DistrictService;
 use Admin\Enums\StoreStation;
+use Admin\Enums\District;
 
 /**
  * 门店车位管理
@@ -19,13 +20,35 @@ use Admin\Enums\StoreStation;
 class StoreStationController extends AdminController {
 
     /**
-     * 用户管理首页
+     * 车位管理
+     * step-1: 找到当前用户的auth_group role_key是admin、manager、sa
+     * step-2: 根据角色限制筛选条件，admin 大区、城市、门店的工位信息均可查看，manager、sa只能查看当前门店工位信息
+     * step-3: 
      * @author tina
      */
     public function index(){
+        
     	$district_id       =   I('district_id');
     	$city_id       =   I('city_id');
     	$store_id       =   I('store_id');
+    	
+    	//step-1: 取出用户的role_key
+    	$role_key = session('user_auth.role_key');
+    	if(!isset($role_key)) {
+    	    //FIXME redirect to login
+    	    
+    	}
+    	
+    	//如果不是admin，则取当前用户绑定的大区、城市、门店
+    	if($role_key != 'admin') {
+    	   $user = M('Member')->where('uid='.UID)->find();
+    	   $district_id = $user['district_id'];
+    	   $city_id = $user['city_id'];
+    	   $store_id = $user['store_id'];
+    	    
+    	} 
+    	
+    	
     	$map = array();
     	if($district_id > 0) {
     		$map['district_id']=$district_id;
@@ -36,8 +59,7 @@ class StoreStationController extends AdminController {
     	if($store_id > 0) {
     		$map['store_id']=$store_id;
     	}
-        
-
+    	
         $list   = $this->lists('StoreStation', $map);
         
         //获取所有车辆信息
@@ -64,23 +86,26 @@ class StoreStationController extends AdminController {
         	}
         	 
         	//设置状态对应的名称
-        	$order_status_name = StoreStation::$STATUS[$val['status']];
-        	$list[$key]['status_name'] = isset($order_status_name) ? $order_status_name : "";
+        	$disabled_name = StoreStation::$DISTABLED[$val['status']];
+        	$list[$key]['disabled_name'] = isset($disabled_name) ? $disabled_name : "";
         	
         	 
         }
         
-        $this->assign('_list', $list);
+        //下拉框字典值
         $districtService = new DistrictService();
-        $district = $districtService->select($type=1, $pid=0);
-        $city = $districtService->select($type=2, $pid=$district_id);
-        $store = $districtService->select($type=3, $pid=$city_id);
+        $district = $districtService->select(District::$TYPE_DISTRICT, $pid=0);
+        $city = $districtService->select(District::$TYPE_CITY, $pid=$district_id);
+        $store = $districtService->select(District::$TYPE_STORE, $pid=$city_id);
+        
+        $this->assign('_list', $list);
         $this->assign('_district',$district);
         $this->assign('_city',$city);
         $this->assign('_store',$store);
-        $this->assign('_district_id',$map['district_id']);
-        $this->assign('_city_id',$map['city_id']);
-        $this->assign('_store_id',$map['store_id']);
+        $this->assign('_district_id',$district_id);
+        $this->assign('_city_id',$city_id);
+        $this->assign('_store_id',$store_id);
+        $this->assign('_disabled', $role_key == 'admin' ? '' : 'disabled');
         $this->meta_title = '车位信息';
         $this->display();
     }

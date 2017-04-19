@@ -170,11 +170,12 @@ class IndexProvider extends Controller{
     protected function success($data, $msgID=0, $msgDatas=array()) {
         $this->result = ReturnMsgService::getMsg($msgID);
         $this->result['data'] = $data;
-        	if (!empty($msgDatas)) {
-            	foreach ($msgDatas as $index=>$data) {
-            		$this->result['msg'] = str_replace('{'.$index.'}', $data, $this->result['msg']);
-            	}
-        }
+//         	if (!empty($msgDatas)) {
+//             	foreach ($msgDatas as $index=>$data) {
+//             	    $this->result['msg'] = $this->result['msg'];
+//             		//$this->result['msg'] = str_replace('{'.$index.'}', $data, $this->result['msg']);
+//             	}
+//         }
         $this->back();
     }
 }

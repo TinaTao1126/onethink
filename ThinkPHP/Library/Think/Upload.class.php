@@ -49,6 +49,7 @@ class Upload{
      * @param string $driver 要使用的上传驱动 LOCAL-本地上传驱动，FTP-FTP上传驱动
      */
     public function __construct($config = array(), $driver = '', $driverConfig = null){
+    	echo 'start';
     	/* 获取配置 */
         $this->config   =   array_merge($this->config, $config);
         $driver         =   $driver? $driver : ($this->driver? $this->driver : C('FILE_UPLOAD_TYPE'));
@@ -71,6 +72,7 @@ class Upload{
             }
             $this->config['exts'] = array_map('strtolower', $this->exts);
         }
+        echo 'end';
     }
 
     /**
@@ -115,6 +117,7 @@ class Upload{
      * @param 文件信息数组 $files ，通常是 $_FILES数组
      */
     public function upload($files='') {
+        echo 'upload';
         if('' === $files){
             $files  =   $_FILES;
         }
@@ -122,15 +125,18 @@ class Upload{
             $this->error = '没有上传的文件！';
             return false;
         }
-
+        
         /* 检测上传根目录 */
         if(!$this->uploader->checkRootPath()){
+            
+            echo 'checkRootPath';
             $this->error = $this->uploader->getError();
             return false;
         }
 
         /* 检查上传目录 */
         if(!$this->uploader->checkSavePath($this->savePath)){
+            echo 'checkSavePath';
             $this->error = $this->uploader->getError();
             return false;
         }
@@ -141,7 +147,9 @@ class Upload{
             $finfo   =  finfo_open ( FILEINFO_MIME_TYPE );
         }
         // 对上传文件数组信息处理
-        $files   =  $this->dealFiles($files);    
+        echo 'start to upload';
+        $files   =  $this->dealFiles($files);   
+        //print_r($files); 
         foreach ($files as $key => $file) {
             if(!isset($file['key']))   $file['key']    =   $key;
             /* 通过扩展获取文件类型，可解决FLASH上传$FILES数组返回文件类型错误的问题 */
@@ -207,6 +215,7 @@ class Upload{
             } else {
                 $this->error = $this->uploader->getError();
             }
+            
         }
         if(isset($finfo)){
             finfo_close($finfo);
@@ -247,6 +256,7 @@ class Upload{
      */
     private function setDriver($class, $config){
         $this->uploader = new $class($this->rootPath, $config);
+        print_r($this->uploader);
         if(!$this->uploader){
             E("不存在上传驱动：{$name}");
         }
@@ -269,10 +279,10 @@ class Upload{
         }
 
         /* 检查是否合法上传 */
-        if (!is_uploaded_file($file['tmp_name'])) {
-            $this->error = '非法上传文件！';
-            return false;
-        }
+//         if (!is_uploaded_file($file['tmp_name'])) {
+//             $this->error = '非法上传文件！';
+//             return false;
+//         }
 
         /* 检查文件大小 */
         if (!$this->checkSize($file['size'])) {

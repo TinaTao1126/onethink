@@ -48,7 +48,7 @@ return array(
 		'callback' => false, //检测文件是否存在回调函数，如果存在返回文件信息数组
     ), //图片上传相关配置（文件上传类配置）
 
-    'PICTURE_UPLOAD_DRIVER'=>'local',
+    'PICTURE_UPLOAD_DRIVER'=>'Qiniu',   //default local
     //本地上传文件驱动配置
     'UPLOAD_LOCAL_CONFIG'=>array(),
     'UPLOAD_BCS_CONFIG'=>array(
@@ -58,10 +58,10 @@ return array(
         'rename'=>false
     ),
     'UPLOAD_QINIU_CONFIG'=>array(
-        'accessKey'=>'__ODsglZwwjRJNZHAu7vtcEf-zgIxdQAY-QqVrZD',
-        'secrectKey'=>'Z9-RahGtXhKeTUYy9WCnLbQ98ZuZ_paiaoBjByKv',
-        'bucket'=>'onethinktest',
-        'domain'=>'onethinktest.u.qiniudn.com',
+        'accessKey'=>'dalSQLfpzok2VmcFGRgT6LO-KGhncJlwRzDeKlSN',
+        'secrectKey'=>'pYx_nlDpVL4TS32ENYU5M3SwTy9dB17aMReyFlpc',
+        'bucket'=>'cartest',
+        'domain'=>'oo379l7i5.bkt.clouddn.com',
         'timeout'=>3600,
     ),
 

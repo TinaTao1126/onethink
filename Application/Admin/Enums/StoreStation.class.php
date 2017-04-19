@@ -9,12 +9,18 @@ class StoreStation {
 	 * @var "0"=>'禁用',
 	 	"1"=>'启用',
 	 */
-	public static  $STATUS =array(
+	public static  $DISTABLED =array(
 		"0"=>'禁用',
 		"1"=>'启用',
 	);
 	
-
+	/**
+	 * 
+	 * @var unknown
+	 */
+    public static $STATUS = array(
+    	
+    );
 	
 }
 

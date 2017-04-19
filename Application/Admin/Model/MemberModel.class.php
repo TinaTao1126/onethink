@@ -70,6 +70,9 @@ class MemberModel extends Model {
             'last_login_ip'   => get_client_ip(1),
         );
         $this->save($data);
+        
+        /** add by tina 增加role_key信息*/
+        $auth_group = M('AuthGroup')->where("id=".$user['auth_group_id'])->find();
 
         /* 记录登录SESSION和COOKIES */
         $auth = array(
@@ -78,6 +81,7 @@ class MemberModel extends Model {
             'last_login_time' => $user['last_login_time'],
             'store_id'        => $user['store_id'],
             'auth_group_id'    => $user['auth_group_id'],
+            'role_key'          => $auth_group['role_key'],
         );
        
         session('user_auth', $auth);

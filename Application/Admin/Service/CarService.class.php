@@ -7,6 +7,7 @@
 // | Author: 麦当苗儿 <zuojiazi@vip.qq.com> <http://www.zjzit.cn>
 // +----------------------------------------------------------------------
 namespace Admin\Service;
+use Think\Upload;
 
 
 class CarService{
@@ -78,55 +79,52 @@ class CarService{
 		//echo file_exists_case($uploadDir);
 		//echo $uploadFile;exit;
 		//保存图片
-		try{
-			$fileName = save_base64_image($base64Code,$uploadFile);
+// 		try{
+			$fileName = $this->save_base64_image($base64Code,$uploadFile);
 			//echo $fileName;exit;
-			$this->uploadOne($fileName);
-		} catch (Exception $e) {
-			//记录日志 TODO
-			//Log::write($message);
-		}
-	}
-	
-	public function uploadOne($fileName){
-// 		$file = $_FILES['qiniu_file'];
-		$file = array(
-				'name'=>'file',
-				'fileName'=>$fileName,
-				'fileBody'=>file_get_contents($fileName)
-		);
-		$config = array();
-		try{
+			$file = array(
+					'name'=>$fileName,
+					'tmp_name'=>$fileName,
+					'fileBody'=>file_get_contents($fileName)
+			);
 			$this->uploadToQiniu($file);
-		}catch (Exception $e) {
-			print_r($e);exit;
-		} 
-		//$result = $this->qiniu->upload($config, $file);
-		if($result){
-			$this->success('上传成功','', $result);
-		}else{
-// 			$this->error('上传失败','', array(
-// 					'error'=>$this->qiniu->error,
-// 					'errorStr'=>$this->qiniu->errorStr
-// 			));
-		}
-		exit;
+// 		} catch (\Exception $e) {
+// 			//记录日志 TODO
+// 			//Log::write($message);
+// 		}
 	}
 	
+	private function save_base64_image($base64Code, $image_file){
+	    header('Content-type:text/html;charset=utf-8');
+	    
+	    //保存base64字符串为图片
+	    //匹配出图片的格式
+	    if (preg_match('/^(data:\s*image\/(\w+);base64,)/', $base64Code, $result)){
+	    	$type = $result[2];
+	    	$new_file = $image_file.'.'.$type;
+	    	//echo $new_file;exit;
+	    	if (file_put_contents($new_file, base64_decode(str_replace($result[1], '', $base64Code)))){
+	    		echo '新文件保存成功：', $new_file;
+	    		return $new_file;
+	    	}
+	    	
+	    
+	    }
+	}
+	
+
 	public function uploadToQiniu($file){
-		$config = array(
-				'accessKey'=>'dalSQLfpzok2VmcFGRgT6LO-KGhncJlwRzDeKlSN',
-				'secrectKey'=>'pYx_nlDpVL4TS32ENYU5M3SwTy9dB17aMReyFlpc',
-				'bucket'=>'cartest',
-				'domain'=>'oo379l7i5.bkt.clouddn.com',
-		);
-		$qiniu = new QiniuStorage($config);
-		$qiniu->upload(array(),$file);
 		
-		
-// 		$upload = new Upload(C("qiniu"));
-// 		$info = $upload->uploadOne($file);
-// 		print_r($info);
+		/* 调用文件上传组件上传文件 */
+		try{
+		  $uploader = new Upload(C('PICTURE_UPLOAD'), C('PICTURE_UPLOAD_DRIVER'),C('UPLOAD_QINIU_CONFIG'));
+		  $info   = $uploader->uploadOne($file);
+		  print_r($info);exit;
+		} catch(Exception $e) {
+		    
+		}
+	    
+
 	}
 	
 	/**
