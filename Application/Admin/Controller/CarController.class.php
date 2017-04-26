@@ -94,19 +94,25 @@ class CarController extends AdminController {
      */
     public function edit($id = 0){
     	if(IS_POST) {
-    		$Car = D('Car');
-    		$data = $Car->create();
-    		if($data){
-    			if($Car->save()){
-    				S('DB_CONFIG_DATA',null);
-    				//记录行为
-    				action_log('update_car','car',$data['id'],UID);
-    				$this->ajaxReturn("更新成功");
-    			} else {
-    				$this->error('更新失败');
-    			}
+    	    print_r(I('post.'));
+    	    
+    	    $carService = new CarService();
+    	    $response = $carService->editCar();
+    	    //修改订单信息
+    	    if($response['code'] == 200) {
+    	        $param = I('post.');
+    	    	$param['car_id'] = $response['data'];
+    	    	$orderService = new OrderService();
+    	    	$result = $orderService->editOrder($param);
+    	    }
+    	    
+    	    $msg   = array( 'success'=>'更新成功！', 'error'=>'更新失败！', 'url'=>'' ,'ajax'=>IS_AJAX);
+    		if(isset($result)){
+    			
+    			$this->success($result);
+    			
     		} else {
-    			$this->error($Car->getError());
+    			$this->error($msg['error']);
     		}
     	} 
     	

@@ -2,6 +2,9 @@
 namespace Api\Provider\Admin;
 use Api\Provider\IndexProvider;
 use Admin\Service\CarService;
+use Admin\Service\OrderService;
+use Admin\Service\CameraService;
+use Admin\Enums\Order;
 use Think\Exception; 
 
 /**
@@ -19,17 +22,7 @@ class CarProvider extends IndexProvider
      */
     public function save($param)
     {
-//         $version=isset($param['version'])?$param['version']:'1.0.0';
-//         // 公共配置信息
-//         $constant=[
-//             'version'=>$version,
-//         ];
-//         //错误信息返回
-//         //$this->fail('101');
-//         //成功返回
-//         $this->success($constant);
-
-        //echo 123;exit;
+        //step－1: 解析封装数据
         $carService = new CarService();
         try{
         	$data = $carService->encapsuleData($param);
@@ -42,29 +35,58 @@ class CarProvider extends IndexProvider
         	$this->fail(600, array(), array('msg'=>"服务器异常"));
         }
         
-        //保存图片
+        
+        $carInfo = $data['carInfo'];
+        
+        //step-2-1: 检查是否能获取到摄像头门店id
+        $cameraService = new CameraService();
+        $camera = $cameraService->select_by_name($data['deviceName']);
+        if(!isset($camera)) {
+        	$this->fail('600', $data=array(), $msg=array("无法找到摄像头的门店信息！"));
+        }
+        
+        //step-2-2: 检查车牌信息是否已经存在
+        if(isset($carInfo['car_number'])) {
+        	$carInDb = M('Car')->where(array('car_number'=>$carInfo['car_number']))->find();
+        	if(!empty($carInDb)) {
+        		//TODO
+        		$this->fail('600', $data=array(), $msg=array("车辆信息已经存在！"));
+        	} 
+        } else {
+        	$this->fail('600', $data=array(), $msg=array("无车牌信息！"));
+        }
+        
+        //step-3 :保存图片
         try{
-        	$carService->uploadImage($data['imageFile']);
+        	$url = $carService->uploadImage($data['imageFile']);
         } catch (\Exception $e) {
         	//记录日志 TODO
         	//Log::write($message);
         }
 
-        // 保存汽车信息
-//         $carInfo = $data['carInfo'];
-//         //print_r($carInfo);exit;
-//         if(isset($carInfo['car_number'])) {
-//         	$carInDb = M('Car')->where(array('car_number'=>$carInfo['car_number']))->find();
-//         	if(!empty($carInDb)) {
-//         		//TODO
-//         		$this->fail('600', $data=array(), $msg=array("车辆信息已经存在！"));
+        //step-3: 保存汽车信息
+        $carInfo['img_url'] = isset($url) ? $url : '';
         
-//         	}
-//         }
-        
-//         //FIXME 加上异常
-//         $car = M('Car')->add($carInfo);
-//         $this->success($carInfo);
+        $carId = M('Car')->add($carInfo);
+               
+        //step-4: 生成临时订单
+        if(isset($carId) && !empty($carId)) {
+            $order = $carInfo;
+            $order['car_id'] = $carId;
+            $order['order_status'] = Order::$ORDER_STATUS_100;//新车入场
+            $order['store_id'] = $camera['store_id']; 
+            
+            $orderService = new OrderService();
+            $result = $orderService->addOrder($order);
+            $response['data'] = array(
+            		'car_id'=>$carId,
+            		'order_id'=>$result['data'],
+            );
+            
+            $this->success($response);
+        } else {
+            $this->fail('600', $data=array(), $msg=array("保存车辆信息失败！"));
+        }
     }
 
 }

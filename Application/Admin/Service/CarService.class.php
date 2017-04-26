@@ -40,21 +40,13 @@ class CarService{
 		}
 		$PlateResult = $Result['PlateResult'];
 		$data = array();
-		//id
 
-//car_lit
-//car_year
-//car_desc
-//car_vin
-//car_engine_num
-//remark
-//member_id
-//create_time
 		$carInfo = array(
 			'car_number' => $PlateResult['license'],
 			'car_color'=> $PlateResult['carColor'],
 			'model_type'=> $Result['CarType'] 
 		);
+		$data['deviceName'] = $AlarmInfoPlate['deviceName'];
 		$data['carInfo'] = $carInfo;
 		$data['imageFile'] = $Result['imageFile']; 
 		
@@ -68,18 +60,12 @@ class CarService{
 		$fileName = time().'_'.rand(1,1000);
 		$uploadDir = self::IMAGEDIR.$date;
 		$uploadFile = $uploadDir.'/'.$fileName;
-		//echo $uploadDir."****";
 		if(!file_exists($uploadDir)){
-			//echo "not exists";
 			$isSuccess = mkdir($uploadDir,0777,true);
-// 			if(!$isSuccess) {
-// 				echo 'failure';
-// 			}
 		}
-		//echo file_exists_case($uploadDir);
-		//echo $uploadFile;exit;
+
 		//保存图片
-// 		try{
+		try{
 			$fileName = $this->save_base64_image($base64Code,$uploadFile);
 			//echo $fileName;exit;
 			$file = array(
@@ -87,11 +73,15 @@ class CarService{
 					'tmp_name'=>$fileName,
 					'fileBody'=>file_get_contents($fileName)
 			);
-			$this->uploadToQiniu($file);
-// 		} catch (\Exception $e) {
-// 			//记录日志 TODO
-// 			//Log::write($message);
-// 		}
+			$url = $this->uploadToQiniu($file);
+			
+			//上传成功删除本地服务器文件
+			unlink($fileName);
+			return $url;
+		} catch (\Exception $e) {
+			//记录日志 TODO
+			//Log::write($message);
+		}
 	}
 	
 	private function save_base64_image($base64Code, $image_file){
@@ -104,7 +94,7 @@ class CarService{
 	    	$new_file = $image_file.'.'.$type;
 	    	//echo $new_file;exit;
 	    	if (file_put_contents($new_file, base64_decode(str_replace($result[1], '', $base64Code)))){
-	    		echo '新文件保存成功：', $new_file;
+	    		//echo '新文件保存成功：', $new_file;
 	    		return $new_file;
 	    	}
 	    	
@@ -119,9 +109,10 @@ class CarService{
 		try{
 		  $uploader = new Upload(C('PICTURE_UPLOAD'), C('PICTURE_UPLOAD_DRIVER'),C('UPLOAD_QINIU_CONFIG'));
 		  $info   = $uploader->uploadOne($file);
-		  print_r($info);exit;
+		  return $info['url'];
 		} catch(Exception $e) {
 		    
+		    return null;
 		}
 	    
 
@@ -133,16 +124,14 @@ class CarService{
 	 */
 	public function editCar() {
 		$param   =   I('post.');
-		//print_r($param);exit;
 		$Car = M('Car');
-		//$Car->car_number=$param['car_number'];
 		$where = array('car_number'=>$param['car_number']);
 		$data = $Car->where($where)->find();
 		$response = array("code"=>500);
 		if(isset($data) && !empty($data)) {
 			//如果存在，则修改否则添加
-			$DCar = D('Car');
-			if($DCar->create()) {
+			$DCar = M('Car');
+			if($DCar->save($param, array('where'=>'id='.$data['id']))) {
 				S('DB_CONFIG_DATA',null);
 				//记录行为
 				action_log('edit_car', 'Car', $data['id'], UID);
@@ -154,6 +143,7 @@ class CarService{
 			$response['code'] = 200;
 			$response['data'] = $data['id'];
 			$response['msg'] = " 修改成功";
+			//print_r($response);
 		} else {
 			//echo 'add';
 			//不存在则新增
@@ -166,12 +156,11 @@ class CarService{
 				$response['data'] = $id;
 				$response['msg'] = "新增成功";
 			} else {
-				print_r($Car->getDbError());
+				//print_r($Car->getDbError());
 				$response['msg'] = '新增失败！';
 			}
 		
 		} 
-		//print_r($response);exit;
 		return $response;
 	}
 }

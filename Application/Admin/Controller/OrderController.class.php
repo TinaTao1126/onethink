@@ -162,6 +162,10 @@ class OrderController extends AdminController {
         $this->get($id);
     }
     
+    public function edit($id = 0){
+    	$this->get($id);
+    }
+    
     public function get($id = 0){
 
     		if($id == 0) {
@@ -181,45 +185,60 @@ class OrderController extends AdminController {
     		
     		$car['order_no'] = $order['order_no'];
     		$car['pay_status'] = $order['pay_status'];
+    		$car['store_station_id'] = $order['store_station_id'];
     		
+    		$this->assign('store_station_id',$order['store_station_id']);
     		$this->assign('car_order_id',$order['id']);
     		$this->assign('data',$car);
     		$this->assign('_list',$orderItemList);
+    		
+    		$this->getCommonInfo();
+    		
     		$this->meta_title = '修改门店信息';
     		$this->display();
     	 
     }
     
+    
+    
     public function add(){
         //从session获取门店信息
         
-        $store_name = session("user_auth.store_name");
-        $store_id = session('user_auth.store_id');
-        if(is_null($store_id) || !isset($store_id)) {
-            
-            $this->display();
-        } else {
-            if(is_null($store_name) || !isset($store_name)) {
-                $Store = M('District')->where('id='.$store_id)->find();
-                $store_name = $Store['name'];
-            }
-            
-            session('store_name',$store_name);
-            $this->assign("store_id", $Store['id']);
-            $this->assign("store_name", $store_name);
-        }
-        
-        //获取工位信息
-        $where = array(
-        	"store_id"=> $store_id,
-            "status"=>0 //   空闲
-        );
-        $store_station = M('StoreStation')->where($where)->select();
-        $this->assign("_store_station", $store_station);
+        $this->getCommonInfo();
         $this->display();
     }
    
    
-  
+    private function getCommonInfo(){
+        $store_name = session("user_auth.store_name");
+        $store_id = session('user_auth.store_id');
+        if(is_null($store_id) || !isset($store_id)) {
+        
+        	$this->display();
+        } else {
+        	if(is_null($store_name) || !isset($store_name)) {
+        		$Store = M('District')->where('id='.$store_id)->find();
+        		$store_name = $Store['name'];
+        	}
+        
+        	session('store_name',$store_name);
+        	$this->assign("store_id", $Store['id']);
+        	$this->assign("store_name", $store_name);
+        }
+        
+        //获取工位信息
+        $where = array(
+        		"store_id"=> $store_id,
+        		"status"=>0 //   空闲
+        );
+        $store_station = M('StoreStation')->where($where)->select();
+        $this->assign("_store_station", $store_station);
+    }
    
+    /**
+     * 查询新车入场数量
+     */
+    function count(){
+        print_r(M('Order')->field('count(1)')->where('order_status='.Order::$ORDER_STATUS_100)->select());
+    }
 }

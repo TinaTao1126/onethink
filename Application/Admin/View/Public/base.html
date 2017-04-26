@@ -10,11 +10,15 @@
     <link rel="stylesheet" type="text/css" href="__CSS__/style.css" media="all">
 	<link rel="stylesheet" type="text/css" href="__CSS__/{$Think.config.COLOR_STYLE}.css" media="all">
 	<link rel="stylesheet" type="text/css" href="__CSS__/module_custom.css">
+	<link rel="stylesheet" type="text/css" href="__CSS__/style_light.css">
+	
 	
      <!--[if lt IE 9]>
     <script type="text/javascript" src="__STATIC__/jquery-1.10.2.min.js"></script>
     <![endif]--><!--[if gte IE 9]><!-->
     <script type="text/javascript" src="__STATIC__/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="__STATIC__/jquery-ui-1.8.14.custom.min.js"></script>
+    <script type="text/javascript" src="__STATIC__/ttw-notification-menu.js"></script>
     <script type="text/javascript" src="__JS__/jquery.mousewheel.js"></script>
     <!--<![endif]-->
     <block name="style"></block>
@@ -36,7 +40,11 @@
 
         <!-- 用户栏 -->
         <div class="user-bar">
-            <a href="javascript:;" class="user-entrance"><i class="icon-user"></i></a>
+        	<ul class="ttw-notification-menu"> 
+        		<li id="projects" class="notification-menu-item first-item">
+           		 <a href="javascript:;" class="user-entrance"><i class="icon-user"></i></a>
+            	</li>
+            </ul>
             <ul class="nav-list user-menu hidden">
                 <li class="manager">你好，<em title="{:session('user_auth.username')}">{:session('user_auth.username')}</em></li>
                 <li><a href="{:U('User/updatePassword')}">修改密码</a></li>
@@ -128,6 +136,35 @@
     <script type="text/javascript" src="__JS__/common.js"></script>
     <script type="text/javascript">
         +function(){
+        	var notifications = new $.ttwNotificationMenu({
+                notificationList:{
+                    anchor:'item',
+                    offset:'0 1'
+                }
+            });
+
+            notifications.initMenu({
+                projects:'#projects'
+            });
+        	
+            //查询是否有新订单
+            var url = Think.U("Admin/Order/list");
+            $.ajax({
+			  type: 'POST',
+			  url: '',
+			  data: data,
+			  success: function(){
+				  var options = {
+		                  category:'projects',
+		                  message: 'Sample Notification'
+		           };
+		           notifications.createNotification(options);
+			  },
+			  dataType: 'json'
+			});
+            
+            
+        	
             var $window = $(window), $subnav = $("#subnav"), url;
             $window.resize(function(){
                 $("#main").css("min-height", $window.height() - 130);

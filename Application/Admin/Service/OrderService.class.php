@@ -9,15 +9,15 @@ class OrderService {
 		
 		$result = array("code"=>500);
 		$order['car_id'] = $param['car_id'];
-		$order['store_id'] = $param['store_id'];
-		$order['order_status'] = Order::$ORDER_STATUS_200;//开单
+		$order['store_id'] = isset($param['store_id']) ? $param['store_id'] : 0;
+		$order['order_status'] = isset($param['order_status']) ? $param['order_status'] : Order::$ORDER_STATUS_200;//开单
 		$order['creator'] = UID;	//创建人
 		$order['create_time'] = date('Y-m-d H:i:s');
 		//生成订单号
 		$orderNo = date('Ymdhis').rand(1000);
 		$order['order_no'] = $orderNo;
 		$order['driving_distance'] = $param['driving_distance'];
-		$order['store_station_id'] = $param['store_station_id'];
+		$order['store_station_id'] = isset($param['store_station_id']) ? $param['store_station_id'] : 0;
 		
 		$Order = M('Order');
 		$id = $Order->add($order);
@@ -28,6 +28,37 @@ class OrderService {
 		} else {
 			//print_r($Order->getError());
 			$result['msg'] = "新增订单失败";
+		}
+		return $result;
+	}
+	
+	public function editOrder($param){
+	    $result = array("code"=>500);
+	    $Car = M('Order');
+	    $where = array('id'=>$param['order_id']);
+	    $data = $Car->where($where)->find();
+	    
+	    if(!isset($data) || empty($data)) {
+	        $result['msg'] = "订单未找到";;
+	        return $result;
+	    }
+	    
+		$order['car_id'] = $param['car_id'];
+		$order['order_status'] = Order::$ORDER_STATUS_200;//开单
+		$order['creator'] = UID;	//创建人
+		$order['create_time'] = date('Y-m-d H:i:s');
+		$order['driving_distance'] = $param['driving_distance'];
+		$order['store_station_id'] = isset($param['store_station_id']) ? $param['store_station_id'] : 0;
+	
+		$Order = M('Order');
+		$id = $Order->save($order,$options=array('where'=>'id='.$param['order_id']));
+		if($id) {
+			$result['code'] = 200;
+			$result['data'] = $id;
+			$result['msg'] = "保存订单成功";
+		} else {
+			//print_r($Order->getError());
+			$result['msg'] = "保存订单失败";
 		}
 		return $result;
 	}

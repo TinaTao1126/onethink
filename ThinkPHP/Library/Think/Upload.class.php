@@ -147,7 +147,7 @@ class Upload{
             $finfo   =  finfo_open ( FILEINFO_MIME_TYPE );
         }
         // 对上传文件数组信息处理
-        echo 'start to upload';
+        //echo 'start to upload';
         $files   =  $this->dealFiles($files);   
         //print_r($files); 
         foreach ($files as $key => $file) {
@@ -192,6 +192,7 @@ class Upload{
 
             /* 检测并创建子目录 */
             $subpath = $this->getSubPath($file['name']);
+            //echo $subpath;exit;
             if(false === $subpath){
                 continue;
             } else {
@@ -255,8 +256,9 @@ class Upload{
      * @param string $class 驱动类名称
      */
     private function setDriver($class, $config){
+        
         $this->uploader = new $class($this->rootPath, $config);
-        print_r($this->uploader);
+        //print_r($this->uploader);exit;
         if(!$this->uploader){
             E("不存在上传驱动：{$name}");
         }
