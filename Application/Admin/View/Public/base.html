@@ -135,35 +135,45 @@
     <script type="text/javascript" src="__STATIC__/think.js"></script>
     <script type="text/javascript" src="__JS__/common.js"></script>
     <script type="text/javascript">
-        +function(){
-        	var notifications = new $.ttwNotificationMenu({
-                notificationList:{
-                    anchor:'item',
-                    offset:'0 1'
-                }
-            });
+ 
+    
+    var notifications = new $.ttwNotificationMenu({
+        notificationList:{
+            anchor:'item',
+            offset:'0 1'
+        }
+    });
 
-            notifications.initMenu({
-                projects:'#projects'
-            });
-        	
-            //查询是否有新订单
-            var url = Think.U("Admin/Order/list");
-            $.ajax({
-			  type: 'POST',
-			  url: '',
-			  data: data,
-			  success: function(){
-				  var options = {
-		                  category:'projects',
-		                  message: 'Sample Notification'
-		           };
+    notifications.initMenu({
+        projects:'#projects'
+    });
+	
+  	
+    //查询是否有新订单
+    var getNewOrder = function (){
+  		console.log("getNewOrder");
+    	var url = Think.U("Admin/Order/count");
+        $.ajax({
+		  type: 'get',
+		  url: url,
+		  success: function(count){
+			  if(count) {
+// 				  var options = {
+// 		                  category:'projects',
+// 		                  message: 'Sample Notification'
+// 		           };
+				var options =1;
 		           notifications.createNotification(options);
-			  },
-			  dataType: 'json'
-			});
-            
-            
+			  }
+		  },
+		  dataType: 'json'
+		});
+    	
+    };
+    
+    //setInterval("getNewOrder()",1000);//1000为1秒钟
+    
+        +function(){
         	
             var $window = $(window), $subnav = $("#subnav"), url;
             $window.resize(function(){

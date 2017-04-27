@@ -31,6 +31,7 @@ class OrderController extends AdminController {
     	$district_id       =   I('district_id');
     	$city_id       =   I('city_id');
     	$store_id       =   I('store_id');
+    	$phone       =   I('phone');
     	$map = array();
     	if($store_id > 0) {
     		$map['store_id']=$store_id;
@@ -38,7 +39,10 @@ class OrderController extends AdminController {
     	if(isset($order_no) && !empty($order_no)) {
     		$map['order_no']=$order_no;
     	}
-
+    	if(isset($phone) && !empty($phone)) {
+    		$map['owner_phone']=$phone;
+    	}
+    	
         $list   = $this->lists('Order', $map);
         
         //获取所有车辆信息
@@ -90,6 +94,7 @@ class OrderController extends AdminController {
         $this->assign('_district_id',$district_id);
         $this->assign('_city_id',$city_id);
         $this->assign('_store_id',$store_id);
+        $this->assign('_phone',$phone);
         $this->meta_title = '客户接待';
         $this->display();
     }
@@ -200,7 +205,9 @@ class OrderController extends AdminController {
     }
     
     
-    
+    /**
+     * 获取公共信息
+     */
     public function add(){
         //从session获取门店信息
         
@@ -239,6 +246,8 @@ class OrderController extends AdminController {
      * 查询新车入场数量
      */
     function count(){
-        print_r(M('Order')->field('count(1)')->where('order_status='.Order::$ORDER_STATUS_100)->select());
+        $count = M('Order')->field('count(1) count')->where('order_status='.Order::$ORDER_STATUS_100)->find();
+        //echo $count['count'];
+        $this->success($count['count']);
     }
 }

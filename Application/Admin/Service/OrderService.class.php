@@ -18,6 +18,8 @@ class OrderService {
 		$order['order_no'] = $orderNo;
 		$order['driving_distance'] = $param['driving_distance'];
 		$order['store_station_id'] = isset($param['store_station_id']) ? $param['store_station_id'] : 0;
+		$order['car_owner'] = $param['car_owner'];
+		$order['owner_phone'] = $param['owner_phone'];
 		
 		$Order = M('Order');
 		$id = $Order->add($order);
@@ -49,16 +51,18 @@ class OrderService {
 		$order['create_time'] = date('Y-m-d H:i:s');
 		$order['driving_distance'] = $param['driving_distance'];
 		$order['store_station_id'] = isset($param['store_station_id']) ? $param['store_station_id'] : 0;
+		$order['car_owner'] = $param['car_owner'];
+		$order['owner_phone'] = $param['owner_phone'];
 	
 		$Order = M('Order');
 		$id = $Order->save($order,$options=array('where'=>'id='.$param['order_id']));
 		if($id) {
 			$result['code'] = 200;
 			$result['data'] = $id;
-			$result['msg'] = "保存订单成功";
+			$result['msg'] = "保存成功";
 		} else {
 			//print_r($Order->getError());
-			$result['msg'] = "保存订单失败";
+			$result['msg'] = "保存失败";
 		}
 		return $result;
 	}

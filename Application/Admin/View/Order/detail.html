@@ -94,17 +94,16 @@
 						<input type="hidden" name="pay_status" value="{$data.pay_status}"/>
 						<input type="hidden" name="id" value="{$data.id}"/>
 						<input type="hidden" name="order_id" id="order_id" value="{$car_order_id}"/>
-						<button class="btn btn-success" type="submit">修改</button>
+						<button class="btn btn-success " type="submit">修改</button>
 						<button type="button" class="btn btn-default" name="back" onclick="javascript:history.back(-1);return false;">返回</button>
 					</div>
   				</div>
   			</div>
   			<div class="col-sm-6">
-  			<img alt="" src="{$data.img_url}">
-  			
+  				<img alt="" src="{$data.img_url}">
   			</div>
   		</div>
-			
+		</div>
 	</form>
   		
   		
@@ -215,12 +214,19 @@
 
 		function success(response){
 			console.log(response);
-			if(response.code == 200){
-				$("#car_id").attr('value',response.data.car_id);
-				$("#order_id").attr('value',response.data.order_id);
-				//$("button:submit").attr("disabled", false);
+			if(response.status){
+				//$("#car_id").attr('value',response.data.car_id);
+				//$("#order_id").attr('value',response.data.order_id);
+				
+				updateAlert(response.info.msg,'alert-success');
+                setTimeout(function(){
+                	$('#top-alert').find('button').click();
+                },1500);
 			} else {
-				//alert(data.msg);
+				updateAlert(response.info);
+				setTimeout(function(){
+                	$('#top-alert').find('button').click();
+                },1500);
 			}
 		}
 	});

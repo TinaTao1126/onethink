@@ -1,19 +1,20 @@
 <extend name="Public/base" />
 
 <block name="body">
+	<link href="__STATIC__/bootstrap/css/bootstrap.css" rel="stylesheet">
 	<!-- 标题栏 -->
 	<div class="main-title">
 		<h2>{$meta_title}</h2>
 	</div>
-	<div class="cf">
-		<div class="fl">
-            <a class="btn" href="{:U('Order/add')}">开单</a>
-        </div>
-
-        <!-- 高级搜索 -->
-		<div class="search-form fr cf">
-			<div class="sleft">
-				<select class="select" name="district_id">
+	
+    <form class="form-inline" method="post" action="{:U('index')}" role="form">
+    <div class="container">
+    	<div class="row">
+    		<div class="form-group">
+    			<a class="btn" href="{:U('Order/add')}">开单</a>
+    			<input type="text" class="form-control" name="phone" placeholder="电话号码" value="{$_phone}"/>
+    			
+    			<select class="form-control" name="district_id">
                 	<option value="0">大区</option>
                 	<notempty name="_district">
 						<volist name="_district" id="vo" >
@@ -25,7 +26,7 @@
 						</volist>
 					</notempty>
                 </select>
-                <select class="select" name="city_id">
+                <select class="form-control" name="city_id">
                 	<option value="0">城市</option>
                 	<notempty name="_city">
 						<volist name="_city" id="vo" >
@@ -37,7 +38,7 @@
 						</volist>
 					</notempty>
                 </select>
-                <select class="select" name="store_id">
+                <select class="form-control" name="store_id">
                 	<option value="0">门店</option>
                 	<notempty name="_store">
 						<volist name="_store" id="vo" >
@@ -49,12 +50,12 @@
 						</volist>
 					</notempty>
                 </select>
-				
-				
-			</div>
-			<a class="sch-btn" href="javascript:;" id="search" url="{:U('index')}"><i class="btn-search"></i></a>
-		</div>
+                <button type="submit" class="btn btn-link"><i class="btn-search"></i></button>
+    			<a class="sch-btn" href="javascript:;" id="search" url="{:U('index')}"></a>
+    		</div>
+    	</div>
     </div>
+    </form>
     <!-- 数据列表 -->
     <div class="data-table table-striped">
 	<table class="">
@@ -120,7 +121,7 @@
 
 <block name="script">
 	<script src="__STATIC__/thinkbox/jquery.thinkbox.js"></script>
-
+	<script type="text/javascript" src="__STATIC__/js/district.js"></script>
 	<script type="text/javascript">
 	//搜索功能
 	$("#search").click(function(){
@@ -143,36 +144,6 @@
 		}
 	});
 	
-	$(function(){
-    	$("select[name=district_id]").change(function(){
-    		var district_id = $(this).val();
-    		var url = Think.U('Admin/District/list_by_type','type=2&pid='+district_id);
-
-    		$.get(url, function(response){
-    			var data = response.info;
-    			for(var i = 0 ; i < data.length; i++) {
-    				
-    				$("select[name=city_id]").append('<option value="'+data[i].id+'">'+data[i].name+'</option>');
-    			}
-    		    
-    		 });
-    	});
-    	
-    	$("select[name=city_id]").change(function(){
-    		var district_id = $(this).val();
-    		var url = Think.U('Admin/District/list_by_type','type=3&pid='+district_id);
-
-    		$.get(url, function(response){
-    			var data = response.info;
-    			for(var i = 0 ; i < data.length; i++) {
-    				
-    				$("select[name=store_id]").append('<option value="'+data[i].id+'">'+data[i].name+'</option>');
-    			}
-    		    
-    		 });
-    	});
-    	
-    });
     //导航高亮
     highlight_subnav('{:U('Store/index')}');
 	</script>

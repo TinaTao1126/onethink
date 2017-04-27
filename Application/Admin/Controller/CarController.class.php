@@ -94,7 +94,7 @@ class CarController extends AdminController {
      */
     public function edit($id = 0){
     	if(IS_POST) {
-    	    print_r(I('post.'));
+    	    //print_r(I('post.'));
     	    
     	    $carService = new CarService();
     	    $response = $carService->editCar();
@@ -116,6 +116,16 @@ class CarController extends AdminController {
     		}
     	} 
     	
+    }
+    
+    public function get(){
+        $car_number = I('car_number');
+        if(empty($car_number)) {
+            return null;
+        } 
+        $where =array('car_number'=>$car_number);
+        $car = M('Car')->where($where)->find();
+        $this->success($car);
     }
     
    

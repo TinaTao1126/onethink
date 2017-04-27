@@ -8,7 +8,7 @@
     			<h3>订单详情</h3>
     		</div>
   		</div>
-  		
+  		<!--  
   		<form class="form-horizontal" role="form" action="{:U('Car/edit')}" method="post">
   			<div class="form-group">
 				<label class="col-sm-1 control-label">门店</label>
@@ -85,7 +85,104 @@
 				</div>
 			</div>
 			
-  		</form>
+  		</form>-->
+  		
+  		<form class="form-horizontal" role="form" action="{:U('Car/edit')}" method="post">
+  		<div class="container"> 
+  		<div class="row">
+  			<div class="col-sm-6">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">门店</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" value="{$store_name}" readonly />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">单号</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" value="{$data.order_no}" readonly/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">工位号</label>
+					<div class="col-sm-6">
+						<select class="form-control" name="store_station_id">
+	                		<notempty name="_store_station">
+							<volist name="_store_station" id="vo" >
+							<if condition="$vo.id eq $store_station_id">
+								<option value="{$vo.id}" selected>{$vo.name}</option>
+							<else/>
+								<option value="{$vo.id}">{$vo.name}</option>
+							</if>
+							</volist>
+						</notempty>
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">品牌</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" name="car_brand" value="{$data.car_brand}" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">车牌号</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" name="car_number" value="{$data.car_number}" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">颜色</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" name="car_color" value="{$data.car_color}" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">车主姓名</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control"  name="car_owner" value="{$data.car_owner}" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">车主电话</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control"  name="owner_phone" value="{$data.owner_phone}" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">VIN</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" name="car_vin" value="{$data.car_vin}" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">车型</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" name="car_model" value="{$data.car_model}" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">行驶里程</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control"  name="driving_distance" value="{$data.driving_distance}" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-6 col-sm-offset-1">
+						<input type="hidden" name="pay_status" value="{$data.pay_status}"/>
+						<input type="hidden" name="id" value="{$data.id}"/>
+						<input type="hidden" name="order_id" id="order_id" value="{$car_order_id}"/>
+						<button class="btn btn-success " type="submit">修改</button>
+						<button type="button" class="btn btn-default" name="back" onclick="javascript:history.back(-1);return false;">返回</button>
+					</div>
+  				</div>
+  			</div>
+  			<div class="col-sm-6">
+  				<img alt="" src="{$data.img_url}">
+  			</div>
+  		</div>
+		</div>
+	</form>
   		</div>
   		
 
@@ -171,6 +268,10 @@
 			});
 		});
 		
+		$('input[name=car_number]').blur(function(){
+			var url = Think.U("Admin/Car/get",'car_number='+order_id);
+			$('form').form('load',url);
+		});
 		
 	});
   	
