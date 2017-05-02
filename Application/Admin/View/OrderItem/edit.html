@@ -11,10 +11,15 @@
             <label class="item-label">类别</label>
             <div class="controls">
                 <select class="select" name="item_type">
-                	<option value="1">维修</option>
-                	<option value="2">保养</option>
-                	<option value="3">美容</option>
-                	<option value="4">检查</option>
+                	<notempty name="_item_type">
+						<volist name="_item_type" id="vo" >
+							<if condition="$vo.id eq $data['item_type']">
+								<option value="{$vo.id}" selected>{$vo.name}</option>
+							<else/>
+								<option value="{$vo.id}">{$vo.name}</option>
+							</if>
+						</volist>
+					</notempty>
                 </select>
             </div>
         </div>

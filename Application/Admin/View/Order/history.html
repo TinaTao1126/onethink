@@ -1,0 +1,168 @@
+<extend name="Public/base" />
+
+<block name="body">
+	<link href="__STATIC__/bootstrap/css/bootstrap.css" rel="stylesheet">
+	<!-- 标题栏 -->
+	<div class="main-title">
+		<h2>{$meta_title}</h2>
+	</div>
+	
+    <form class="form-inline" method="post" action="{:U('history')}" role="form">
+    <div class="container">
+    	<div class="row">
+    		<div class="form-group">
+    			<select class="form-control" name="district_id">
+                	<option value="0">大区</option>
+                	<notempty name="_district">
+						<volist name="_district" id="vo" >
+							<if condition="$vo.id eq $_condition['_district_id']">
+								<option value="{$vo.id}" selected>{$vo.name}</option>
+							<else/>
+								<option value="{$vo.id}">{$vo.name}</option>
+							</if>
+						</volist>
+					</notempty>
+                </select>
+                <select class="form-control" name="city_id">
+                	<option value="0">城市</option>
+                	<notempty name="_city">
+						<volist name="_city" id="vo" >
+							<if condition="$vo.id eq $_condition['_city_id']">
+								<option value="{$vo.id}" selected>{$vo.name}</option>
+							<else/>
+								<option value="{$vo.id}">{$vo.name}</option>
+							</if>
+						</volist>
+					</notempty>
+                </select>
+                <select class="form-control" name="store_id">
+                	<option value="0">门店</option>
+                	<notempty name="_store">
+						<volist name="_store" id="vo" >
+							<if condition="$vo.id eq $_condition['_store_id']">
+								<option value="{$vo.id}" selected>{$vo.name}</option>
+							<else/>
+								<option value="{$vo.id}">{$vo.name}</option>
+							</if>
+						</volist>
+					</notempty>
+                </select>
+                <input type="text" class="form-control" name="phone" placeholder="联系电话" value="{$_condition._phone}"/>
+                <div class="form-group">
+                <div class='input-group date' id='startTime'>
+                    <input type='text' class="form-control" name="start_time" placeholder="开始时间" value="{$condition._start_time}"/>
+                    <!--  -->
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar" ></span>
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class='input-group date' id='endTime'>
+                    <input type='text' class="form-control" name="end_time" placeholder="结束时间" value="{$condition._end_time}"/>
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+                <button type="submit" class="btn btn-link"><i class="btn-search"></i></button>
+    			<a class="sch-btn" href="javascript:;" id="search" url="{:U('index')}"></a>
+    		</div>
+    	</div>
+    </div>
+    </form>
+    <!-- 数据列表 -->
+    <div class="data-table table-striped">
+	<table class="">
+    <thead>
+        <tr>
+		<th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
+		<th class="">ID</th>
+		<th class="">门店</th>
+		<th class="">单号</th>
+		<th class="">车牌号</th>
+		<th class="">客户名称</th>
+		<th class="">状态</th>
+		<th class="">应收金额</th>
+		<th class="">实收金额</th>
+		<th class="">日期</th>
+		<th class="">操作员</th>
+		<th class="">行驶里程</th>
+		<th class="">操作</th>
+		</tr>
+    </thead>
+    <tbody>
+		<notempty name="_list">
+		<volist name="_list" id="vo">
+		<tr>
+            <td><input class="ids" type="checkbox" name="id[]" value="{$vo.id}" /></td>
+            <td>{$vo.id} </td>
+            <td>{$vo.district_name}|{$vo.city_name}|{$vo.store_name}</td>
+            <td>{$vo.order_no}</td>
+            <td>{$vo.car_number} </td>
+			<td>{$vo.car_owner} </td>
+			<td>{$vo.order_status_name}</td>
+			<td>{$vo.purchase_amount}</td>
+			<td>{$vo.pay_amount}</td>
+			<td><span>{$vo.create_time}</span></td>
+			<td>{$vo.creator_name}</td>
+			<td>{$vo.driving_distance}</td>
+			
+			<td>
+				<a href="{:U('Order/detail?id='.$vo['id'])}" target="_blank">查看</a>
+				<a href="{:U('Order/detail?id='.$vo['id'].'&print=1')}" target="_blank">打印</a>
+            </td>
+		</tr>
+		</volist>
+		<else/>
+		<td colspan="9" class="text-center"> aOh! 暂时还没有内容! </td>
+		</notempty>
+	</tbody>
+    </table>
+	</div>
+    <div class="page">
+        {$_page}
+    </div>
+</block>
+
+<block name="script">
+	<script src="__STATIC__/bootstrap/js/bootstrap.min.js"></script>
+	<script src="__STATIC__/bootstrap/js/moment.js"></script>
+	<script src="__STATIC__/bootstrap/js/bootstrap-datetimepicker.min.js"></script>
+	<script src="__STATIC__/thinkbox/jquery.thinkbox.js"></script>
+	<script type="text/javascript" src="__STATIC__/js/district.js"></script>
+	<script type="text/javascript">
+	//搜索功能
+	$("#search").click(function(){
+		var url = $(this).attr('url');
+        var query  = $('.search-form').find('select').serialize();
+        query = query.replace(/(&|^)(\w*?\d*?\-*?_*?)*?=?((?=&)|(?=$))/g,'');
+        query = query.replace(/^&/g,'');
+        if( url.indexOf('?')>0 ){
+            url += '&' + query;
+        }else{
+            url += '?' + query;
+        }
+		window.location.href = url;
+	});
+	//回车搜索
+	$(".search-input").keyup(function(e){
+		if(e.keyCode === 13){
+			$("#search").click();
+			return false;
+		}
+	});
+	
+	$(function(){
+		$('input[name=start_time]').datetimepicker({
+			format: 'YYYY-MM-DD',
+		});
+		$('input[name=end_time]').datetimepicker({
+			format: 'YYYY-MM-DD',
+		});
+	});
+	
+    //导航高亮
+    highlight_subnav('{:U('Order/history')}');
+	</script>
+</block>

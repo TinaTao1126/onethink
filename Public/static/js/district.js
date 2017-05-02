@@ -1,5 +1,7 @@
+var selected_address={'district_id':'大区', 'city_id':'城市', 'store_id': '门店'};
+
 $(function() {
-	var getDistrict = function(type, name, parent, child) {
+	var getDistrict = function(type, name, parent, child, not_trigger) {
 		var district = $("select[name=" + parent + "]");
 		var pid = $(district).find("option:selected").val();
 		console.log(pid);
@@ -10,20 +12,22 @@ $(function() {
 			$("select[name=" + name + "] option").remove();
 			var data = response.info;
 			console.log(data);
-//			if(data && data.length) {
+			
+			
+			$("select[name=" + name + "]").append('<option value="0">'+selected_address[name]+'</option>');
+			if(data != null) {
+				
 				for ( var i = 0; i < data.length; i++) {
 					$("select[name=" + name + "]").append(
 							'<option value="' + data[i].id + '">' + data[i].name
 									+ '</option>');
 				}
 
-				if (child != '') {
-					$("select[name=" + child + "]").trigger('change');
-				}
-//			} else {
-//				$("select[name=" + name + "]").append('<option value="0">无数据</option>');
-//			}
+			} 
 			
+			if (child != '') {
+				$("select[name=" + child + "]").trigger('change');
+			}
 		});
 
 	};

@@ -189,11 +189,12 @@ class CameraController extends AdminController {
     		
     		$districtService = new DistrictService();
     		$district = $districtService->select($type=1, $pid=0);
+    		$city = $districtService->select($type=2, $pid=$data['district_id']);
+    		$store = $districtService->select($type=3, $pid=$data['city_id']);
+    		
     		$this->assign('_district',$district);
-    		$district = $districtService->select($type=2, $pid=$data['district_id']);
-    		$this->assign('_city',$district);
-    		$district = $districtService->select($type=3, $pid=$data['city_id']);
-    		$this->assign('_store',$district);
+    		$this->assign('_city',$city);
+    		$this->assign('_store',$store);
     		$this->assign('_district_id',$data['district_id']);
     		$this->assign('_city_id',$data['city_id']);
     		$this->assign('_store_id',$data['store_id']);

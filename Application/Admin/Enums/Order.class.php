@@ -23,6 +23,17 @@ class Order {
 	);
 	
 	/**
+	 * @var 客户接待显示的状态
+	 */
+	public static $ORDER_STATUS_ACTIVE = array(100, 101, 200);
+	
+	/**
+	 * @var 历史订单状态
+	 * 
+	 */
+	public static $ORDER_STATUS_HISTORY=array(201, 300, 400);
+	
+	/**
 	 * 
 	 * @var 新车入场，未开单
 	 */

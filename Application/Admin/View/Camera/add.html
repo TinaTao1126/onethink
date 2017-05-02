@@ -33,6 +33,13 @@
         </div>
         
         <div class="form-item">
+            <label class="item-label">类型</label>
+            <div class="controls">
+                <input name="type" type="radio"  value="1" />入口
+                <input name="type" type="radio"  value="2" />出口
+            </div>
+        </div>
+        <div class="form-item">
             <button class="btn submit-btn ajax-post" id="submit" type="submit" target-form="form-horizontal">确 定</button>
             <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
         </div>
@@ -42,6 +49,7 @@
 <block name="script">
 <script type="text/javascript" src="__STATIC__/js/district.js"></script>
     <script type="text/javascript">
+    	Think.setValue('type',{$data.type|default=1});
         //导航高亮
         highlight_subnav('{:U('Camera/index')}');
         

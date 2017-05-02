@@ -10,6 +10,7 @@
 namespace Admin\Controller;
 use Admin\Service\OrderItemService;
 use Admin\Service\OrderService;
+use Admin\Enums\OrderItem;
 
 /**
  * 订单明细管理
@@ -61,7 +62,7 @@ class OrderItemController extends AdminController {
     	          $orderService = new OrderService();
     	          $car_order_id = I("post.car_order_id");
     	          $orderService->updateAmount($car_order_id);
-    	      	  $this->success('更新成功', "Admin/Order/detail?id=".$car_order_id);
+    	      	  $this->success('更新成功', "Admin/Order/edit?id=".$car_order_id);
     	      } else {
     	      	$this->error('无更新');
     	      }
@@ -77,6 +78,8 @@ class OrderItemController extends AdminController {
     		if(false === $data){
     			$this->error("获取项目信息错误");
     		}
+    		
+    		$this->assign('_item_type', OrderItem::$ITEM_TYPE);
     		$this->assign('car_order_id',$car_order_id);
     		$this->assign('data',$data);
     		$this->meta_title = '修改项目信息';
@@ -119,7 +122,7 @@ class OrderItemController extends AdminController {
     				S('DB_CONFIG_DATA',null);
     				//记录行为
     				action_log('add_order_item', 'OrderItem', $id, UID);
-    				$this->success('新增成功', "Admin/Order/detail?id=".$data['car_order_id']);
+    				$this->success('新增成功', "Admin/Order/edit?id=".$data['car_order_id']);
     			} else {
     				$this->error('新增失败');
     			}
@@ -131,6 +134,9 @@ class OrderItemController extends AdminController {
     		$id = I('get.id');
     		empty($id) && $this->error('参数不能为空！');
     		$data['id'] = $id;
+    		
+    		
+    		$this->assign('_item_type', OrderItem::$ITEM_TYPE);
     		$this->assign('data',$data);
     		$this->meta_title = '编辑行为';
     		$this->display();

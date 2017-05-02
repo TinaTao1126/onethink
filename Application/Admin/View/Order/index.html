@@ -12,13 +12,15 @@
     	<div class="row">
     		<div class="form-group">
     			<a class="btn" href="{:U('Order/add')}">开单</a>
-    			<input type="text" class="form-control" name="phone" placeholder="电话号码" value="{$_phone}"/>
+    			<input type="text" class="form-control" name="owner_name" placeholder="客户姓名" value="{$_condition._owner_name}"/>
+    			<input type="text" class="form-control" name="phone" placeholder="联系电话" value="{$_condition._phone}"/>
+    			<!--  <input type="text" class="form-control" name="car_number" placeholder="车牌" value="{$_condition._car_number}"/>-->
     			
-    			<select class="form-control" name="district_id">
+    			<select class="form-control" name="district_id" {$_condition._disabled}>
                 	<option value="0">大区</option>
                 	<notempty name="_district">
 						<volist name="_district" id="vo" >
-							<if condition="$vo.id eq $_district_id">
+							<if condition="$vo.id eq $_condition['_district_id']">
 								<option value="{$vo.id}" selected>{$vo.name}</option>
 							<else/>
 								<option value="{$vo.id}">{$vo.name}</option>
@@ -26,11 +28,11 @@
 						</volist>
 					</notempty>
                 </select>
-                <select class="form-control" name="city_id">
+                <select class="form-control" name="city_id" {$_condition._disabled}>
                 	<option value="0">城市</option>
                 	<notempty name="_city">
 						<volist name="_city" id="vo" >
-							<if condition="$vo.id eq $_city_id">
+							<if condition="$vo.id eq $_condition['_city_id']">
 								<option value="{$vo.id}" selected>{$vo.name}</option>
 							<else/>
 								<option value="{$vo.id}">{$vo.name}</option>
@@ -38,11 +40,11 @@
 						</volist>
 					</notempty>
                 </select>
-                <select class="form-control" name="store_id">
+                <select class="form-control" name="store_id" {$_condition._disabled}>
                 	<option value="0">门店</option>
                 	<notempty name="_store">
 						<volist name="_store" id="vo" >
-							<if condition="$vo.id eq $_store_id">
+							<if condition="$vo.id eq $_condition['_store_id']">
 								<option value="{$vo.id}" selected>{$vo.name}</option>
 							<else/>
 								<option value="{$vo.id}">{$vo.name}</option>
@@ -63,6 +65,7 @@
         <tr>
 		<th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
 		<th class="">ID</th>
+		<th class="">单号</th>
 		<th class="">车牌号</th>
 		<th class="">客户名称</th>
 		<th class="">工位</th>
@@ -70,7 +73,6 @@
 		<th class="">应收金额</th>
 		<th class="">实收金额</th>
 		<th class="">日期</th>
-		<th class="">单号</th>
 		<th class="">操作员</th>
 		<th class="">行驶里程</th>
 		<th class="">操作</th>
@@ -82,27 +84,26 @@
 		<tr>
             <td><input class="ids" type="checkbox" name="id[]" value="{$vo.id}" /></td>
             <td>{$vo.id} </td>
+            <td>{$vo.order_no}</td>
             <td>{$vo.car_number} </td>
 			<td>{$vo.car_owner} </td>
-			<td>{$vo.station}</td>
+			<td>{$vo.station_name}</td>
 			<td>{$vo.order_status_name}</td>
 			<td>{$vo.purchase_amount}</td>
 			<td>{$vo.pay_amount}</td>
-			<td><span>{$vo.createtime|time_format}</span></td>
-			<td>{$vo.order_no}</td>
-			<td>{$vo.operator}</td>
+			<td><span>{$vo.create_time}</span></td>
+			<td>{$vo.creator_name}</td>
 			<td>{$vo.driving_distance}</td>
 			
 			<td><if condition="$vo.order_status eq 100">
 				<a href="{:U('Order/edit?id='.$vo['id'])}">开单</a>
-				<elseif condition="$vo.order_status eq 200"/>
-				<a href="{:U('Order/detail?id='.$vo['id'])}">查看明细</a>
-				<a href="{:U('Order/settlement?id='.$vo['id'])}" class="ajax-get">结算</a>
-				<a href="{:U('Order/printer?id='.$vo['id'])}" target="_blank">打印</a>
-				<a href="{:U('Order/del?id='.$vo['id'])}" class="ajax-get">删除</a>
 				<else/>
-				<a href="{:U('Order/detail?id='.$vo['id'])}">查看明细</a>
-				<a href="{:U('Order/printer?id='.$vo['id'])}" target="_blank">打印</a>
+				<a href="{:U('Order/detail?id='.$vo['id'])}" target="_blank">查看</a>
+				<a href="{:U('Order/edit?id='.$vo['id'])}">编辑</a>
+				<a href="" data-toggle="modal" data-target="#settlement" id="{$vo['id']}" purchase_amount="{$vo.purchase_amount}">结算</a>
+				<a href="{:U('Order/detail?id='.$vo['id'].'&print=1')}" target="_blank">打印</a>
+				<a href="{:U('Order/del?id='.$vo['id'])}" class="ajax-get">删除</a>
+				
 				</if>
 				
                 </td>
@@ -117,12 +118,119 @@
     <div class="page">
         {$_page}
     </div>
+    
+    <div class="modal fade" id="settlement" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">  
+    <div class="modal-dialog" role="document">  
+        <div class="modal-content">  
+            <div class="modal-header">  
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">  
+                    <span aria-hidden="true">×</span>  
+                </button>  
+                <h4 class="modal-title" id="myModalLabel">结算</h4>  
+            </div>  
+            <form class="form-horizontal" role="form" id="settleForm" action="{:U('settle')}" method="post">
+            <div class="modal-body">  
+                <div class="form-group">
+					<label class="col-sm-2 control-label">应收金额</label>
+					<div class="col-sm-9">
+						<input type="text" name="purchase_amount" class="form-control" value="" readonly />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">实收金额</label>
+					<div class="col-sm-9">
+						<input type="text" name="pay_amount" class="form-control" value="" placeholder=""/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">备注</label>
+					<div class="col-sm-9">
+						<textarea name="pay_remark" class="form-control" rows="3"></textarea>
+					</div>
+				</div>
+            </div>  
+            
+            
+            <div class="modal-footer">  
+            	<input type="hidden" name="id" />
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>  
+                <button type="button" onclick="settle()" class="ajax-post btn btn-primary">保存</button>  
+            </div>  
+            </form>
+        </div>  
+    </div>  
+	</div>  
 </block>
 
 <block name="script">
+	
+	<script src="__STATIC__/bootstrap/js/bootstrap.min.js"></script>
 	<script src="__STATIC__/thinkbox/jquery.thinkbox.js"></script>
 	<script type="text/javascript" src="__STATIC__/js/district.js"></script>
 	<script type="text/javascript">
+	
+	$(function() {
+		$('#settlement').on('show.bs.modal', function (event) {
+		 var a = $(event.relatedTarget) // a that triggered the modal
+		 //console.log(a);
+		 var id = $(a).attr('id');
+		 var purchase_amount = $(a).attr('purchase_amount');
+		 var modal = $(this);
+		 modal.find('input[name="purchase_amount"]').val(purchase_amount);
+		 modal.find('input[name="pay_amount"]').attr('placeholder',purchase_amount);
+		 //modal.find('[input type=""]').val(id);
+		 
+		 modal.find("input[name='id']").val(id);
+		 
+		});
+	});
+	
+	// 添加入库操作
+    function settle()
+    {
+		//alert("save");
+// 		console.log($('#settleForm').serialize());
+		$.ajax({
+            cache: true,
+            type: "POST",
+            url: "{:U('settle')}",
+            data:$('#settleForm').serialize(),// 你的formid
+            async: false,
+            error: function(request) {
+                alert("Connection error");
+            },
+            success: function(data) {
+                console.log(data)
+                if (data.status==1) {
+                    if (data.url) {
+                        updateAlert(data.info + ' 页面即将自动跳转~','alert-success');
+                    }else{
+                        updateAlert(data.info ,'alert-success');
+                    }
+                    setTimeout(function(){
+                        if (data.url) {
+                            location.href=data.url;
+                        }else{
+                            location.reload();
+                        }
+                    },1500);
+                }else{
+                    updateAlert(data.info);
+                    setTimeout(function(){
+                        if (data.url) {
+                            location.href=data.url;
+                        }else{
+                        	location.reload();
+                        }
+                    },1500);
+                }
+                
+            }
+        });
+        
+
+    }
+	
 	//搜索功能
 	$("#search").click(function(){
 		var url = $(this).attr('url');
@@ -145,6 +253,6 @@
 	});
 	
     //导航高亮
-    highlight_subnav('{:U('Store/index')}');
+    highlight_subnav('{:U('Order/index')}');
 	</script>
 </block>

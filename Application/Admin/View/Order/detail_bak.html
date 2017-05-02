@@ -2,91 +2,13 @@
 
 <block name="body">
 	<link href="__STATIC__/bootstrap/css/bootstrap.css" rel="stylesheet">
-    <div class="container">
+    	<div class="container">
   		<div class="row">
     		<div class="col-sm-10">
     			<h3>订单详情</h3>
     		</div>
   		</div>
-  		<!--  
-  		<form class="form-horizontal" role="form" action="{:U('Car/edit')}" method="post">
-  			<div class="form-group">
-				<label class="col-sm-1 control-label">门店</label>
-				<div class="col-sm-4">
-					<input type="text" class="form-control"  value="{$store_name}" readonly />
-				</div>
-				<label class="col-sm-1 control-label">单号</label>
-				<div class="col-sm-4">
-					<input type="text" class="form-control"  value="{$data.order_no}" />
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-1 control-label">工位号</label>
-				<div class="col-sm-2">
-					<select class="form-control" name="store_station_id">
-                		<notempty name="_store_station">
-						<volist name="_store_station" id="vo" >
-							<if condition="$vo.id eq $store_station_id">
-								<option value="{$vo.id}" selected>{$vo.name}</option>
-							<else/>
-								<option value="{$vo.id}">{$vo.name}</option>
-							</if>
-						</volist>
-					</notempty>
-					</select>
-					
-				</div>
-				<label class="col-sm-1 col-sm-offset-2 control-label">品牌</label>
-				<div class="col-sm-4">
-					<input type="text" class="form-control" name="car_brand" value="{$data.car_brand}" />
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-1 control-label">车牌号</label>
-				<div class="col-sm-4">
-					<input type="text" class="form-control" name="car_number" value="{$data.car_number}" />
-				</div>
-				<label class="col-sm-1 control-label">颜色</label>
-				<div class="col-sm-4">
-					<input type="text" class="form-control" name="car_color" value="{$data.car_color}" />
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-1 control-label">车主姓名</label>
-				<div class="col-sm-4">
-					<input type="text" class="form-control"  name="car_owner" value="{$data.car_owner}" />
-				</div>
-				<label class="col-sm-1 control-label">车主电话</label>
-				<div class="col-sm-4">
-					<input type="text" class="form-control"  name="owner_phone" value="{$data.owner_phone}" />
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-1 control-label">VIN</label>
-				<div class="col-sm-4">
-					<input type="text" class="form-control" name="car_vin" value="{$data.car_vin}" />
-				</div>
-				<label class="col-sm-1 control-label">车型</label>
-				<div class="col-sm-4">
-					<input type="text" class="form-control" name="car_model" value="{$data.car_model}" />
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-1 control-label">行驶里程</label>
-				<div class="col-sm-4">
-					<input type="text" class="form-control"  name="driving_distance" value="{$data.driving_distance}" />
-				</div>
-				<div class="col-sm-4 col-sm-offset-1">
-					<input type="hidden" name="pay_status" value="{$data.pay_status}"/>
-					<input type="hidden" name="id" value="{$data.id}"/>
-					<input type="hidden" name="order_id" id="order_id" value="{$car_order_id}"/>
-					<button class="btn btn-success" type="submit">保存</button>
-					<button type="button" class="btn btn-default" name="back" onclick="javascript:history.back(-1);return false;">返回</button>
-				</div>
-			</div>
-			
-  		</form>-->
-  		
+  		</div>
   		<form class="form-horizontal" role="form" action="{:U('Car/edit')}" method="post">
   		<div class="container"> 
   		<div class="row">
@@ -195,7 +117,7 @@
   		</div>
 		</div>
 	</form>
-</div>
+  		
   		
 
     
@@ -208,6 +130,7 @@
   	
   	<div class="row">
     	<div class="col-sm-10">
+    		<input type="hidden" name="order_id" id="order_id" value="{$car_order_id}"/>
    			<a class="btn" id="order-item-add">新 增</a>
             <button class="btn ajax-post btn-default " url="{:U('OrderItem/delete')}" target-form="ids">删 除</button>
    		</div>
@@ -230,7 +153,6 @@
 		<th>零件</th>
 		<th>数量</th>
 		<th>合计</th>
-		<th>操作</th>
 		</tr>
     </thead>
     <tbody>
@@ -244,10 +166,7 @@
 			<td>{$vo.item_price}</td>
 			<td>{$vo.item_num}</td>
 			<td>{$vo.total_price}</td>
-			<td>
-				<a title="编辑" href="{:U('OrderItem/edit?id='.$vo['id'])}">编辑</a>
-				<a class="confirm ajax-get" title="删除" href="{:U('OrderItem/del?id='.$vo['id'])}">删除</a>
-			</td>
+			
 		</tr>
 		</volist>
 		<else/>
@@ -261,81 +180,7 @@
 </block>
 
 <block name="script">
-	<script type="text/javascript" src="__STATIC__/js/common.js"></script>
     <script type="text/javascript">
-  	//初始化表单
-	$(function(){
-		var pay_status = $('input[name=pay_status]').val();
-		if(pay_status == 1) {
-			$("input").each(function(){
-				$(this).attr("disabled",true);
-			});
-			$("button").each(function(){
-				if($(this).attr('name') == 'back') return;
-				$(this).attr("disabled",true);
-			});
-		}
-		$("#update").click(function(){
-			$("input").each(function(){
-				$(this).removeAttr("disabled");
-			});
-		});
-		
-		$('#search_car_number').click(function(){
-			var car_number = $('input[name=car_number]').val();
-			
-	        if (car_number != null) {
-	        	 $.post("{:U('Car/get')}", { car_number: car_number }, function (data) {
-	        		 console.log(data);
-	        		 if(data.status == 1) {
-	         			if(data.info != null) $("form").setForm(data.info);
-	         			else {
-	         				
-	         				updateAlert('未找到用户信息');
-	              			setTimeout(function(){
-	              				$('#top-alert').removeClass('block').slideUp(200);
-	              			}, 1500);
-	         			}
-	         		} else {
-	         			updateAlert(data.info);
-	         			setTimeout(function(){
-	         				$('#top-alert').removeClass('block').slideUp(200);
-	         			}, 1500);
-	         		}
-	        	 });
-	        }
-	           
-		});
-		
-	});
-  	
-	$("#order-item-add").click(function(){
-		//console.log($(this).attr("href"));
-		var order_id = $("#order_id").val();
-		if(order_id == '') {
-			alert("请先添加车辆信息");
-			return false;
-		}
-		var url = Think.U("Admin/OrderItem/add",'id='+order_id);
-		console.log(url);
-		//console.log(url);
-	    $(this).attr("href",url);
-	});
-
-	$("form").submit(function(){
-		var self = $(this);
-		$.post(self.attr("action"), self.serialize(), success, "json");
-		return false;
-
-		function success(response){
-			console.log(response);
-			if(response.status){
-				$("button:submit").attr("disabled", false);
-			} else {
-				alert(response.info);
-			}
-		}
-	});
     //导航高亮
     highlight_subnav('{:U('Order/index')}');
     </script>

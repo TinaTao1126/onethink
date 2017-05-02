@@ -9,6 +9,7 @@
     		</div>
   		</div>
   		
+  		<!--  
   		<form class="form-horizontal" role="form" action="{:U('Car/add')}" method="post">
   			<div class="form-group">
 				<label class="col-sm-1 control-label">门店</label>
@@ -40,7 +41,13 @@
 			<div class="form-group">
 				<label class="col-sm-1 control-label">车牌号</label>
 				<div class="col-sm-4">
-					<input type="text" class="form-control" name="car_number" value="{$data.car_number}" required/>
+					<span style="display:inline-block;">
+						<input type="text" class="form-control" name="car_number" value="{$data.car_number}" required/>
+					</span>
+					<span style="display:inline-block;">
+					<input class="btn btn-default" type="button"  id="search_car_number" value="查询">
+					</span>
+					
 				</div>
 				<label class="col-sm-1 control-label">颜色</label>
 				<div class="col-sm-4">
@@ -73,7 +80,7 @@
 					<input type="text" class="form-control"  name="driving_distance" value="{$data.driving_distance}" />
 				</div>
 				<div class="col-sm-4 col-sm-offset-1">
-					<input type="hidden" name="store_id" value="{$store_id}"/><!-- FIXME -->
+					<input type="hidden" name="store_id" value="{$store_id}"/>
         			<input type="hidden" name="id" id="car_id" value=""/>
 					<button class="btn btn-success" type="submit">确定</button>
 					<button type="button" class="btn btn-default" name="back" onclick="javascript:history.back(-1);return false;">返回</button>
@@ -81,6 +88,115 @@
 			</div>
 			
   		</form>
+  		-->
+  		
+  		<form class="form-horizontal" role="form" action="{:U('Car/add')}" method="post">
+  		<div class="container"> 
+  		<div class="row">
+  			<div class="col-sm-6">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">门店</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" value="{$store_name}" readonly />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">单号</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" value="{$data.order_no}" readonly placeholder="系统自动生成，无需填写"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">工位号</label>
+					<div class="col-sm-6">
+						<select class="form-control" name="store_station_id">
+	                		<notempty name="_store_station">
+							<volist name="_store_station" id="vo" >
+							<if condition="$vo.id eq $store_station_id">
+								<option value="{$vo.id}" selected>{$vo.name}</option>
+							<else/>
+								<option value="{$vo.id}">{$vo.name}</option>
+							</if>
+							</volist>
+						</notempty>
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">车牌号</label>
+					<div class="col-sm-6">
+						<span style="display:inline-block;">
+						<input type="text" class="form-control" name="car_number" value="{$data.car_number}" />
+						</span>
+						<span style="display:inline-block;">
+						<input class="btn btn-default" type="button"  id="search_car_number" value="查询">
+						</span>
+						
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">颜色</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" name="car_color" value="{$data.car_color}" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">车主姓名</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control"  name="car_owner" value="{$data.car_owner}" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">车主电话</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control"  name="owner_phone" value="{$data.owner_phone}" />
+					</div>
+				</div>
+				
+  			</div>
+  			<div class="col-sm-6">
+  				<div class="form-group">
+					<label class="col-sm-2 control-label">品牌</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" name="car_brand" value="{$data.car_brand}" />
+					</div>
+				</div>
+  				<div class="form-group">
+					<label class="col-sm-2 control-label">VIN</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" name="car_vin" value="{$data.car_vin}" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">车型</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" name="car_model" value="{$data.car_model}" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">行驶里程</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control"  name="driving_distance" value="{$data.driving_distance}" />
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<div class="col-sm-12">
+						<img alt="" src="{$data.img_url}">
+					</div>
+				</div>
+  				<div class="form-group">
+					<div class="col-sm-5 col-sm-offset-1">
+						<input type="hidden" name="store_id" value="{$store_id}"/>
+        				<input type="hidden" name="id" id="car_id" value=""/>
+						<button class="btn btn-success" type="submit">确定</button>
+						<button type="button" class="btn btn-default" name="back" onclick="javascript:history.back(-1);return false;">返回</button>
+					</div>
+  				</div>
+  			</div>
+  		</div>
+		</div>
+	</form>
   	</div>
   	
     <div class="cf">
@@ -137,13 +253,17 @@
 
 
 <block name="script">
+	<script type="text/javascript" src="__STATIC__/js/common.js"></script>
     <script type="text/javascript">
   	
 	$("#order-item-add").click(function(){
 		//console.log($(this).attr("href"));
 		var order_id = $("#order_id").val();
 		if(order_id == '') {
-			alert("请先添加车辆信息");
+			updateAlert("请先保存车辆信息!");
+			setTimeout(function(){
+ 				$('#top-alert').removeClass('block').slideUp(200);
+ 			}, 1500);
 			return false;
 		}
 		var url = Think.U("Admin/OrderItem/add",'id='+order_id);
@@ -155,69 +275,46 @@
 		var self = $(this);
 		$.post(self.attr("action"), self.serialize(), function success(response){
 			console.log(response);
-			if(response.code == 200){
+			if(response.status == 1){
 				$("#car_id").attr('value',response.data.car_id);
 				$("#order_id").attr('value',response.data.order_id);
 				$('input').each(function(){
 					$(this).attr("disabled",true);
 				});
 			} else {
-				alert(response.msg);
+				updateAlert(response.info);
+				setTimeout(function(){
+     				$('#top-alert').removeClass('block').slideUp(200);
+     			}, 1500);
 			}
 		}, "json");
 		return false;
 	});
 	
-	$.fn.extend({
-        //表单加载json对象数据
-        setForm: function (jsonValue) {
-            var obj = this;
-            $.each(jsonValue, function (name, ival) {
-                var $oinput = obj.find("input[name=" + name + "]");
-                if ($oinput.attr("type") == "checkbox") {
-                    if (ival !== null) {
-                        var checkboxObj = $("[name=" + name + "]");
-                        var checkArray = ival.split(";");
-                        for (var i = 0; i < checkboxObj.length; i++) {
-                            for (var j = 0; j < checkArray.length; j++) {
-                                if (checkboxObj[i].value == checkArray[j]) {
-                                    checkboxObj[i].click();
-                                }
-                            }
-                        }
-                    }
-                }
-                else if ($oinput.attr("type") == "radio") {
-                    $oinput.each(function () {
-                        var radioObj = $("[name=" + name + "]");
-                        for (var i = 0; i < radioObj.length; i++) {
-                            if (radioObj[i].value == ival) {
-                                radioObj[i].click();
-                            }
-                        }
-                    });
-                }
-                else if ($oinput.attr("type") == "textarea") {
-                    obj.find("[name=" + name + "]").html(ival);
-                }
-                else {
-                    obj.find("[name=" + name + "]").val(ival);
-                }
-            })
- 
-        }
-    });
 	
-	$('input[name=car_number]').blur(function(){
-		var car_number = $(this).val();
+	
+	$('#search_car_number').click(function(){
+		var car_number = $('input[name=car_number]').val();
 		
         if (car_number != null) {
         	 $.post("{:U('Car/get')}", { car_number: car_number }, function (data) {
         		 console.log(data);
-        		$("form").setForm(data.info);
+        		if(data.status == 1) {
+        			if(data.info != null) $("form").setForm(data.info);
+        			else {
+        				updateAlert('未找到用户信息');
+             			setTimeout(function(){
+             				$('#top-alert').removeClass('block').slideUp(200);
+             			}, 1500);
+        			}
+        			//$("form").attr('action', "{:U('Car/edit')}");
+        		} else {
+        			updateAlert(data.info);
+         			setTimeout(function(){
+         				$('#top-alert').removeClass('block').slideUp(200);
+         			}, 1500);
+        		}
         	 });
-                 
-                 //这里就是调用那个扩展的方法来对表单form进行赋值（再也不用一个值一个表单的写了），注意这里用到了json2.js需要把json字符串转换成json对象。
         }
            
 	});

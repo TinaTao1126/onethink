@@ -378,9 +378,9 @@ function get_action_type($type, $all = false){
  * @param unknown $field
  * @return unknown
  */
-function getFieldMap($arr, $field){
+function getFieldMap($arr, $field, $unique=true){
 	foreach ($arr as $key => $value) {
 		$arr2[] = $value[$field];
 	}
-	return $arr2;
+	return $unique ? array_unique($arr2) : $arr2;
 }

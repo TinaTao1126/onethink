@@ -37,10 +37,18 @@
             </div>
         </div>
         <div class="form-item">
-            <label class="item-label">车位号</label>
+            <label class="item-label">摄像头名称</label>
             <div class="controls">
                 <input type="text" class="text input-large" name="name" value="{$data.name}">
             </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">类型</label>
+            <div class="controls">
+                <label class="radio"><input type="radio" name="type" value="1">入口</label>
+                <label class="radio"><input type="radio" name="type" value="2">出口</label>
+            </div>
+            
         </div>
         <div class="form-item">
         	<input type="hidden" name="id" value="{$data.id|default=''}">
@@ -53,9 +61,9 @@
 <block name="script">
 <script type="text/javascript" src="__STATIC__/js/district.js"></script>
 <script type="text/javascript" charset="utf-8">
-	Think.setValue('type',{$type|default=1});
+ 	Think.setValue('type',{$data.type|default=1});
     //导航高亮
-    highlight_subnav('{:U('StoreStation/index')}');
+    highlight_subnav('{:U('Camera/index')}');
     
 </script>
 </block>

@@ -12,6 +12,7 @@ use Admin\Enums\Order;
 use Admin\Enums\District;
 use Admin\Service\DistrictService;
 use Admin\Service\OrderItemService;
+use Admin\Service\OrderService;
 
 /**
  * 汽车管理
@@ -25,109 +26,110 @@ class OrderController extends AdminController {
      * @author tina
      */
     public function index(){
-    	$order_no       	=   I('order_no');
-    	$create_time_begin	=   I('create_time_begin');
-    	$create_end      	=   I('create_time_end');
-    	$district_id       =   I('district_id');
-    	$city_id       =   I('city_id');
-    	$store_id       =   I('store_id');
-    	$phone       =   I('phone');
-    	$map = array();
-    	if($store_id > 0) {
-    		$map['store_id']=$store_id;
-    	}
-    	if(isset($order_no) && !empty($order_no)) {
-    		$map['order_no']=$order_no;
-    	}
-    	if(isset($phone) && !empty($phone)) {
-    		$map['owner_phone']=$phone;
-    	}
+        print_r(session("user_auth"));
+        //封装参数
+        $orderService = new OrderService();
+        $map = $orderService->list_condition();
     	
-        $list   = $this->lists('Order', $map);
+        //只显示当天未结算的和等待开单的订单
+    	$map['order_status'] = array('in', Order::$ORDER_STATUS_ACTIVE);
+    	$list   = $this->lists('Order', $map);
+    	
+    	//组装返回数据
+        $orderService = new OrderService();
+        $list = $orderService->combine_response($list);
         
-        //获取所有车辆信息
-        $carIdList = getFieldMap($list,$field="car_id");
-
-        if(isset($carIdList) && !empty($carIdList)) {
-        	//根据汽车id，批量取出汽车信息
-        	$where['id'] = array('in',$carIdList);
-        	$carList = M('Car')->where($where)->select();
-        	
-        	//key:id, val:car
-        	//$carMap＝array_combine(array_column($carList,"id"), $carList);
-        	$carMap = array();
-        	foreach ($carList as $key => $val) {
-        		$carMap[$val['id']] = $val;
-        	}
-        	
-        }
-        
-        foreach ($list as $key=>$val) {
-        	//设置汽车信息
-        	if(isset($carMap)) {
-        		$car = $carMap[$val['car_id']];
-        		$list[$key]['car_number'] = $car['car_number'];
-        		$list[$key]['car_owner'] = $car['car_owner'];
-        	}
-        	
-        	//设置状态对应的名称
-        	$order_status_name = Order::$ORDER_STATUS[$val['order_status']];
-        	$list[$key]['order_status_name'] = isset($order_status_name) ? $order_status_name : "";
-        	
-        	//设置操作人 FIXME
-        	$list[$key]['operator'] = 'tina';
-        	$list[$key]['station'] = '001';
-        	
-        }
-        
-        
-        //获取大区数据
+        //获取 ［区|城市|门店］ 数据
         $districtService = new DistrictService();
         $district = $districtService->select(District::$TYPE_DISTRICT, $pid=0);
-        $city = $districtService->select(District::$TYPE_CITY, $pid=$district_id);
-        $store = $districtService->select(District::$TYPE_STORE, $pid=$city_id);
+        $city = $districtService->select(District::$TYPE_CITY, $pid=$map['district_id']);
+    	$store = $districtService->select(District::$TYPE_STORE, $pid=$map['city_id']);
         
         $this->assign('_list', $list);
         $this->assign('_district',$district);
         $this->assign('_city',$city);
         $this->assign('_store',$store);
-        $this->assign('_district_id',$district_id);
-        $this->assign('_city_id',$city_id);
-        $this->assign('_store_id',$store_id);
-        $this->assign('_phone',$phone);
+        $this->assign('_condition', $orderService->cache_condition($map));
         $this->meta_title = '客户接待';
         $this->display();
+    }
+    
+    
+    /**
+     * 历史结算单
+     * @author tina
+     */
+    public function history(){
+        $orderService = new OrderService();
+        $map = $orderService->list_condition();
+
+    	
+    	$map['order_status'] = array('in', Order::$ORDER_STATUS_HISTORY);
+    	$list   = $this->lists('Order', $map);
+    	 
+    	//组装返回数据
+    	$list = $orderService->combine_response($list);
+    
+    	//获取 ［区|城市|门店］ 数据
+    	$districtService = new DistrictService();
+    	$district = $districtService->select(District::$TYPE_DISTRICT, $pid=0);
+    	$city = $districtService->select(District::$TYPE_CITY, $pid=$map['district_id']);
+    	$store = $districtService->select(District::$TYPE_STORE, $pid=$map['city_id']);
+    
+    	$this->assign('_list', $list);
+    	$this->assign('_district',$district);
+    	$this->assign('_city',$city);
+    	$this->assign('_store',$store);
+    	$condition = $orderService->cache_condition($map);
+    	$this->assign('_condition', $condition);
+    	$this->meta_title = '结算单';
+    	$this->display();
     }
     
     /**
      * 结算
      * @param unknown $id
      */
-    public function settlement($id){
+    public function settle(){
+        //print_r(I('post.'));
     	$id = I('id');
-    	if ( empty($id) ) {
+    	if (empty($id) ) {
     		$this->error('请选择要操作的数据!');
     	}
     	
-    	//FIXME  判断状态
-    	
+    	//检查参数
     	$map = array('id'=>$id);
     	$Order = M('Order');
+    	$order = $Order->where($map)->find();
+    	if(empty($order)){
+    	    $this->error('未找到订单!');
+    	}
+    	
+    	if($order['pay_status'] > 0){
+    		$this->error('订单已结算！');
+    	}
+    	
+    	$pay_amount = I('pay_amount');
+    	$pay_amount = isset($pay_amount) ? ($pay_amount == 0 ? null : $pay_amount) : null;
+    	
+    	
     	$Order->order_status = Order::$ORDER_STATUS_201;
     	$Order->pay_time = date('Y-m-d H:i:s');
     	$Order->payee = UID;
+    	$Order->pay_amount = empty($pay_amount) ? $order['purchase_amount'] : $pay_amount;
+    	$Order->pay_remark = I('pay_remark');
     	$Order->pay_status = Order::$PAY_STATUS_1;
     	
-    	$msg   = array_merge( array( 'success'=>' 结算成功！', 'error'=>'结算失败！', 'url'=>'' ,'ajax'=>IS_AJAX) , (array)$msg );
+        //$msg   = array_merge( array( 'success'=>'结算成功！', 'error'=>'结算失败！', 'url'=>'' ,'ajax'=>IS_AJAX) , (array)$msg );
     	if($Order->where($map)->save()){
     		S('DB_CONFIG_DATA',null);
     		//记录行为
     		action_log('add_order', 'Order', $id, UID);
     		
     		
-    		$this->success($msg['success'],$msg['url'],$msg['ajax']);
+    		//$this->success($msg['success'],$msg['url'],$msg['ajax']);
     		
-    	    //$this->success('结算成功', 'Admin/Order/index');
+    	    $this->success('结算成功', 'index');
     	} else {
     		$this->error($msg['error']);
     	}
@@ -157,11 +159,6 @@ class OrderController extends AdminController {
     	}
     }
     
-    
-    
-    public function printer($id = 0){
-        $this->get($id);
-    }
     
     public function detail($id = 0){
         $this->get($id);
@@ -195,11 +192,12 @@ class OrderController extends AdminController {
     		$this->assign('store_station_id',$order['store_station_id']);
     		$this->assign('car_order_id',$order['id']);
     		$this->assign('data',$car);
+    		$this->assign('isPrint',empty(I('print')) ? 0 : 1);
     		$this->assign('_list',$orderItemList);
     		
     		$this->getCommonInfo();
     		
-    		$this->meta_title = '修改门店信息';
+    		$this->meta_title = empty(I('print')) ? '订单详情' : "打印订单";
     		$this->display();
     	 
     }
@@ -249,5 +247,64 @@ class OrderController extends AdminController {
         $count = M('Order')->field('count(1) count')->where('order_status='.Order::$ORDER_STATUS_100)->find();
         //echo $count['count'];
         $this->success($count['count']);
+    }
+    
+    /**
+     * 报表
+     */
+    public function report(){
+        
+        if(IS_POST) {
+            $Order = M('Order');
+            $sql = '
+            select store_id, DATE_FORMAT( create_time, "%Y-%m-%d" ) date ,sum(purchase_amount) total_amount,count(1) order_nums
+            from onethink_order
+            group by store_id,DATE_FORMAT( create_time, "%Y-%m-%d" ) ';
+            $list = $Order->query($sql);
+            
+            $data = array();
+            
+            $legend = array();
+            $series = array();
+            $xAxis = array();
+            $order_nums_arr = array();
+            
+            $dateList = getFieldMap($list,$field="date");
+            
+            //echo json_encode($dateList).'12345';
+            
+            foreach ($list as $key=>$val) {
+                $legend[] = $val['store_id'];         
+                $order_nums_arr[$val['store_id']][$val['date']] = $val['order_nums'];
+                
+            }
+            
+            foreach ($order_nums_arr as $key=> $val) {
+
+                $notFoundDateList = array_diff($dateList, array_keys($val));
+                
+                if(!empty($notFoundDateList)) {
+                    foreach ($notFoundDateList as $date) {
+                        $val[$date] = '0';
+                    }
+                }
+                
+                ksort($val);
+                
+                $series[] = array(
+                	'name'=>$key,
+                    'type'=>'line',
+                    'data'=>array_values($val)
+                );
+            }
+            $data['legend'] = array_unique($legend);
+            $data['series'] = $series;
+            $data['xAxis'] = array_unique($dateList);
+            
+            $this->success($data);
+       } else {
+            $this->display();
+       }
+        
     }
 }

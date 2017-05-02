@@ -444,7 +444,6 @@ class AdminController extends Controller {
         $options['limit'] = $page->firstRow.','.$page->listRows;
 
         $model->setProperty('options',$options);
-
         return $model->field($field)->select();
     }
 

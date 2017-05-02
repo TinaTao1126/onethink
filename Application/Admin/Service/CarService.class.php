@@ -128,16 +128,12 @@ class CarService{
 		$where = array('car_number'=>$param['car_number']);
 		$data = $Car->where($where)->find();
 		$response = array("code"=>500);
-		if(isset($data) && !empty($data)) {
+		if(!empty($data)) {
 			//如果存在，则修改否则添加
-			$DCar = M('Car');
-			if($DCar->save($param, array('where'=>'id='.$data['id']))) {
+			if($Car->save($param, array('where'=>'id='.$data['id']))) {
 				S('DB_CONFIG_DATA',null);
 				//记录行为
 				action_log('edit_car', 'Car', $data['id'], UID);
-			}else {
-			    $response['msg'] = $DCar->getError();
-			    return $response;
 			}
 			
 			$response['code'] = 200;

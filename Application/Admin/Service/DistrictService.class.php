@@ -32,4 +32,5 @@ class DistrictService{
 	    $where['id'] = array('in',$ids);
 	    return M('District')->where($where)->select();
 	}
+	
 }

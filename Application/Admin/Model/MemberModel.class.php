@@ -79,9 +79,11 @@ class MemberModel extends Model {
             'uid'             => $user['uid'],
             'username'        => $user['nickname'],
             'last_login_time' => $user['last_login_time'],
+            'district_id'     => $user['district_id'],
+            'city_id'         => $user['city_id'],
             'store_id'        => $user['store_id'],
-            'auth_group_id'    => $user['auth_group_id'],
-            'role_key'          => $auth_group['role_key'],
+            'auth_group_id'   => $user['auth_group_id'],
+            'role_key'        => $auth_group['role_key'],
         );
        
         session('user_auth', $auth);
