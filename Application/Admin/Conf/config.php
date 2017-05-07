@@ -100,5 +100,13 @@ return array(
     'TMPL_ACTION_ERROR'     =>  MODULE_PATH.'View/Public/error.html', // 默认错误跳转对应的模板文件
     'TMPL_ACTION_SUCCESS'   =>  MODULE_PATH.'View/Public/success.html', // 默认成功跳转对应的模板文件
     'TMPL_EXCEPTION_FILE'   =>  MODULE_PATH.'View/Public/exception.html',// 异常页面的模板文件
+    
+    /* 日志设置 */
+    'LOG_RECORD'            =>  true,   // 默认不记录日志
+    'LOG_TYPE'              =>  'File', // 日志记录类型 默认为文件方式
+    'LOG_LEVEL'             =>  'EMERG,ALERT,CRIT,ERR, INFO',// 允许记录的日志级别
+    'LOG_FILE_SIZE'         =>  2097152,	// 日志文件大小限制
+    'LOG_EXCEPTION_RECORD'  =>  true,    // 是否记录异常信息日志
+    'LOG_ROOT_PATH'  =>  '/Data/logs/',    // 是否记录异常信息日志
 
 );

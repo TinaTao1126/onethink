@@ -189,6 +189,7 @@
 					<div class="col-sm-5 col-sm-offset-1">
 						<input type="hidden" name="store_id" value="{$store_id}"/>
         				<input type="hidden" name="id" id="car_id" value=""/>
+        				<input type="hidden" name="order_id" id="order_id" value=""/>
 						<button class="btn btn-success" type="submit">确定</button>
 						<button type="button" class="btn btn-default" name="back" onclick="javascript:history.back(-1);return false;">返回</button>
 					</div>
@@ -276,17 +277,19 @@
 		$.post(self.attr("action"), self.serialize(), function success(response){
 			console.log(response);
 			if(response.status == 1){
-				$("#car_id").attr('value',response.data.car_id);
-				$("#order_id").attr('value',response.data.order_id);
+				$("#car_id").attr('value',response.info.car_id);
+				$("#order_id").attr('value',response.info.order_id);
 				$('input').each(function(){
 					$(this).attr("disabled",true);
 				});
+				updateAlert("开单成功！", 'alert-success');
 			} else {
 				updateAlert(response.info);
-				setTimeout(function(){
-     				$('#top-alert').removeClass('block').slideUp(200);
-     			}, 1500);
+				
 			}
+			setTimeout(function(){
+ 				$('#top-alert').removeClass('block').slideUp(200);
+ 			}, 1500);
 		}, "json");
 		return false;
 	});
@@ -302,7 +305,7 @@
         		if(data.status == 1) {
         			if(data.info != null) $("form").setForm(data.info);
         			else {
-        				updateAlert('未找到用户信息');
+        				updateAlert('未找到车牌信息！');
              			setTimeout(function(){
              				$('#top-alert').removeClass('block').slideUp(200);
              			}, 1500);

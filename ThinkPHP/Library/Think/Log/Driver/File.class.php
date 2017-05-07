@@ -14,7 +14,7 @@ namespace Think\Log\Driver;
 class File {
 
     protected $config  =   array(
-        'log_time_format'   =>  ' c ',
+        'log_time_format'   =>  'Y-m-d H:i:s',
         'log_file_size'     =>  2097152,
         'log_path'          =>  '',
     );
@@ -38,6 +38,6 @@ class File {
         //检测日志文件大小，超过配置大小则备份日志文件重新生成
         if(is_file($destination) && floor($this->config['log_file_size']) <= filesize($destination) )
               rename($destination,dirname($destination).'/'.time().'-'.basename($destination));
-        error_log("[{$now}] ".$_SERVER['REMOTE_ADDR'].' '.$_SERVER['REQUEST_URI']."\r\n{$log}\r\n", 3,$destination);
+        error_log("[{$now}] ".$_SERVER['REMOTE_ADDR'].' '.$_SERVER['REQUEST_URI']." \r\n{$log}\r\n", 3,$destination);
     }
 }

@@ -138,7 +138,7 @@ class OrderItemController extends AdminController {
     		
     		$this->assign('_item_type', OrderItem::$ITEM_TYPE);
     		$this->assign('data',$data);
-    		$this->meta_title = '编辑行为';
+    		$this->meta_title = '添加项目';
     		$this->display();
     		
     	}

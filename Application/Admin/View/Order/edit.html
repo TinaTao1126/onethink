@@ -5,7 +5,7 @@
     <div class="container">
   		<div class="row">
     		<div class="col-sm-10">
-    			<h3>订单详情</h3>
+    			<h3>{$meta_title}</h3>
     		</div>
   		</div>
   		<!--  
@@ -219,9 +219,9 @@
    		</div>
   	</div>
    	 <div class="row">
-    		<div class="col-sm-10">
+    	<div class="col-sm-10">
     	<table class="table table-bordered">
-   		 <thead>
+   		<thead>
         <tr>
 		<th>ID</th>
 		<th>类别</th>
@@ -232,7 +232,7 @@
 		<th>合计</th>
 		<th>操作</th>
 		</tr>
-    </thead>
+    	</thead>
     <tbody>
 		<notempty name="_list">
 		<volist name="_list" id="vo">
@@ -324,17 +324,23 @@
 
 	$("form").submit(function(){
 		var self = $(this);
-		$.post(self.attr("action"), self.serialize(), success, "json");
-		return false;
-
-		function success(response){
+		$.post(self.attr("action"), self.serialize(), function success(response){
 			console.log(response);
-			if(response.status){
-				$("button:submit").attr("disabled", false);
+			if(response.status == 1){
+				$("#car_id").attr('value',response.info.car_id);
+				$("#order_id").attr('value',response.info.order_id);
+				$('input').each(function(){
+					$(this).attr("disabled",true);
+				});
+				updateAlert("保存成功！", 'alert-success');
 			} else {
-				alert(response.info);
+				updateAlert(response.info);
+				
 			}
-		}
+			setTimeout(function(){
+ 				$('#top-alert').removeClass('block').slideUp(200);
+ 			}, 1500);
+		}, "json");
 	});
     //导航高亮
     highlight_subnav('{:U('Order/index')}');

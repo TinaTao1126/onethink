@@ -8,7 +8,11 @@
 // +----------------------------------------------------------------------
 namespace Admin\Service;
 use Think\Upload;
-
+use Admin\Service\OrderService;
+use Admin\Enums\Order;
+use Admin\Enums\Camera;
+use Think\Exception;
+use Think\Log;
 
 class CarService{
 	
@@ -25,18 +29,17 @@ class CarService{
 	public function encapsuleData($param){
 		//echo 123;exit;
 		if(!isset($param['AlarmInfoPlate'])) {
-			
-			throw_exception("请求参数不全");
+			E("请求参数不全");
 		}
 		$AlarmInfoPlate = $param['AlarmInfoPlate'];
 		
 		if(!isset($AlarmInfoPlate['result'])) {
-			throw_exception("请求参数不全");
+			E("请求参数不全");
 		}
 		$Result = $AlarmInfoPlate['result'];
 		
 		if(!isset($Result['PlateResult'])) {
-			throw_exception("请求参数不全");
+			E("请求参数不全");
 		}
 		$PlateResult = $Result['PlateResult'];
 		$data = array();
@@ -77,10 +80,11 @@ class CarService{
 			
 			//上传成功删除本地服务器文件
 			unlink($fileName);
+			
 			return $url;
-		} catch (\Exception $e) {
-			//记录日志 TODO
-			//Log::write($message);
+		} catch (Exception $e) {
+			//记录日志 
+			Log::write($message);
 		}
 	}
 	
@@ -92,13 +96,9 @@ class CarService{
 	    if (preg_match('/^(data:\s*image\/(\w+);base64,)/', $base64Code, $result)){
 	    	$type = $result[2];
 	    	$new_file = $image_file.'.'.$type;
-	    	//echo $new_file;exit;
 	    	if (file_put_contents($new_file, base64_decode(str_replace($result[1], '', $base64Code)))){
-	    		//echo '新文件保存成功：', $new_file;
 	    		return $new_file;
 	    	}
-	    	
-	    
 	    }
 	}
 	
@@ -119,15 +119,122 @@ class CarService{
 	}
 	
 	/**
+	 * 新车入场
+	 */
+	public function carIn($data){
+	    Log::writeInfo('start to excute carIn in CarService', 'car');
+	    $carInfo = $data['carInfo'];
+	    //step-2-2: 检查车牌信息是否已经存在
+	    $carInDb = M('Car')->where(array('car_number'=>$carInfo['car_number']))->find();
+	    Log::writeInfo('step-1: find car by car_number, param:'.$carInfo['car_number'].', result:'.json_encode($carInDb), 'car');
+	    if(!empty($carInDb)) {
+	       E("车牌信息已经存在！");
+	    }
+	     
+	    $carOutIn = array(
+	    	'type' => Camera::$TYPE_IN,
+	       'camera_id' => $data['camera_id'],
+	        'car_number' => $carInfo['car_number']
+	        
+	    );
+	    $result = M('CarOutIn')->add($carOutIn);
+	    Log::writeInfo('step-2: save car_out_in record, param:'.json_encode($carOutIn).', result:'.$result, 'car');
+	    
+	    //step-1 :保存图片
+	    try{
+	        Log::writeInfo('step-3: start to upload image', 'car');
+	    	$url = $this->uploadImage($data['imageFile']);
+	    } catch (\Exception $e) {
+	    	//记录日志 TODO
+	    	//Log::write($message);
+	    }
+	    
+	    //step-2: 保存汽车信息
+	    $carInfo['img_url'] = isset($url) ? $url : '';
+	    
+	    $carId = M('Car')->add($carInfo);
+	    Log::writeInfo('step-4: save car, param:'.$json_encode($carInfo).', result:'.$carId, 'car');
+	     
+	    //step-3: 生成临时订单
+	    Log::writeInfo('step-5: start to create temp order', 'car');
+	    if(isset($carId) && !empty($carId)) {
+	    	$order = $carInfo;
+	    	$order['car_id'] = $carId;
+	    	$order['order_status'] = Order::$ORDER_STATUS_100;//新车入场
+	    	$order['store_id'] = $data['store_id'];
+	    
+	    	Log::writeInfo('step-5-1: order:'.json_encode($order), 'car');
+	    	$orderService = new OrderService();
+	    	$order_id = $orderService->addOrder($order);
+	    	Log::writeInfo('step-5-2: succeed to create temp order, result:'.$order_id, 'car');
+	    	$response['data'] = array(
+	    			'car_id'=>$carId,
+	    			'order_id'=>$order_id,
+	    	);
+	    
+	    	return $response;
+	   // 	$this->success($response);
+	    } else {
+	        return null;
+	    //	$this->fail('600', $data=array(), $msg=array("保存车辆信息失败！"));
+	    }
+	    
+	    return $response;
+	}
+	
+	
+	/**
+	 * 汽车离场
+	 * 将已经结算的订单
+	 * 
+	 */
+	public function carOut($data){
+	    $carInfo = $data['carInfo'];
+	    
+	    $carOutIn = array(
+	    		'type' => Camera::$TYPE_OUT,
+	    		'camera_id' => $data['camera_id'],
+	    		'car_number' => $carInfo['car_number']
+	    		 
+	    );
+	    M('CarOutIn')->add($carOutIn);
+	    
+	    //step-0: 查询车牌信息
+	    $Car = M('Car')->where(array('car_number'=>$carInfo['car_number']))->find();
+	    
+	    //step-1: 判断车辆信息是否存在
+	    if(!empty($Car)) {
+	        $where['car_id'] = array('eq', $Car['id']);
+	        $where['order_status'] = array('neq', Order::$ORDER_STATUS_200);
+	    	$OrderList = M('Order')->where($where)->select();
+	    	// print_r($OrderList);
+	    	if(!empty($OrderList)) {
+	    	    
+	    	    //$idList = getFieldMap($OrderList, $field="id");
+	    	    foreach ($OrderList as $key => $value) {
+	    	    	$idList[] = $value['id'];
+	    	    }
+	    	    $data['order_status'] = Order::$ORDER_STATUS_300;
+	    	    $where['id'] = array('in', $idList);
+	    	    $response = M('Order')->where($where)->save($data);
+	    	    
+	    	    return $response;
+	    	}
+	    	
+	    } 
+	}
+	
+	
+	/**
 	 * 添加车辆信息，如果存在，则修改，不存在，则添加
 	 * @return 
 	 */
 	public function editCar() {
 		$param   =   I('post.');
 		$Car = M('Car');
-		$where = array('car_number'=>$param['car_number']);
+		$where = array('id'=>$param['id']);
 		$data = $Car->where($where)->find();
-		$response = array("code"=>500);
+// 		$response = array("code"=>500);
 		if(!empty($data)) {
 			//如果存在，则修改否则添加
 			if($Car->save($param, array('where'=>'id='.$data['id']))) {
@@ -136,9 +243,8 @@ class CarService{
 				action_log('edit_car', 'Car', $data['id'], UID);
 			}
 			
-			$response['code'] = 200;
-			$response['data'] = $data['id'];
-			$response['msg'] = " 修改成功";
+			return $data['id'];
+			//$response['msg'] = " 修改成功";
 			//print_r($response);
 		} else {
 			//echo 'add';
@@ -148,15 +254,17 @@ class CarService{
 				S('DB_CONFIG_DATA',null);
 				//记录行为
 				action_log('add_car', 'Car', $id, UID);
-				$response['code'] = 200;
-				$response['data'] = $id;
-				$response['msg'] = "新增成功";
+// 				$response['status'] = 1;
+// 				$response['info'] = $id;
+				return $id;
+				//$response['msg'] = "新增成功";
 			} else {
 				//print_r($Car->getDbError());
-				$response['msg'] = '新增失败！';
+				//$response['info'] = '新增失败！';
+				return 0;
 			}
 		
 		} 
-		return $response;
+		//return $response;
 	}
 }

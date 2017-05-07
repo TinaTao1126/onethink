@@ -88,14 +88,26 @@ class Log {
      * @param string $destination  写入目标
      * @return void
      */
-    static function write($message,$level=self::ERR,$type='',$destination='') {
+    static function write($message, $level=self::ERR,$type='',$destination='') {
         if(!self::$storage){
             $type = $type?$type:C('LOG_TYPE');
             $class  =   'Think\\Log\\Driver\\'. ucwords($type);
             self::$storage = new $class();            
         }
-        if(empty($destination))
-            $destination = C('LOG_PATH').date('y_m_d').'.log';        
+        if(empty($destination)) {
+            $destination = C('LOG_PATH').date('y_m_d').'.log';   
+        }
         self::$storage->write("{$level}: {$message}", $destination);
     }
+    
+    /**
+     * add by tina
+     * @param unknown $message
+     * @param unknown $fileName
+     */
+    static function writeInfo($message, $fileName) {
+        $destination = C('LOG_PATH').$fileName.'-'.date('y_m_d').'.log';
+        self::write($message, 'INFO', $type='', $destination);
+    }
+    
 }

@@ -9,6 +9,7 @@
 
 namespace Admin\Controller;
 use Admin\Service\DistrictService;
+use Admin\Service\StoreService;
 use Admin\Enums\Store;
 use Admin\Enums\District;
 
@@ -24,16 +25,10 @@ class StoreController extends AdminController {
      * @author tina
      */
     public function index(){
-    	$district_id       =   I('district_id');
-    	$city_id       =   I('city_id');
-    	$map = array();
-    	if($district_id > 0) {
-    		$map['district_id']=$district_id;
-    	}
-    	if($city_id > 0) {
-    		$map['city_id']=$city_id;
-    	}
-
+    	$storeService = new StoreService();
+    	$map = $storeService->list_condition();
+        
+        
         $list   = $this->lists('Store', $map);
         
         //获取所有门店的大区id和城市id
@@ -63,14 +58,14 @@ class StoreController extends AdminController {
         }
         
         $districtService = new DistrictService();
-        $district = $districtService->select($type=1, $pid=0);
-        $city = $districtService->select($type=2, $district_id);
+        $district = $districtService->select(District::$TYPE_DISTRICT, $pid=0);
+    	$city = $districtService->select(District::$TYPE_CITY, $pid=$map['district_id']);
+    	$condition = $storeService->cache_condition($map);
         
         $this->assign('_list', $list);
         $this->assign('_district',$district);
         $this->assign('_city',$city);
-        $this->assign('_district_id',$district_id);
-        $this->assign('_city_id',$city_id);
+        $this->assign('_condition', $condition);
         $this->meta_title = '门店信息';
         $this->display();
     }

@@ -55,6 +55,7 @@
 				<a href="{:U('User/changeStatus?method=resumeUser&id='.$vo['uid'])}" class="ajax-get">启用</a>
 				</eq>
 				<a href="{:U('AuthManager/group?uid='.$vo['uid'])}" class="confirm ajax-get">删除</a>
+				<a href="{:U('User/edit?uid='.$vo['uid'])}">编辑</a>
                 </td>
 		</tr>
 		</volist>

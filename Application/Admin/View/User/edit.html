@@ -9,7 +9,7 @@
     		</div>
   		</div>
   	</div>
-  	<form action="{:U()}" method="post" class="form-horizontal">
+  	<form action="{:U('edit')}" method="post" class="form-horizontal">
   	<div class="container">
   		<div class="row">
   			<div class="col-sm-6">
@@ -17,19 +17,19 @@
   			<div class="form-group">
   				<label class="col-sm-3 control-label">编号</label>
 				<div class="col-sm-6">
-					<input type="text" class="form-control"  name="user_no" value=""/>
+					<input type="text" class="form-control"  name="user_no" value="{$data.user_no}"/>
 				</div>
   			</div>
   			<div class="form-group">
   				<label class="col-sm-3 control-label">姓名</label>
 				<div class="col-sm-6">
-					<input type="text" class="form-control"  name="nickname" value=""/>
+					<input type="text" class="form-control"  name="nickname" value="{$data.nickname}"/>
 				</div>
   			</div>
   			<div class="form-group">
   				<label class="col-sm-3 control-label">电话</label>
 				<div class="col-sm-6">
-					<input type="text" class="form-control"  name="mobile" value=""/>
+					<input type="text" class="form-control"  name="mobile" value="{$data.mobile}"/>
 				</div>
   			</div>
   			<div class="form-group">
@@ -38,7 +38,11 @@
 					<select class="form-control"  name="auth_group_id">
 						<notempty name="auth_group">
 						<volist name="auth_group" id="vo" >
-							<option value="{$vo.id}">{$vo.title}</option>
+							<if condition="$vo.id eq $data['auth_group_id']">
+								<option value="{$vo.id}" selected>{$vo.title}</option>
+							<else/>
+								<option value="{$vo.id}">{$vo.title}</option>
+							</if>
 						</volist>
 						</notempty>
 					</select>
@@ -51,7 +55,11 @@
 	                	<option value="0">大区</option>
 	                	<notempty name="_district">
 							<volist name="_district" id="vo" >
-								<option value="{$vo.id}">{$vo.name}</option>
+								<if condition="$vo.id eq $data['district_id']">
+									<option value="{$vo.id}" selected>{$vo.name}</option>
+								<else/>
+									<option value="{$vo.id}">{$vo.name}</option>
+								</if>
 							</volist>
 						</notempty>
 	                </select>
@@ -61,7 +69,15 @@
   				<label class="col-sm-3 control-label">所属城市</label>
 				<div class="col-sm-6">
 					<select class="form-control" name="city_id">
-	                	<option value="0">城市</option>
+						<notempty name="_city">
+							<volist name="_city" id="vo" >
+								<if condition="$vo.id eq $data['city_id']">
+									<option value="{$vo.id}" selected>{$vo.name}</option>
+								<else/>
+									<option value="{$vo.id}">{$vo.name}</option>
+								</if>
+							</volist>
+						</notempty>
 	                </select>
 				</div>
   			</div>
@@ -69,7 +85,15 @@
   				<label class="col-sm-3 control-label">所属门店</label>
 				<div class="col-sm-6">
 	                <select class="form-control" name="store_id">
-	                	<option value="0">门店</option>
+	                	<notempty name="_store">
+							<volist name="_store" id="vo" >
+								<if condition="$vo.id eq $data['store_id']">
+									<option value="{$vo.id}" selected>{$vo.name}</option>
+								<else/>
+									<option value="{$vo.id}">{$vo.name}</option>
+								</if>
+							</volist>
+						</notempty>
 	                </select>
 				</div>
 			</div>
@@ -77,20 +101,20 @@
 				<div class="form-group">
   					<label class="col-sm-3 control-label">证件号</label>
 					<div class="col-sm-6">
-						<input type="text" class="form-control"  name="id_no" value=""/>
+						<input type="text" class="form-control"  name="id_no" value="{$data.id_no}"/>
 					</div>
   				</div>
   				<div class="form-group">
   					<label class="col-sm-3 control-label">通信地址</label>
 					<div class="col-sm-6">
-						<input type="text" class="form-control"  name="address" value=""/>
+						<input type="text" class="form-control"  name="address" value="{$data.address}"/>
 					</div>
   				</div>
   				<div class="form-group">
   					<label class="col-sm-3 control-label">备注</label>
 					<div class="col-sm-6">
 						<textarea class="textarea input-large" name="remark">
-                
+                		{$data.remark}
                 		</textarea>
 					</div>
   				</div>
@@ -101,7 +125,7 @@
   				<div class="form-group">
   					<label class="col-sm-2 control-label">登录名</label>
 					<div class="col-sm-6">
-						<input type="text" class="form-control"  name="username" value=""/>
+						<input type="text" class="form-control"  name="username" value="{$data.username}"/>
 					</div>
   				</div>
   				<div class="form-group">
@@ -119,7 +143,7 @@
   				<div class="form-group">
   					<label class="col-sm-2 control-label">邮箱</label>
 					<div class="col-sm-6">
-						<input type="text" class="form-control"  name="email" value=""/>
+						<input type="text" class="form-control"  name="email" value="{$data.email}"/>
 					</div>
   				</div>
   			
@@ -129,6 +153,7 @@
   	</div>
   	<div class="row">
   		<div class="col-sm-6 col-sm-offset-4">
+  			<input type="hidden" name="uid" value="{$data.uid}"/>
   				<button class="btn submit-btn ajax-post" id="submit" type="submit" target-form="form-horizontal">确 定</button>
             	<button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
   			</div>

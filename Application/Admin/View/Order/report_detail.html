@@ -1,0 +1,212 @@
+<extend name="Public/base" />
+
+<block name="body">
+	<link href="__STATIC__/bootstrap/css/bootstrap.css" rel="stylesheet">
+	<!-- 标题栏 -->
+	<div class="main-title">
+		<h2>{$meta_title}</h2>
+	</div>
+	
+   <div class="container">
+   <div class="row">
+    	<div class="col-sm-10">
+    	<table class="table table-bordered">
+   		<thead>
+        <tr>
+		<th>门店</th>
+		<th>大区</th>
+		<th>快修费</th>
+		<th>保养费</th>
+		<th>装饰美容</th>
+		<th>洗车费</th>
+		<th>保险费</th>
+		<th>总合计</th>
+		</tr>
+    	</thead>
+    <tbody>
+		<notempty name="_list">
+		<volist name="_list" id="vo">
+		<tr>
+			<td>{$vo.store_name} </td>
+            <td>{$vo.district_name} </td>
+			<td>{$vo.total_repair_amount} </td>
+			<td>{$vo.total_maintain_amount}</td>
+			<td>{$vo.total_beauty_amount}</td>
+			<td>{$vo.total_cleaning_amount}</td>
+			<td>{$vo.total_insurance_amount}</td>
+			<td>{$vo.total_amount}</td>
+		</tr>
+		</volist>
+		<else/>
+		<td colspan="9" class="text-center"> 无记录！ </td>
+		</notempty>
+	</tbody>
+    </table>
+    </div>
+    </div>
+   </div>
+   
+   
+    <!--  <div class="container">
+    
+    	
+    	<div class="row">
+    	<div class="col-sm-10">
+    		
+    		<div id="line" style="height:400px;">
+    	
+    		</div>
+    	</div>
+    	</div>
+    	<div id="pie">
+    	
+    	</div>
+    </div>-->
+</block>
+
+<block name="script">
+	<script src="__STATIC__/echarts/echarts.js"></script>
+	<script src="__STATIC__/bootstrap/js/bootstrap.min.js"></script>
+	<script src="__STATIC__/bootstrap/js/moment.js"></script>
+	<script src="__STATIC__/bootstrap/js/bootstrap-datetimepicker.min.js"></script>
+	<script src="__STATIC__/thinkbox/jquery.thinkbox.js"></script>
+	<script type="text/javascript" src="__STATIC__/js/district.js"></script>
+	<script type="text/javascript">
+	//搜索功能
+	$("#search").click(function(){
+		var url = $(this).attr('url');
+        var query  = $('.search-form').find('select').serialize();
+        query = query.replace(/(&|^)(\w*?\d*?\-*?_*?)*?=?((?=&)|(?=$))/g,'');
+        query = query.replace(/^&/g,'');
+        if( url.indexOf('?')>0 ){
+            url += '&' + query;
+        }else{
+            url += '?' + query;
+        }
+		window.location.href = url;
+	});
+	//回车搜索
+	$(".search-input").keyup(function(e){
+		if(e.keyCode === 13){
+			$("#search").click();
+			return false;
+		}
+	});
+	
+	$(function(){
+		$('input[name=start_time]').datetimepicker({
+			format: 'YYYY-MM-DD',
+		});
+		$('input[name=end_time]').datetimepicker({
+			format: 'YYYY-MM-DD',
+		});
+	
+        
+        var lineChart = echarts.init(document.getElementById('line'));
+        
+        lineChart.setOption({
+            title: {
+                text: ''
+            },
+            tooltip: {},
+           
+            xAxis: {
+                data: []
+            },
+            yAxis: {},
+            
+        });
+        
+        $.post("{:U('report')}").done(function (response) {
+        	
+        	var data = response.info;
+        	console.log(data.xAxis);
+        	console.log(data.legend);
+        	console.log(data.series);
+        	
+        	var option = {
+        		    title: {
+        		        text: '折线图堆叠'
+        		    },
+        		    tooltip: {
+        		        trigger: 'axis'
+        		    },
+        		    legend: {
+        		        data: data.legend
+        		    },
+        		    grid: {
+        		        left: '3%',
+        		        right: '4%',
+        		        bottom: '3%',
+        		        containLabel: true
+        		    },
+        		    toolbox: {
+        		        feature: {
+        		            saveAsImage: {}
+        		        }
+        		    },
+        		    xAxis: {
+        		        type: 'category',
+        		        boundaryGap: false,
+        		        data: data.xAxis
+        		    },
+        		    yAxis: {
+        		        type: 'value'
+        		    },
+        		    series: data.series
+//         		    [
+//         		        {
+//         		            name:'订单总数',
+//         		            type:'line',
+//         		            stack: '总量',
+//         		            data:[2,32]
+//         		        }
+//         		    ]
+        		};
+
+            // 填入数据
+            lineChart.setOption(option);
+            
+            //lineChart.setOption(option);
+        });
+        
+        
+//         option = {
+//         	    title: {
+//         	        text: '折线图堆叠'
+//         	    },
+//         	    tooltip: {
+//         	        trigger: 'axis'
+//         	    },
+//         	    legend: {
+//         	        data:{$data['legend']}
+//         	    },
+//         	    grid: {
+//         	        left: '3%',
+//         	        right: '4%',
+//         	        bottom: '3%',
+//         	        containLabel: true
+//         	    },
+//         	    toolbox: {
+//         	        feature: {
+//         	            saveAsImage: {}
+//         	        }
+//         	    },
+//         	    xAxis: {
+//         	        type: 'category',
+//         	        boundaryGap: false,
+//         	        data: {$data['xAxis']}
+//         	    },
+//         	    yAxis: {
+//         	        type: 'value'
+//         	    },
+//         	    series: {$data.series}
+//         	};
+        
+       
+	});
+	
+    //导航高亮
+    highlight_subnav('{:U('Order/report')}');
+	</script>
+</block>

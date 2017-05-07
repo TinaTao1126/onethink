@@ -7,11 +7,11 @@
 		<h2>{$meta_title}</h2>
 	</div>
 	
-    <form class="form-inline" method="post" action="{:U('history')}" role="form">
+    <form class="form-inline" method="post" action="{:U('report_detail')}" role="form">
     <div class="container">
     	<div class="row">
     		<div class="form-group">
-    			<select class="form-control" name="district_id">
+    			<!-- <select class="form-control" name="district_id">
                 	<option value="0">大区</option>
                 	<notempty name="_district">
 						<volist name="_district" id="vo" >
@@ -46,7 +46,7 @@
 							</if>
 						</volist>
 					</notempty>
-                </select>
+                </select> -->
                 <div class="form-group">
                 <div class='input-group date' id='startTime'>
                     <input type='text' class="form-control" name="start_time" placeholder="开始时间" value="{$condition._start_time}"/>
@@ -64,28 +64,42 @@
                     </span>
                 </div>
             </div>
+            <div class="form-group">
+	             <select class="form-control" name="item_type">
+	             	<option value='0'>全项目</option>
+	             	<notempty name="_item_type">
+					<volist name="_item_type" id="vo" >
+					<if condition="$vo.id eq $_condition['item_type']">
+						<option value="{$vo.id}" selected>{$vo.name}</option>
+					<else/>
+						<option value="{$vo.id}">{$vo.name}</option>
+					</if>
+					</volist>
+					</notempty>
+	        	</select>
+        	</div>
                 <button type="submit" class="btn btn-link"><i class="btn-search"></i></button>
-    			<a class="sch-btn" href="javascript:;" id="search" url="{:U('index')}"></a>
     		</div>
     	</div>
     </div>
-    </form>
     
     <div class="container">
-    
-    	
-    	<div class="row">
-    	<div class="col-sm-10">
-    		
-    		<div id="line" style="height:400px;">
-    	
-    		</div>
-    	</div>
-    	</div>
-    	<div id="pie">
-    	
-    	</div>
+    	<div class="row col-sm-6">
+    		<notempty name="_list">
+			<volist name="_list" id="vo" key="district_id">
+    		<ul class="list-group">
+			    <li class="list-group-item active"><input class="check-group" type="checkbox" value="{$district_id}"/> {$vo.district_name}</li>
+			   	<volist name="vo" id="store" key="key">
+			   	<if condition="$key neq 'district_namf'">
+			    	<li class="list-group-item"><input type="checkbox" class="ids" group='{$district_id}' name="ids[]" value="{$store.store_id}">{$store.store_name}</li>
+  				</if>
+			    </volist>
+			</ul>
+			</volist>
+			</notempty>
+		</div>
     </div>
+    </form>
 </block>
 
 <block name="script">
@@ -125,108 +139,17 @@
 			format: 'YYYY-MM-DD',
 		});
 	
-        
-        var lineChart = echarts.init(document.getElementById('line'));
-        
-        lineChart.setOption({
-            title: {
-                text: '异步数据加载示例'
-            },
-            tooltip: {},
-           
-            xAxis: {
-                data: []
-            },
-            yAxis: {},
-            
-        });
-        
-        $.post("{:U('report')}").done(function (response) {
-        	
-        	var data = response.info;
-        	console.log(data.xAxis);
-        	console.log(data.legend);
-        	console.log(data.series);
-        	
-        	var option = {
-        		    title: {
-        		        text: '折线图堆叠'
-        		    },
-        		    tooltip: {
-        		        trigger: 'axis'
-        		    },
-        		    legend: {
-        		        data: data.legend
-        		    },
-        		    grid: {
-        		        left: '3%',
-        		        right: '4%',
-        		        bottom: '3%',
-        		        containLabel: true
-        		    },
-        		    toolbox: {
-        		        feature: {
-        		            saveAsImage: {}
-        		        }
-        		    },
-        		    xAxis: {
-        		        type: 'category',
-        		        boundaryGap: false,
-        		        data: data.xAxis
-        		    },
-        		    yAxis: {
-        		        type: 'value'
-        		    },
-        		    series: data.series
-//         		    [
-//         		        {
-//         		            name:'订单总数',
-//         		            type:'line',
-//         		            stack: '总量',
-//         		            data:[2,32]
-//         		        }
-//         		    ]
-        		};
-
-            // 填入数据
-            lineChart.setOption(option);
-            
-            //lineChart.setOption(option);
-        });
-        
-        
-//         option = {
-//         	    title: {
-//         	        text: '折线图堆叠'
-//         	    },
-//         	    tooltip: {
-//         	        trigger: 'axis'
-//         	    },
-//         	    legend: {
-//         	        data:{$data['legend']}
-//         	    },
-//         	    grid: {
-//         	        left: '3%',
-//         	        right: '4%',
-//         	        bottom: '3%',
-//         	        containLabel: true
-//         	    },
-//         	    toolbox: {
-//         	        feature: {
-//         	            saveAsImage: {}
-//         	        }
-//         	    },
-//         	    xAxis: {
-//         	        type: 'category',
-//         	        boundaryGap: false,
-//         	        data: {$data['xAxis']}
-//         	    },
-//         	    yAxis: {
-//         	        type: 'value'
-//         	    },
-//         	    series: {$data.series}
-//         	};
-        
+		$(".check-group").click(function(){
+				var checked = this.checked;
+				var group = $(this).val();
+	            $('input[type=checkbox]').each(function(){
+	            	if($(this).attr('group') == group) {
+	            		$(this).prop('checked', checked);
+	            	}
+	            }); 
+		});
+			
+       
        
 	});
 	

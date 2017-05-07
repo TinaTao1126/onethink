@@ -11,6 +11,7 @@ namespace Admin\Controller;
 use User\Api\UserApi;
 use Admin\Service\DistrictService;
 use Admin\Model\AuthGroupModel;
+use Admin\Enums\District;
 
 /**
  * 后台用户控制器
@@ -242,6 +243,58 @@ class UserController extends AdminController {
             $this->meta_title = '新增用户';
             $this->display();
         }
+    }
+    
+    
+    public function edit($uid = 0){
+    	if(IS_POST){
+    		$param = I('post.');
+    		$username = $param['nickname'];
+    		$password = $param['password'];
+    		$repassword = $param['repassword'];
+    		$email = $param['email'];
+    		$mobile = $param['mobile'];
+    		/* 检测密码 */
+    		if($password != $repassword){
+    			$this->error('密码和重复密码不一致！');
+    		}
+    		
+    		if(empty($password)) {
+    		    $param['password'] = '123qwe';
+    		}
+    		/* 调用注册接口注册用户 */
+    		//$User   =   new UserApi;
+    		//$uid    =   $User->register($username, $password, $email, $mobile);
+    		//if(0 < $uid){ //注册成功
+    		
+    		if(!M('Member')->save($param, $option=array("uid"=>$param["uid"]))){
+    			$this->error('用户保存失败！');
+    		} else {
+    			$this->success('用户保存成功！',U('index'));
+    		}
+    		
+    	} else {
+    	    
+    	    $data = M('Member')->where('uid='.$uid)->find();
+  
+    		//获取 ［区|城市|门店］ 数据
+    		$districtService = new DistrictService();
+    		$district = $districtService->select(District::$TYPE_DISTRICT, $pid=0);
+    		$city = $districtService->select(District::$TYPE_CITY, $pid=$data['district_id']);
+    		$store = $districtService->select(District::$TYPE_STORE, $pid=$data['city_id']);
+    		
+    		$this->assign('data', $data);
+    		$this->assign('_district',$district);
+    		$this->assign('_city',$city);
+    		$this->assign('_store',$store);
+    		
+    		//角色
+    		$auth_group = M('AuthGroup')->where( array('module'=>'admin','type'=>AuthGroupModel::TYPE_ADMIN) )->select();
+    		$this->assign('auth_group',$auth_group);
+    
+    		$this->meta_title = '编辑用户';
+    		$this->display();
+    	}
     }
 
     /**

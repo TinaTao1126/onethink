@@ -33,4 +33,29 @@ class DistrictService{
 	    return M('District')->where($where)->select();
 	}
 	
+	
+	public function selectStoreGroupByDistrict() {
+	    $District = M('District');
+	    $sql = 'select d.id district_id, d.name district_name, s.id store_id, s.name store_name from onethink_district d
+	    inner join onethink_district c on c.pid=d.id and c.type=2 and d.type=1
+	    inner join onethink_district s on s.pid=c.id and s.type=3';
+	   
+	    $list = $District->query($sql);
+	    
+	    
+	    $data = array();
+	    foreach ($list as $key=>$row) {
+	        
+	        if(array_key_exists($row['district_id'], $data)) {
+	            $data[$row['district_id']][] = array("store_id"=>$row['store_id'], "store_name"=>$row['store_name']);
+	            $data[$row['district_id']]['district_name'] = $row['district_name'];
+	        } else {
+	            $data[$row['district_id']][] = array("store_id"=>$row['store_id'], "store_name"=>$row['store_name']);
+	        }
+	        
+	    }
+	    return $data;
+	    
+	}
+	
 }

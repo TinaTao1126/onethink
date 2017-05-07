@@ -97,22 +97,25 @@ class CarController extends AdminController {
     	    //print_r(I('post.'));
     	    
     	    $carService = new CarService();
-    	    $response = $carService->editCar();
+    	    $car_id = $carService->editCar();
     	    //修改订单信息
-    	    if($response['code'] == 200) {
+    	    if($car_id > 0) {
     	        $param = I('post.');
-    	    	$param['car_id'] = $response['data'];
+    	    	$param['car_id'] = $car_id;
     	    	$orderService = new OrderService();
-    	    	$result = $orderService->editOrder($param);
-    	    }
+    	    	$order_id = $orderService->editOrder($param);
+    	    	$response = array(
+    	    			'car_id'=>$car_id,
+    	    			'order_id'=>$order_id,
+    	    	);
+    	    }else{
+    			$this->error('保存车辆信息异常！');
+    		}
     	    
-    	    $msg   = array( 'success'=>'更新成功！', 'error'=>'更新失败！', 'url'=>'' ,'ajax'=>IS_AJAX);
-    		if(isset($result)){
-    			
-    			$this->success($result);
-    			
+    		if(empty($response)) {
+    			$this->error('生成订单异常！');
     		} else {
-    			$this->error($msg['error']);
+    			$this->success($response);
     		}
     	} 
     	
@@ -144,20 +147,26 @@ class CarController extends AdminController {
     		//echo 'edit';
     		//添加汽车信息
     		$carService = new CarService();
-    		$response = $carService->editCar();
+    		$car_id = $carService->editCar();
     		
     		//生成订单信息
-    		if($response['code'] == 200) {
-    			$param['car_id'] = $response['data'];
+    		if($car_id > 0) {
+    			$param['car_id'] = $car_id;
     			$orderService = new OrderService();
-    			$result = $orderService->addOrder($param);
-    			$response['data'] = array(
-    					'car_id'=>$response['data'],
-    					'order_id'=>$result['data'],
+    			$order_id = $orderService->addOrder($param);
+    			$response = array(
+    					'car_id'=>$car_id,
+    					'order_id'=>$order_id,
     			);
+    		} else{
+    		    $this->error('保存车辆信息异常！');
     		}
     		
-    		$this->ajaxReturn($response);
+    		if(empty($response)) {
+    		    $this->error('生成订单异常！');
+    		} else {
+    		    $this->success($response);
+    		}
     		
     	} else {
     		$this->meta_title = '开单';

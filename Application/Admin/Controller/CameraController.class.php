@@ -215,9 +215,10 @@ class CameraController extends AdminController {
     		$param['disabled'] = 1;   //启用
     		
     		//查询摄像头名是否已经被使用
-    		$where = 'name='.$param['name'];
+    		$where['name'] = $param['name'];
     		$camera = M('Camera')->where($where)->find();
-    		if(isset($camera) || !empty($camera)) {
+    		//print_r($camera);exit;
+    		if(!empty($camera)) {
     		    $this->error('摄像头名称已被使用！');
     		}
     		

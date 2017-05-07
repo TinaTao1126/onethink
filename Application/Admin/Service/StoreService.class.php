@@ -10,7 +10,7 @@ namespace Admin\Service;
 use Admin\Enums\RoleKey;
 
 
-class StoreStationService{
+class StoreService{
 	
     /**
      * 根据角色显示查询条件
@@ -18,7 +18,7 @@ class StoreStationService{
 	public function list_condition(){
 	    $district_id       =   I('district_id');
 	    $city_id       =   I('city_id');
-	    $store_id       =   I('store_id');
+	    $store_name       =   I('name');
 	     
 	    //step-1: 取出用户的role_key
 	    $role_key = session('user_auth.role_key');
@@ -44,15 +44,15 @@ class StoreStationService{
 	    if($city_id > 0) {
 	    	$map['city_id']=$city_id;
 	    }
-	    if($store_id > 0) {
-	    	$map['store_id']=$store_id;
+	    if(!empty($store_name)) {
+	        $map['store_name'] = $store_name;
+	    	$map['name']=array('like', '%'.$store_name.'%');
 	    }
 	    
 	    //根据权限筛选条件
 	    if(!empty(session('user_auth.role_key')) && session('user_auth.role_key') != RoleKey::$ADMIN){
 	    	$map['district_id']=session('user_auth.district_id');
 	    	$map['city_id']=session('user_auth.city_id');
-	    	$map['store_id']=session('user_auth.store_id');
 	    	$map['select_disabled'] = 'disabled';
 	    }
 	    
@@ -67,7 +67,7 @@ class StoreStationService{
 		$condition = array(
 				'_district_id'=>$map['district_id'],
 				'_city_id'=>$map['city_id'],
-				'_store_id'=>$map['store_id'],
+				'_name'=>$map['store_name'],
 				'_disabled'=>$map['select_disabled']
 		);
 		return $condition;

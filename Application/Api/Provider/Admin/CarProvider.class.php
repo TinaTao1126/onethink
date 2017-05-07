@@ -2,16 +2,17 @@
 namespace Api\Provider\Admin;
 use Api\Provider\IndexProvider;
 use Admin\Service\CarService;
-use Admin\Service\OrderService;
 use Admin\Service\CameraService;
-use Admin\Enums\Order;
+use Admin\Enums\Camera;
 use Think\Exception; 
+use Think\Log;
 
 /**
  * Description of ConstantProvider
  */
 class CarProvider extends IndexProvider
 {
+    
     public function __construct()
     {
         parent::__construct();
@@ -22,71 +23,65 @@ class CarProvider extends IndexProvider
      */
     public function save($param)
     {
+        //echo APP_PATH; exit;
+        Log::writeInfo('start to execute save in CarProvider, param:' .json_encode($param),'car');
         //step－1: 解析封装数据
         $carService = new CarService();
+        Log::writeInfo('step-0: parse param', 'car');
         try{
         	$data = $carService->encapsuleData($param);
         } catch (Exception $e) {
-        	
         	$this->fail(600, array(), array('msg'=>$e->getMessage()));
         }
         
         if(!isset($data)) {
-        	$this->fail(600, array(), array('msg'=>"服务器异常"));
+        	$this->fail(600, array(), array('msg'=>"解析数据失败！"));
         }
         
         
         $carInfo = $data['carInfo'];
         
+        //step-2-0: 检查车牌信息是否存在
+        Log::writeInfo('step-1: check car_number', 'car');
+        if(empty($carInfo['car_number'])) {
+            Log::writeInfo('car_number empty!', 'car');
+        	$this->fail('600', $data=array(), $msg=array("无车牌信息！"));
+        }
+         
         //step-2-1: 检查是否能获取到摄像头门店id
         $cameraService = new CameraService();
         $camera = $cameraService->select_by_name($data['deviceName']);
-        if(!isset($camera)) {
+        Log::writeInfo('step-2: find store_id by camera name, deviceName:'.$data['deviceName'].', result:'.json_encode($camera), 'car');
+        if(empty($camera)) {
         	$this->fail('600', $data=array(), $msg=array("无法找到摄像头的门店信息！"));
         }
         
-        //step-2-2: 检查车牌信息是否已经存在
-        if(isset($carInfo['car_number'])) {
-        	$carInDb = M('Car')->where(array('car_number'=>$carInfo['car_number']))->find();
-        	if(!empty($carInDb)) {
-        		//TODO
-        		$this->fail('600', $data=array(), $msg=array("车辆信息已经存在！"));
-        	} 
-        } else {
-        	$this->fail('600', $data=array(), $msg=array("无车牌信息！"));
-        }
+        $data['store_id'] = $camera['store_id'];
+        $data['camera_id'] = $camera['id'];
         
-        //step-3 :保存图片
-        try{
-        	$url = $carService->uploadImage($data['imageFile']);
-        } catch (\Exception $e) {
-        	//记录日志 TODO
-        	//Log::write($message);
-        }
-
-        //step-3: 保存汽车信息
-        $carInfo['img_url'] = isset($url) ? $url : '';
-        
-        $carId = M('Car')->add($carInfo);
-               
-        //step-4: 生成临时订单
-        if(isset($carId) && !empty($carId)) {
-            $order = $carInfo;
-            $order['car_id'] = $carId;
-            $order['order_status'] = Order::$ORDER_STATUS_100;//新车入场
-            $order['store_id'] = $camera['store_id']; 
-            
-            $orderService = new OrderService();
-            $result = $orderService->addOrder($order);
-            $response['data'] = array(
-            		'car_id'=>$carId,
-            		'order_id'=>$result['data'],
-            );
-            
+        //step-2: 根据摄像头类型来选择以下操作
+        if($camera['type'] == Camera::$TYPE_IN) {
+            Log::writeInfo('step-3: call CarService.carIn', 'car');
+            //入口摄像头，新车入场
+            try{
+                $response = $carService->carIn($data);
+            } catch (Exception $e) {
+        	   $this->fail(600, array(), array('msg'=>$e->getMessage()));
+            }
+                
             $this->success($response);
-        } else {
-            $this->fail('600', $data=array(), $msg=array("保存车辆信息失败！"));
+            
+        } elseif($camera['type'] == Camera::$TYPE_OUT) {
+            Log::writeInfo('step-3: call CarService.carOut', 'car');
+            //出口摄像头，汽车离场
+            $response = $carService->carOut($data);
+            if(empty($response)) {
+            	$this->fail('600', $data=array(), $msg=array("保存车辆信息失败！"));
+            } else {
+            	$this->success($response);
+            }
         }
+        
     }
 
 }

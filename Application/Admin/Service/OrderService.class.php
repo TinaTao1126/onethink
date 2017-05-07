@@ -223,6 +223,11 @@ class OrderService {
         return $list;
     }
 	
+    /**
+     * sa手动开单
+     * @param unknown $param
+     * @return unknown
+     */
 	public function addOrder($param){
 		
 		$result = array("code"=>500);
@@ -244,15 +249,15 @@ class OrderService {
 		
 		$Order = M('Order');
 		$id = $Order->add($order);
-		if($id) {
-			$result['code'] = 200;
-			$result['data'] = $id;
-			$result['msg'] = "新增成功";
-		} else {
-			//print_r($Order->getError());
-			$result['msg'] = "新增订单失败";
-		}
-		return $result;
+// 		if($id) {
+// 			$result['code'] = 200;
+// 			$result['data'] = $id;
+// 			$result['msg'] = "新增成功";
+// 		} else {
+// 			//print_r($Order->getError());
+// 			$result['msg'] = "新增订单失败";
+// 		}
+		return $id;
 	}
 	
 	public function editOrder($param){
@@ -280,15 +285,8 @@ class OrderService {
 	
 		$Order = M('Order');
 		$id = $Order->save($order,$options=array('where'=>'id='.$param['order_id']));
-		if($id) {
-			$result['code'] = 200;
-			$result['data'] = $id;
-			$result['msg'] = "保存成功";
-		} else {
-			//print_r($Order->getError());
-			$result['msg'] = "保存失败";
-		}
-		return $result;
+
+		return $id;
 	}
 	
 	/**

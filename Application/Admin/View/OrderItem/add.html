@@ -1,62 +1,104 @@
 <extend name="Public/base"/>
 
 <block name="body">
+<link href="__STATIC__/bootstrap/css/bootstrap.css" rel="stylesheet">
     <div class="main-title">
-        <h2>添加项目</h2>
+        <h2>{$meta_title}</h2>
     </div>
-    <form action="{:U('OrderItem/add')}" method="post" class="form-horizontal">
-
-        <div class="form-item">
+    <div class="container row col-sm-5">
+    <form action="{:U('OrderItem/add')}" method="post" class="form">
+        <div class="form-group">
         	<input type="hidden"  name="car_order_id" value="{$data.id}">
-            <label class="item-label">类别</label>
-            <div class="controls">
-                <select class="select" name="item_type">
-                	<notempty name="_item_type">
-						<volist name="_item_type" id="vo" >
-							<if condition="$vo.id eq $_condition['item_type']">
-								<option value="{$vo.id}" selected>{$vo.name}</option>
-							<else/>
-								<option value="{$vo.id}">{$vo.name}</option>
-							</if>
-						</volist>
-					</notempty>
-                </select>
+            <label for="" class="control-label">类别</label>
+             <select class="form-control" name="item_type">
+             	<notempty name="_item_type">
+				<volist name="_item_type" id="vo" >
+				<if condition="$vo.id eq $_condition['item_type']">
+					<option value="{$vo.id}" selected>{$vo.name}</option>
+				<else/>
+					<option value="{$vo.id}">{$vo.name}</option>
+				</if>
+				</volist>
+				</notempty>
+        	</select>
+        </div>
+        <div class="form-group">
+            <label class="control-label">项目描述</label>
+            <textarea class="form-control" name="item_name" row=3></textarea>
+        </div>
+        <div class="form-group">
+            <label class="control-label">零件费</label>
+            <div class="input-group">  
+                <input type="text" class="form-control" id="item_price" name="item_price" value="">
+                <span class="input-group-addon">.00(RMB)</span>  
+            </div>  
+            
+        </div>
+        <div class="form-group">
+            <label class="control-label">数量</label>
+            <div class="input-group">
+            	
+                <input type="text" class="form-control" id="item_num" name="item_num" value="">
+                <span class="input-group-addon">个</span> 
             </div>
         </div>
-        <div class="form-item">
-            <label class="item-label">项目描述</label>
-            <div class="controls">
-                <textarea class="textarea input-large" name="item_name"></textarea>
+        <div class="form-group">
+            <label class="control-label">工时费</label>
+            <div class="input-group">
+                <input type="text" class="form-control" id="hour_price" name="hour_price" value="">
+                <span class="input-group-addon">.00(RMB)</span>  
             </div>
         </div>
-        <div class="form-item">
-            <label class="item-label">零件费</label>
-            <div class="controls">
-                <input type="text" class="text input-large" name="item_price" value="">
+        <div class="form-group">
+            <label class="control-label">总计</label>
+            <div class="input-group">
+                <input type="text" class="form-control" id="total_price" value="" readonly placeholder="自动计算">
+                <span class="input-group-addon">.00(RMB)</span>  
             </div>
         </div>
-        <div class="form-item">
-            <label class="item-label">数量</label>
-            <div class="controls">
-                <input type="text" class="text input-large" name="item_num" value="">
-            </div>
-        </div>
-        <div class="form-item">
-            <label class="item-label">工时费</label>
-            <div class="controls">
-                <input type="text" class="text input-large" name="hour_price" value="">
-            </div>
-        </div>
-        <div class="form-item">
+        <div class="form-group">
         	<input type="hidden"  />
-            <button class="btn submit-btn ajax-post" id="submit" type="submit" target-form="form-horizontal">确 定</button>
+            <button class="btn submit-btn ajax-post" id="submit" type="submit" target-form="form">确 定</button>
             <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
         </div>
     </form>
+    </div>
 </block>
 
 <block name="script">
     <script type="text/javascript">
+    	$(function(){
+    		$("#item_price").blur(function(){
+    			var item_price = $(this).val();
+    			var item_num = $("#item_num").val();
+    			item_num = item_num == '' ? 0 : item_num;
+    			var hour_price = $("#hour_price").val();
+    			hour_price = hour_price == '' ? 0 : hour_price
+    			
+    			var total_price = parseInt(item_price) * parseInt(item_num) + parseInt(hour_price);
+    			$("#total_price").val(total_price);
+    		});
+    		$("#item_num").blur(function(){
+    			var item_price = $("#item_price").val();
+    			var item_num = $(this).val();
+    			item_num = item_num == '' ? 0 : item_num;
+    			var hour_price = $("#hour_price").val();
+    			hour_price = hour_price == '' ? 0 : hour_price
+    					
+    			var total_price = parseInt(item_price) * parseInt(item_num) + parseInt(hour_price);
+    			$("#total_price").val(total_price);
+    		});
+    		$("#hour_price").blur(function(){
+    			var item_price = $("#item_price").val();
+    			var item_num = $("#item_num").val();
+    			item_num = item_num == '' ? 0 : item_num;
+    			var hour_price = $(this).val();
+    			hour_price = hour_price == '' ? 0 : hour_price
+    			
+    			var total_price = parseInt(item_price) * parseInt(item_num) + parseInt(hour_price);
+    			$("#total_price").val(total_price);
+    		});
+    	});
         //导航高亮
         highlight_subnav('{:U('Order/index')}');
     </script>

@@ -49,7 +49,7 @@ class Upload{
      * @param string $driver 要使用的上传驱动 LOCAL-本地上传驱动，FTP-FTP上传驱动
      */
     public function __construct($config = array(), $driver = '', $driverConfig = null){
-    	echo 'start';
+    	//echo 'start';
     	/* 获取配置 */
         $this->config   =   array_merge($this->config, $config);
         $driver         =   $driver? $driver : ($this->driver? $this->driver : C('FILE_UPLOAD_TYPE'));
@@ -72,7 +72,7 @@ class Upload{
             }
             $this->config['exts'] = array_map('strtolower', $this->exts);
         }
-        echo 'end';
+        //echo 'end';
     }
 
     /**
@@ -117,7 +117,7 @@ class Upload{
      * @param 文件信息数组 $files ，通常是 $_FILES数组
      */
     public function upload($files='') {
-        echo 'upload';
+        //echo 'upload';
         if('' === $files){
             $files  =   $_FILES;
         }
