@@ -331,11 +331,27 @@ class OrderController extends AdminController {
         
         
         if(!empty($param['item_type'])) {
-            $where = ' and item_type='.$param['item_type'];
+            $where .= ' and item_type='.$param['item_type'];
         } else {
             $show_columns = OrderItem::$ITEM_TYPE;
         }
         
+        if (!empty($param['start_time'])) {
+        	$where .= ' and order.create_time>=\''. $param['start_time'].'\'';
+        }
+        
+        if (!empty($param['end_time'])) {
+        	$where .= ' and order.create_time<=\''. $param['end_time'].' 23:59:59\'';
+        }
+        
+        if(!empty($param['ids'])) {
+            $ids = array_unique((array)I('ids',0));
+            
+            $ids = is_array($ids) ? implode(',',$ids) : $ids;
+            $where .= ' and store_id in ('.$ids.')';
+        }
+        
+        //print_r($where);
 
 		$Order = M('Order');
 		$sql = '
@@ -349,19 +365,54 @@ class OrderController extends AdminController {
 		$list = $Order->query($sql);
         
 		
+		$storeIdList = getFieldMap($list,$field="store_id");
+		$districtIdList = getFieldMap($list,$field="district_id");
+		
+		$idList = array_merge($storeIdList, $districtIdList);
+		
+	   
+		$districtService = new DistrictService();
+		
+		if(!empty($idList)) {
+			$where['id'] = array('in',$idList);
+			$districtList = $districtService->listByIds($idList);
+		
+		
+			$districtMap = array();
+			foreach ($districtList as $key => $val) {
+				$districtMap[$val['id']] = $val;
+			}
+		
+		}
+		
+		//返回结果
         $data = array();
         
+        //组装数据
         foreach ($list as $key => $val) {
+            
+            
             if($val['item_type'] == 1)  {
+                /** 洗车费*/
                 $val['total_cleaning_amount'] = $val['total_amount'];
             }elseif ($val['item_type'] == 2){
+                /** 快修费*/
                 $val['total_repair_amount'] = $val['total_amount'];
             }elseif ($val['item_type'] == 3){
+                /** 保养费*/
                 $val['total_maintain_amount'] = $val['total_amount'];
             }elseif ($val['item_type'] == 4){
+                /** 美容装饰费*/
                 $val['total_beauty_amount'] = $val['total_amount'];
             }
         	
+            if(!empty($districtMap)) {
+        		$district = $districtMap[$val['district_id']];
+        		$store = $districtMap[$val['store_id']];
+        		$val['district_name'] = $district['name'];
+        		$val['store_name'] = $store['name'];
+        	}
+            
             if(in_array($val['item_type'], OrderItem::$ALL_ITEM_TYPE_ID)) {
                 $total_amount = (empty($val['total_cleaning_amount']) ? 0 : $val['total_cleaning_amount'])
                     + (empty($val['total_repair_amount']) ? 0 : $val['total_repair_amount'])
@@ -372,7 +423,6 @@ class OrderController extends AdminController {
             }
             
         }
-        
         
         $this->assign('_list', $data);
         $this->meta_title = "报表统计";

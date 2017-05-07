@@ -140,7 +140,7 @@ class StoreController extends AdminController {
     				action_log('update_store','store',$data['id'],UID);
     				$this->success('更新成功', 'Admin/Store/index');
     			} else {
-    				$this->error('更新失败');
+    				$this->error('无更新');
     			}
     		} else {
     			$this->error($Store->getError());
