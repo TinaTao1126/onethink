@@ -3,6 +3,7 @@
 namespace Admin\Service;
 use Admin\Enums\Order;
 use Admin\Enums\RoleKey;
+use Admin\Service\CarService;
 
 class OrderService {
     
@@ -80,6 +81,7 @@ class OrderService {
         return $condition;
     }
     
+    
     /**
      * 封装返回结果
      * @param unknown $list
@@ -91,19 +93,8 @@ class OrderService {
         //获取所有车辆信息
         $carIdList = getFieldMap($list,$field="car_id");
         
-        if(!empty($carIdList)) {
-        	//根据汽车id，批量取出汽车信息
-        	$where['id'] = array('in',$carIdList);
-        	$carList = M('Car')->where($where)->select();
-        	 
-        	//key:id, val:car
-        	//$carMap＝array_combine(array_column($carList,"id"), $carList);
-        	$carMap = array();
-        	foreach ($carList as $key => $val) {
-        		$carMap[$val['id']] = $val;
-        	}
-        	 
-        }
+        $carService = new CarService();
+        $carMap = $carService->getCarMap($carIdList);
         
         //大区信息
         $districtIdList = getFieldMap($list,$field="district_id");
@@ -245,6 +236,9 @@ class OrderService {
 		$order['store_station_id'] = isset($param['store_station_id']) ? $param['store_station_id'] : 0;
 		$order['car_owner'] = $param['car_owner'];
 		$order['owner_phone'] = $param['owner_phone'];
+		$order['store_id'] = $param['store_id'];
+		$order['city_id'] = $param['city_id'];
+		$order['district_id'] = $param['district_id'];
 		
 		
 		$Order = M('Order');
@@ -310,6 +304,13 @@ class OrderService {
 	     
 	    $order['purchase_amount'] = $total_price;
 	    M("Order")->where('id='.$id)->save($order);
+	}
+	
+	/**
+	 * 订单保存参数
+	 */
+	public function orderSaveParam(){
+	    
 	}
 }
 

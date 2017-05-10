@@ -57,14 +57,13 @@ class StoreController extends AdminController {
             $list[$key]['status_name'] = Store::$STATUS[$store['status']];
         }
         
-        $districtService = new DistrictService();
-        $district = $districtService->select(District::$TYPE_DISTRICT, $pid=0);
-    	$city = $districtService->select(District::$TYPE_CITY, $pid=$map['district_id']);
+    	//获取 ［区|城市］ 数据
+    	$this->setDistrictSelectList($map['district_id'], 0);
+    	
+    	//缓存条件
     	$condition = $storeService->cache_condition($map);
         
         $this->assign('_list', $list);
-        $this->assign('_district',$district);
-        $this->assign('_city',$city);
         $this->assign('_condition', $condition);
         $this->meta_title = '门店信息';
         $this->display();
@@ -154,12 +153,10 @@ class StoreController extends AdminController {
     			$this->error("获取门店信息错误");
     		}
     		
+    		//获取 ［区|城市］ 数据
+    		$this->setDistrictSelectList($data['district_id'], 0);
+    		
     		$this->assign('data',$data);
-    		$districtService = new DistrictService();
-    		$district = $districtService->select($type=1, $pid=0);
-    		$city = $districtService->select($type=2, $pid=$data['district_id']);
-    		$this->assign('_district',$district);
-    		$this->assign('_city',$city);
     		$this->assign('_district_id',$data['district_id']);
     		$this->assign('_city_id',$data['city_id']);
     		$this->meta_title = '修改门店信息';
@@ -202,9 +199,8 @@ class StoreController extends AdminController {
     		$this->meta_title = '新增门店';
     		
     		//获取大区数据
-    		$districtService = new DistrictService();
-    		$district = $districtService->select();
-    		$this->assign('_district',$district);
+    		$this->setDistrictSelectList(0, 0);
+    		
     		$this->display();
     	}
     }

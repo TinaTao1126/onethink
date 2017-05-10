@@ -13,7 +13,9 @@ use Admin\Enums\District;
 use Admin\Service\DistrictService;
 use Admin\Service\OrderItemService;
 use Admin\Service\OrderService;
+use Admin\Service\CarService;
 use Admin\Enums\OrderItem;
+use Admin\Enums\RoleKey;
 
 /**
  * 汽车管理
@@ -41,15 +43,9 @@ class OrderController extends AdminController {
         $list = $orderService->combine_response($list);
         
         //获取 ［区|城市|门店］ 数据
-        $districtService = new DistrictService();
-        $district = $districtService->select(District::$TYPE_DISTRICT, $pid=0);
-        $city = $districtService->select(District::$TYPE_CITY, $pid=$map['district_id']);
-    	$store = $districtService->select(District::$TYPE_STORE, $pid=$map['city_id']);
+        $this->setDistrictSelectList($map['district_id'], $map['city_id']);
         
         $this->assign('_list', $list);
-        $this->assign('_district',$district);
-        $this->assign('_city',$city);
-        $this->assign('_store',$store);
         $this->assign('_condition', $orderService->cache_condition($map));
         $this->meta_title = '客户接待';
         $this->display();
@@ -72,15 +68,10 @@ class OrderController extends AdminController {
     	$list = $orderService->combine_response($list);
     
     	//获取 ［区|城市|门店］ 数据
-    	$districtService = new DistrictService();
-    	$district = $districtService->select(District::$TYPE_DISTRICT, $pid=0);
-    	$city = $districtService->select(District::$TYPE_CITY, $pid=$map['district_id']);
-    	$store = $districtService->select(District::$TYPE_STORE, $pid=$map['city_id']);
+    	$this->setDistrictSelectList($map['district_id'], $map['city_id']);
     
     	$this->assign('_list', $list);
-    	$this->assign('_district',$district);
-    	$this->assign('_city',$city);
-    	$this->assign('_store',$store);
+    	
     	$condition = $orderService->cache_condition($map);
     	$this->assign('_condition', $condition);
     	$this->meta_title = '结算单';
@@ -178,6 +169,10 @@ class OrderController extends AdminController {
 		if(false === $order){
 			$this->error("请检查参数，不能获取到有效的数据！");
 		}
+		if($type == 'edit'  && $order['order_status'] == Order::$ORDER_STATUS_0) {
+            M('Order')->where('id='.$order['id'])->save(array('order_status'=>Order::$ORDER_STATUS_100));
+		}
+		
 		$car_id = $order['car_id'];
 		$car = M('Car')->field(true)->find($car_id);
 		if(false === $order){
@@ -247,12 +242,42 @@ class OrderController extends AdminController {
     }
    
     /**
-     * 查询新车入场数量
+     * 查询新车入场信息
      */
-    function count(){
-        $count = M('Order')->field('count(1) count')->where('order_status='.Order::$ORDER_STATUS_100)->find();
-        //echo $count['count'];
-        $this->success($count['count']);
+    public function newcar(){
+        
+        $where = array(
+            'order_status'=> Order::$ORDER_STATUS_0,
+        );
+        if(empty(session('user_auth.role_key')) || session('user_auth.role_key') == RoleKey::$ADMIN){
+        	$this->success(null);
+        }
+        
+        $where['district_id']=session('user_auth.district_id');
+        $where['city_id']=session('user_auth.city_id');
+        $where['store_id']=session('user_auth.store_id');
+        
+        $list = M('Order')->where($where)->select();
+        
+        if(!empty($list)) {
+            //获取所有车辆信息
+            $carIdList = getFieldMap($list,$field="car_id");
+            
+            $carService = new CarService();
+            $carMap = $carService->getCarMap($carIdList);
+            
+            foreach ($list as $key=>$val) {
+   
+            	//设置汽车信息
+            	if(!empty($carMap)) {
+            		$car = $carMap[$val['car_id']];
+            		$list[$key]['car_number'] = $car['car_number'];
+            		$list[$key]['car_owner'] = $car['car_owner'];
+            	}
+            }
+           
+        }
+        $this->success($list);
     }
     
     /**

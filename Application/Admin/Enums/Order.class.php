@@ -14,7 +14,8 @@ class Order {
 		@var "400"=>'订单取消',
 	 */
 	public static  $ORDER_STATUS=array(
-		"100"=>'新车入场',//未开单
+	    "0"  =>'新车入场',
+		"100"=>'开单中',//未开单
 		"101"=>'未开单',//未开单
 		"200"=>'未结算', //已开单，未结算
 		"201"=>'已结算',
@@ -25,7 +26,7 @@ class Order {
 	/**
 	 * @var 客户接待显示的状态
 	 */
-	public static $ORDER_STATUS_ACTIVE = array(100, 101, 200, 201);
+	public static $ORDER_STATUS_ACTIVE = array(0, 100, 101, 200, 201);
 	
 	/**
 	 * @var 历史订单状态
@@ -34,8 +35,13 @@ class Order {
 	public static $ORDER_STATUS_HISTORY=array(300, 400);
 	
 	/**
+	 *
+	 * @var 新车入场
+	 */
+	public static $ORDER_STATUS_0 = 0;
+	/**
 	 * 
-	 * @var 新车入场，未开单
+	 * @var 新车入场，开单中
 	 */
 	public static $ORDER_STATUS_100 = 100;
 	/**

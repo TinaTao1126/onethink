@@ -57,6 +57,7 @@ class CarService{
 		return $data;
 	}
 	
+	
 	public function uploadImage($base64Code){
 		$date = date('Y/m/d');
 		
@@ -153,15 +154,17 @@ class CarService{
 	    $carInfo['img_url'] = isset($url) ? $url : '';
 	    
 	    $carId = M('Car')->add($carInfo);
-	    Log::writeInfo('step-4: save car, param:'.$json_encode($carInfo).', result:'.$carId, 'car');
+	    Log::writeInfo('step-4: save car, param:'.json_encode($carInfo).', result:'.$carId, 'car');
 	     
 	    //step-3: 生成临时订单
 	    Log::writeInfo('step-5: start to create temp order', 'car');
 	    if(isset($carId) && !empty($carId)) {
 	    	$order = $carInfo;
 	    	$order['car_id'] = $carId;
-	    	$order['order_status'] = Order::$ORDER_STATUS_100;//新车入场
+	    	$order['order_status'] = Order::$ORDER_STATUS_0;//新车入场
 	    	$order['store_id'] = $data['store_id'];
+	    	$order['district_id'] = $data['district_id'];
+	    	$order['city_id'] = $data['city_id'];
 	    
 	    	Log::writeInfo('step-5-1: order:'.json_encode($order), 'car');
 	    	$orderService = new OrderService();
@@ -266,5 +269,23 @@ class CarService{
 		
 		} 
 		//return $response;
+	}
+	
+	
+	public function getCarMap($carIdList){
+	    if(!empty($carIdList)) {
+	    	//根据汽车id，批量取出汽车信息
+	    	$where['id'] = array('in',$carIdList);
+	    	$carList = M('Car')->where($where)->select();
+	    
+	    	//key:id, val:car
+	    	//$carMap＝array_combine(array_column($carList,"id"), $carList);
+	    	$carMap = array();
+	    	foreach ($carList as $key => $val) {
+	    		$carMap[$val['id']] = $val;
+	    	}
+	       return $carMap;
+	    }
+	    
 	}
 }

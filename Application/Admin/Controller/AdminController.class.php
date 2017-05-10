@@ -9,7 +9,8 @@
 namespace Admin\Controller;
 use Think\Controller;
 use Admin\Model\AuthRuleModel;
-use Admin\Model\AuthGroupModel;
+use Admin\Service\DistrictService;
+use Admin\Enums\District;
 /**
  * 后台首页控制器
  * @author 麦当苗儿 <zuojiazi@vip.qq.com>
@@ -447,4 +448,23 @@ class AdminController extends Controller {
         return $model->field($field)->select();
     }
 
+    /**
+     * 
+     */
+    protected function setDistrictSelectList($district_id=0,$city_id=0){
+        $districtService = new DistrictService();
+        $district = $districtService->select(District::$TYPE_DISTRICT, $pid=0);
+        $this->assign('_district',$district);
+        
+        if($district_id > 0) {
+            $city = $districtService->select(District::$TYPE_CITY, $pid=$district_id);
+            $this->assign('_city',$city);
+        }
+        
+        if($district_id > 0) {
+            $store = $districtService->select(District::$TYPE_STORE, $pid=$city_id);
+            $this->assign('_store',$store);
+        }
+        
+    }
 }

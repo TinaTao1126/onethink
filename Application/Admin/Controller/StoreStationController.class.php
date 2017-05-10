@@ -66,18 +66,13 @@ class StoreStationController extends AdminController {
         	 
         }
         
-        //下拉框字典值
-        $districtService = new DistrictService();
-        $district = $districtService->select(District::$TYPE_DISTRICT, $pid=0);
-        $city = $districtService->select(District::$TYPE_CITY, $pid=$map['district_id']);
-    	$store = $districtService->select(District::$TYPE_STORE, $pid=$map['city_id']);
+        //获取 ［区|城市|门店］ 数据
+        $this->setDistrictSelectList($map['district_id'], $map['city_id']);
         
+        //缓存条件
         $condition = $storeStationService->cache_condition($map);
         
         $this->assign('_list', $list);
-        $this->assign('_district',$district);
-        $this->assign('_city',$city);
-        $this->assign('_store',$store);
         $this->assign('_condition', $condition);
         
         $this->meta_title = '车位信息';
@@ -153,15 +148,11 @@ class StoreStationController extends AdminController {
     		if(false === $data){
     			$this->error("获取车位信息错误");
     		}
-    		$this->assign('data',$data);
     		
-    		$districtService = new DistrictService();
-    		$district = $districtService->select($type=1, $pid=0);
-    		$this->assign('_district',$district);
-    		$district = $districtService->select($type=2, $pid=$data['district_id']);
-    		$this->assign('_city',$district);
-    		$district = $districtService->select($type=3, $pid=$data['city_id']);
-    		$this->assign('_store',$district);
+    		//获取 ［区|城市|门店］ 数据
+    		$this->setDistrictSelectList($data['district_id'], $data['city_id']);
+    		
+    		$this->assign('data',$data);
     		$this->assign('_district_id',$data['district_id']);
     		$this->assign('_city_id',$data['city_id']);
     		$this->assign('_store_id',$data['store_id']);
@@ -209,9 +200,9 @@ class StoreStationController extends AdminController {
     	    //根据权限获取数据
     	    
     	    
-    	    $districtService = new DistrictService();
-    	    $district = $districtService->select();
-    	    $this->assign('_district',$district);
+    	    //获取 ［区］ 数据
+    	    $this->setDistrictSelectList(0, 0);
+    	    
     	    //$this->assign('store_id',session('store_id'));
     	    
     		$this->meta_title = '新增工位';

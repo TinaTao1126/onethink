@@ -56,6 +56,9 @@ class CarProvider extends IndexProvider
         	$this->fail('600', $data=array(), $msg=array("无法找到摄像头的门店信息！"));
         }
         
+        print_r($camera);
+        $data['district_id'] = $camera['district_id'];
+        $data['city_id'] = $camera['city_id'];
         $data['store_id'] = $camera['store_id'];
         $data['camera_id'] = $camera['id'];
         

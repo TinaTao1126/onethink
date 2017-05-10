@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>{$meta_title}|OneThink管理平台</title>
+    <title>{$meta_title}|汽修管理平台</title>
     <link href="__ROOT__/Public/favicon.ico" type="image/x-icon" rel="shortcut icon">
     <link rel="stylesheet" type="text/css" href="__CSS__/base.css" media="all">
     <link rel="stylesheet" type="text/css" href="__CSS__/common.css" media="all">
@@ -10,18 +10,18 @@
     <link rel="stylesheet" type="text/css" href="__CSS__/style.css" media="all">
 	<link rel="stylesheet" type="text/css" href="__CSS__/{$Think.config.COLOR_STYLE}.css" media="all">
 	<link rel="stylesheet" type="text/css" href="__CSS__/module_custom.css">
-	<link rel="stylesheet" type="text/css" href="__CSS__/style_light.css">
-	
 	
      <!--[if lt IE 9]>
     <script type="text/javascript" src="__STATIC__/jquery-1.10.2.min.js"></script>
     <![endif]--><!--[if gte IE 9]><!-->
     <script type="text/javascript" src="__STATIC__/jquery-2.0.3.min.js"></script>
     <script type="text/javascript" src="__STATIC__/jquery-ui-1.8.14.custom.min.js"></script>
-    <script type="text/javascript" src="__STATIC__/ttw-notification-menu.js"></script>
+    <script type="text/javascript" src="__STATIC__/bootstrap/js/bootstrap-notify.js"></script>
     <script type="text/javascript" src="__JS__/jquery.mousewheel.js"></script>
     <!--<![endif]-->
-    <block name="style"></block>
+    <block name="style">
+    
+    </block>
 </head>
 <body>
     <!-- 头部 -->
@@ -40,12 +40,9 @@
 
         <!-- 用户栏 -->
         <div class="user-bar">
-        	<ul class="ttw-notification-menu"> 
-        		<li id="projects" class="notification-menu-item first-item">
-           		 <a href="javascript:;" class="user-entrance"><i class="icon-user"></i></a>
-            	</li>
-            </ul>
+        	<div class="e"><a href="javascript:;" class="user-entrance"><i class="icon-user"></i></a><a href="{:U('Order/index')}"><div class="badged"><span id="new_messages"></span></div></a></div>
             <ul class="nav-list user-menu hidden">
+            	<input type="hidden" name="role_key" value="{:session('user_auth.role_key')}"/>
                 <li class="manager">你好，<em title="{:session('user_auth.username')}">{:session('user_auth.username')}</em></li>
                 <li><a href="{:U('User/updatePassword')}">修改密码</a></li>
                 <li><a href="{:U('User/updateNickname')}">修改昵称</a></li>
@@ -114,7 +111,7 @@
         </div>
         <div class="cont-ft">
             <div class="copyright">
-                <div class="fl">感谢使用<a href="http://www.onethink.cn" target="_blank">OneThink</a>管理平台</div>
+                <div class="fl">感谢使用汽修管理平台</div>
                 <div class="fr">V{$Think.const.ONETHINK_VERSION}</div>
             </div>
         </div>
@@ -129,51 +126,65 @@
             "DEEP"   : "{:C('URL_PATHINFO_DEPR')}", //PATHINFO分割符
             "MODEL"  : ["{:C('URL_MODEL')}", "{:C('URL_CASE_INSENSITIVE')}", "{:C('URL_HTML_SUFFIX')}"],
             "VAR"    : ["{:C('VAR_MODULE')}", "{:C('VAR_CONTROLLER')}", "{:C('VAR_ACTION')}"]
-        }
+        };
+        
+
     })();
     </script>
     <script type="text/javascript" src="__STATIC__/think.js"></script>
     <script type="text/javascript" src="__JS__/common.js"></script>
     <script type="text/javascript">
- 
     
-    var notifications = new $.ttwNotificationMenu({
-        notificationList:{
-            anchor:'item',
-            offset:'0 1'
-        }
+    window.newcar = {};
+    
+    $.notifyDefaults({
+    	type: 'success',
+    	//allow_dismiss: false,
+    	delay: 0
     });
-
-    notifications.initMenu({
-        projects:'#projects'
-    });
-	
-  	
-    //查询是否有新订单
-    var getNewOrder = function (){
-  		console.log("getNewOrder");
-    	var url = Think.U("Admin/Order/count");
+    
+    var getMessage = function(){
+    	var url = Think.U("Admin/Order/newcar");
+    	
         $.ajax({
 		  type: 'get',
-		  url: url,
-		  success: function(count){
-			  if(count) {
-// 				  var options = {
-// 		                  category:'projects',
-// 		                  message: 'Sample Notification'
-// 		           };
-				var options =1;
-		           notifications.createNotification(options);
+		  url: "index.php?s=/Admin/Order/newcar.html",
+		  success: function(response){
+			  console.log(response);
+			  if(response.status) {
+				  
+				  if(response.info != null) {
+					  for(var i = 0 ; i < response.info.length; i++) {
+						  var order = response.info[i];
+						  if(newcar[order.id] == null) {
+							  newcar[order.id] = order.car_number;
+							  var editUrl = Think.U("Admin/Order/edit","id="+order.id);
+							  $.notify({
+									message: order.car_number + "入场！点击开单",
+									url: editUrl,
+									target: "_blank"
+								});
+						  }
+						  
+						  
+					  }
+					  
+// 					  
+				  }
+				  
+				  
 			  }
 		  },
 		  dataType: 'json'
 		});
-    	
     };
     
-    //setInterval("getNewOrder()",1000);//1000为1秒钟
     
         +function(){
+        	
+        	if($('input[name=role_key]').val() != 'admin') {
+        		setInterval("getMessage()",3000);//1000为1秒钟
+        	}
         	
             var $window = $(window), $subnav = $("#subnav"), url;
             $window.resize(function(){
