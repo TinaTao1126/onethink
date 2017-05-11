@@ -36,6 +36,7 @@ class OrderItemController extends AdminController {
     	 
     	$data = M('OrderItem')->where($map)->find();
     	if(M('OrderItem')->where($map)->delete()){
+    	    
     	    //计算订单应收金额
     	    $orderService = new OrderService();
     	    $orderService->updateAmount($data['car_order_id']);
@@ -86,20 +87,6 @@ class OrderItemController extends AdminController {
     		$this->display();
     	}
     	
-    }
-    
-    /**
-     * 更新
-     * @author tina
-     */
-    public function save(){
-    	$res = D('Store')->update();
-    	if(!$res){
-    		//print_r(D('Store')->getError());exit;
-    		$this->error(D('Store')->getError());
-    	}else{
-    		$this->success($res['id']?'更新成功！':'新增成功！', Cookie('__forward__'));
-    	}
     }
     
     

@@ -21,7 +21,7 @@
                 	<option value="0">大区</option>
                 	<notempty name="_district">
 						<volist name="_district" id="vo" >
-							<if condition="$vo.id eq $_district_id">
+							<if condition="$vo.id eq $_condition['_district_id']">
 								<option value="{$vo.id}" selected>{$vo.name}</option>
 							<else/>
 								<option value="{$vo.id}">{$vo.name}</option>
@@ -33,7 +33,7 @@
                 	<option value="0">城市</option>
                 	<notempty name="_city">
 						<volist name="_city" id="vo" >
-							<if condition="$vo.id eq $_city_id">
+							<if condition="$vo.id eq $_condition['_city_id']">
 								<option value="{$vo.id}" selected>{$vo.name}</option>
 							<else/>
 								<option value="{$vo.id}">{$vo.name}</option>
@@ -45,7 +45,7 @@
                 	<option value="0">门店</option>
                 	<notempty name="_store">
 						<volist name="_store" id="vo" >
-							<if condition="$vo.id eq $_store_id">
+							<if condition="$vo.id eq $_condition['_store_id']">
 								<option value="{$vo.id}" selected>{$vo.name}</option>
 							<else/>
 								<option value="{$vo.id}">{$vo.name}</option>

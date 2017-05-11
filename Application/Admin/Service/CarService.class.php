@@ -234,41 +234,39 @@ class CarService{
 	 */
 	public function editCar() {
 		$param   =   I('post.');
-		$Car = M('Car');
-		$where = array('id'=>$param['id']);
-		$data = $Car->where($where)->find();
-// 		$response = array("code"=>500);
-		if(!empty($data)) {
-			//如果存在，则修改否则添加
-			if($Car->save($param, array('where'=>'id='.$data['id']))) {
-				S('DB_CONFIG_DATA',null);
-				//记录行为
-				action_log('edit_car', 'Car', $data['id'], UID);
-			}
-			
-			return $data['id'];
-			//$response['msg'] = " 修改成功";
-			//print_r($response);
+		$Car = D('Car');
+		$data = $Car->create($param);
+		//print_r($Car->getError());
+		if($data) {
+		    $where = array('id'=>$param['id']);
+		    $car = $Car->where($where)->find();
+		    
+		    if(!empty($car)) {
+		    	//如果存在，则修改否则添加
+		    	if($Car->save($param, array('where'=>'id='.$car['id']))) {
+		    		S('DB_CONFIG_DATA',null);
+		    		//记录行为
+		    		action_log('edit_car', 'car', $car['id'], UID);
+		    	}
+		    		
+		    	return $car['id'];
+		    } else {
+		    	//不存在则新增
+		    	$id = M('Car')->add($param);
+		    	if($id){
+		    		S('DB_CONFIG_DATA',null);
+		    		//记录行为
+		    		action_log('add_car', 'Car', $id, UID);
+		    		return $id;
+		    	} else {
+		    		return 0;
+		    	}
+		    
+		    }
 		} else {
-			//echo 'add';
-			//不存在则新增
-			$id = M('Car')->add($param);
-			if($id){
-				S('DB_CONFIG_DATA',null);
-				//记录行为
-				action_log('add_car', 'Car', $id, UID);
-// 				$response['status'] = 1;
-// 				$response['info'] = $id;
-				return $id;
-				//$response['msg'] = "新增成功";
-			} else {
-				//print_r($Car->getDbError());
-				//$response['info'] = '新增失败！';
-				return 0;
-			}
+            E($Car->getError());
+		}
 		
-		} 
-		//return $response;
 	}
 	
 	

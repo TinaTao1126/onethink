@@ -196,7 +196,7 @@ class OrderController extends AdminController {
 		if($type == 'detail') {
 		    $meta_title = empty(I('print')) ? "订单详情" : "打印订单";
 		} else {
-		    $meta_title = $order['order_status'] == 100 ? "开单" : "编辑订单";
+		    $meta_title = $order['order_status'] == Order::$ORDER_STATUS_100 ? "开单" : "编辑订单";
 		}
 		
         $this->meta_title=$meta_title;   
@@ -211,6 +211,7 @@ class OrderController extends AdminController {
         //从session获取门店信息
         
         $this->getCommonInfo();
+        $this->meta_title='开单';
         $this->display();
     }
    

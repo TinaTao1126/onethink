@@ -69,6 +69,10 @@ class StoreController extends AdminController {
         $this->display();
     }
     
+    /**
+     * 启用／禁用
+     * @param string $method
+     */
     public function changeStatus($method=null){
     	$id = array_unique((array)I('id',0));
        	$id = is_array($id) ? implode(',',$id) : $id;
@@ -91,16 +95,31 @@ class StoreController extends AdminController {
     
     /**
      * 删除
+     * 1、删除district中对应的store_id
+     * 2、删除store中的数据
+     * 
      */
     public function del(){
     
     	$id = array_unique((array)I('id',0));
 
     	$id = is_array($id) ? implode(',',$id) : $id;
-    	if ( empty($id) ) {
+    	if (empty($id)) {
     		$this->error('请选择要操作的数据!');
     	}
     	$map = array('id' => array('in', $id) );
+    	
+    	$storeList = M('Store')->where($map)->select();
+    	$storeIdList = getFieldMap($storeList,$field="store_id");
+    	 
+    	if(!empty($storeIdList)) {
+    		//根据汽车id，批量取出汽车信息
+    		$where['id'] = array('in',$storeIdList);
+    		if(M('District')->where($where)->delete()){
+    		    S('DB_CONFIG_DATA',null);
+    		    action_log('delete_district','district',$storeIdList,UID);
+    		}
+    	}
     	
     	if(M('Store')->where($map)->delete()){
     		S('DB_CONFIG_DATA',null);
@@ -120,7 +139,8 @@ class StoreController extends AdminController {
     	if(IS_POST) {
     		
     		$store = M('Store')->where('id='. I('post.id'))->find();
-    		if(!isset($store)) {
+    		
+    		if(empty($store)) {
     		    $this->error('未找到门店信息！');
     		}
     		$Store = D('Store');
@@ -148,7 +168,8 @@ class StoreController extends AdminController {
     		if($id == 0) {
     			$this->error('无效的参数');
     		}
-    		$data = M('Store')->field(true)->find($id);
+    		
+    		$data = M('Store')->find($id);
     		if(false === $data){
     			$this->error("获取门店信息错误");
     		}
@@ -159,6 +180,7 @@ class StoreController extends AdminController {
     		$this->assign('data',$data);
     		$this->assign('_district_id',$data['district_id']);
     		$this->assign('_city_id',$data['city_id']);
+    		
     		$this->meta_title = '修改门店信息';
     		$this->display();
     	}
@@ -173,34 +195,40 @@ class StoreController extends AdminController {
 
     	if(IS_POST){
     	    $param = I('post.');
-    	    //step-1: 先保存district字典表中
-    	    $district['type'] = District::$TYPE_STORE;
-    	    $district['name'] = $param['name'];
-    	    $district['pid'] = $param['city_id'];
-    	    $store_id = M('District')->add($district);
     	    
-    		//step-2: 保存门店信息
-    		$Store = M('Store');
-    		$param['store_id'] = $store_id;
-    		$id = $Store->add($param);
-    		
-    		if($id){
-    		  
-    		  //step-3: 记录日志
-    		  S('DB_CONFIG_DATA',null);
-    	      action_log('add_store', 'Store', $id, UID);
-    		  $this->success('新增成功', 'Admin/Store/index');
-    			
-    		} else {
+    	    //step-1: 验证参数
+    	    $Store = D('Store');
+    	    $data = $Store->create($param);
+    	    if($data){
+    	        //step-2: 先保存district字典表中
+    	        $district['type'] = District::$TYPE_STORE;
+    	        $district['name'] = $param['name'];
+    	        $district['pid'] = $param['city_id'];
+    	        $store_id = M('District')->add($district);
+    	        if($store_id) {
+    	            S('DB_CONFIG_DATA',null);
+    	            action_log('add_district', 'district', $store_id, UID);
+    	            
+    	            //step-3: 保存门店信息
+    	            $param['store_id'] = $store_id;
+    	            $id = $Store->add($param);
+    	            if($id) {
+    	            	//step-4: 记录日志
+    	            	S('DB_CONFIG_DATA',null);
+    	            	action_log('add_store', 'Store', $id, UID);
+    	            }
+    	        } 
+    	        $this->success('新增成功', 'Admin/Store/index');
+    	        
+    	    }else {
     			$this->error($Store->getError());
     		}
     		
     	} else {
-    		$this->meta_title = '新增门店';
-    		
     		//获取大区数据
     		$this->setDistrictSelectList(0, 0);
     		
+    		$this->meta_title = '新增门店';
     		$this->display();
     	}
     }

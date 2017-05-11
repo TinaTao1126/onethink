@@ -8,10 +8,8 @@
 // +----------------------------------------------------------------------
 
 namespace Admin\Controller;
-use Admin\Service\DistrictService;
 use Admin\Service\StoreStationService;
 use Admin\Enums\StoreStation;
-use Admin\Enums\District;
 
 /**
  * 门店车位管理
@@ -29,42 +27,15 @@ class StoreStationController extends AdminController {
      */
     public function index(){
         
-    	
-    	
+    	//step-1: 封装查询参数
     	$storeStationService = new StoreStationService();
     	$map = $storeStationService->list_condition();
     	
+    	//step-2: 根据条件查询
         $list   = $this->lists('StoreStation', $map);
         
-        //获取所有车辆信息
-        $storeIdList = getFieldMap($list,$field="store_id");
-        
-        if(isset($storeIdList) && !empty($storeIdList)) {
-        	//根据汽车id，批量取出汽车信息
-        	$where['id'] = array('in',$storeIdList);
-        	$storeList = M('District')->where($where)->select();
-        	 
-        	//key:id, val:car
-        	//$carMap＝array_combine(array_column($carList,"id"), $carList);
-        	$storeMap = array();
-        	foreach ($storeList as $key => $val) {
-        		$storeMap[$val['id']] = $val['name'];
-        	}
-        	 
-        }
-        
-        foreach ($list as $key=>$val) {
-        	//设置汽车信息
-        	if(isset($storeMap)) {
-        		$list[$key]['store_name'] = $storeMap[$val['store_id']];
-        	}
-        	 
-        	//设置状态对应的名称
-        	$disabled_name = StoreStation::$DISTABLED[$val['status']];
-        	$list[$key]['disabled_name'] = isset($disabled_name) ? $disabled_name : "";
-        	
-        	 
-        }
+        //step-3 :组装返回结果
+        $list = $storeStationService->combine_response($list);
         
         //获取 ［区|城市|门店］ 数据
         $this->setDistrictSelectList($map['district_id'], $map['city_id']);
@@ -75,10 +46,14 @@ class StoreStationController extends AdminController {
         $this->assign('_list', $list);
         $this->assign('_condition', $condition);
         
-        $this->meta_title = '车位信息';
+        $this->meta_title = '工位信息';
         $this->display();
     }
     
+    /**
+     * 启用／禁用
+     * @param string $method
+     */
     public function changeStatus($method=null){
     	$id = array_unique((array)I('id',0));
        	$id = is_array($id) ? implode(',',$id) : $id;
@@ -126,19 +101,19 @@ class StoreStationController extends AdminController {
      */
     public function edit($id = 0){
     	if(IS_POST) {
-    		$Store = D('StoreStation');
-    		$data = $Store->create();
+    		$StoreStation = D('StoreStation');
+    		$data = $StoreStation->create();
     		if($data){
-    			if($Store->save()){
+    			if($StoreStation->save()){
     				S('DB_CONFIG_DATA',null);
     				//记录行为
-    				action_log('update_store','store',$data['id'],UID);
+    				action_log('update_store_station','store_station',$data['id'],UID);
     				$this->success('更新成功', 'Admin/StoreStation/index');
     			} else {
-    				$this->error('更新失败');
+    				$this->error('无更新');
     			}
     		} else {
-    			$this->error($Store->getError());
+    			$this->error($StoreStation->getError());
     		}
     	} else {
     		if($id == 0) {
@@ -163,20 +138,6 @@ class StoreStationController extends AdminController {
     	
     }
     
-    /**
-     * 更新
-     * @author tina
-     */
-    public function save(){
-    	$res = D('StoreStation')->update();
-    	if(!$res){
-    		//print_r(D('Store')->getError());exit;
-    		$this->error(D('Store')->getError());
-    	}else{
-    		$this->success($res['id']?'更新成功！':'新增成功！', Cookie('__forward__'));
-    	}
-    }
-    
 
     public function add(){
 
@@ -184,17 +145,22 @@ class StoreStationController extends AdminController {
     		$param = I('post.');
     		$param['creator'] = UID;
     		$param['disabled'] = 1;   //启用
-    		print_r($param);exit;
-    		$id = M('StoreStation')->add($param);
-    		if($id){
-    				S('DB_CONFIG_DATA',null);
-    				//记录行为
-    				action_log('add_store_station', 'store_station', $id, UID);
-    				$this->success('新增成功', 'Admin/StoreStation/index');
-    			} else {
-    				$this->error('新增失败');
-    			}
     		
+    		$StoreStation = D('StoreStation');
+    		$data = $StoreStation->create($param);
+    		if($data) {
+    		    $id = $StoreStation->add($param);
+    		    if($id){
+    		    	S('DB_CONFIG_DATA',null);
+    		    	//记录行为
+    		    	action_log('add_store_station', 'store_station', $id, UID);
+    		    	$this->success('新增成功', 'Admin/StoreStation/index');
+    		    } else {
+    		    	$this->error('新增失败');
+    		    }
+    		} else {
+    		    $this->error($StoreStation->getError());
+    		}
     		
     	} else {
     	    //根据权限获取数据

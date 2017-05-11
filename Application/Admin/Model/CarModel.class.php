@@ -21,6 +21,7 @@ class CarModel extends Model {
 		array('car_number','require','车牌号必填'), 
 		array('car_owner','require','车主姓名必填'),
 		array('owner_phone','require','车主电话必填'),
+	    array('driving_distance','require','行驶里程必填'),
 	);
 
 	

@@ -8,6 +8,7 @@
 // +----------------------------------------------------------------------
 namespace Admin\Service;
 use Admin\Enums\RoleKey;
+use Admin\Enums\StoreStation;
 
 
 class StoreStationService{
@@ -71,5 +72,37 @@ class StoreStationService{
 				'_disabled'=>$map['select_disabled']
 		);
 		return $condition;
+	}
+	
+	public function combine_response($list){
+	    //获取所有车辆信息
+	    $storeIdList = getFieldMap($list,$field="store_id");
+	    
+	    if(isset($storeIdList) && !empty($storeIdList)) {
+	    	//根据汽车id，批量取出汽车信息
+	    	$where['id'] = array('in',$storeIdList);
+	    	$storeList = M('District')->where($where)->select();
+	    
+	    	//$carMap＝array_combine(array_column($carList,"id"), $carList);
+	    	$storeMap = array();
+	    	foreach ($storeList as $key => $val) {
+	    		$storeMap[$val['id']] = $val['name'];
+	    	}
+	    
+	    }
+	    
+	    foreach ($list as $key=>$val) {
+	    	//设置汽车信息
+	    	if(isset($storeMap)) {
+	    		$list[$key]['store_name'] = $storeMap[$val['store_id']];
+	    	}
+	    
+	    	//设置状态对应的名称
+	    	$disabled_name = StoreStation::$DISTABLED[$val['status']];
+	    	$list[$key]['disabled_name'] = isset($disabled_name) ? $disabled_name : "";
+	    	 
+	    
+	    }
+	    return $list;
 	}
 }
