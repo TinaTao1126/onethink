@@ -20,7 +20,19 @@ use Admin\Enums\OrderItem;
 class OrderItemController extends AdminController {
 
    
-    
+    public function list_by_order_id($order_id=0){
+        //echo $order_id;
+        
+        $orderItemService = new OrderItemService();
+        $orderItemList = $orderItemService->listByOrderId($order_id);
+        
+        $result['data'] = $orderItemList;
+        
+        //echo json_encode($orderItemList);
+        
+        echo json_encode($result);
+        
+    }
     /**
      * 删除
      */

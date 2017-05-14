@@ -19,6 +19,8 @@ class IndexController extends Controller{
     public function index(){
         	//获取REQUEST 参数
         	$param = I("post.");
+        	$action = I("get.action");
+        	$method = I("get.method");
         	if (empty($param) && I("get.debug") == 1 ) {
         		$param = I("get.");
         	}
@@ -39,6 +41,6 @@ class IndexController extends Controller{
         			'start_time_unix' => time(), //时间戳
         	);
         	//根据get参数调用相应的方法
-        	$info->method($param['action'],$param['method'], $param);
+        	$info->method($action,$method, $param);
     }
 }
