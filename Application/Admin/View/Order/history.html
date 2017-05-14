@@ -7,46 +7,48 @@
 		<h2>{$meta_title}</h2>
 	</div>
 	
+	<div class="container-fluid">
     <form class="form-inline" method="post" action="{:U('history')}" role="form">
-    <div class="container">
+    
     	<div class="row">
-    		<div class="form-group">
-    			<select class="form-control" name="district_id">
+    	
+    		<select class="selectpicker" data-live-search="true" name="district_id">
                 	<option value="0">大区</option>
                 	<notempty name="_district">
 						<volist name="_district" id="vo" >
 							<if condition="$vo.id eq $_condition['_district_id']">
-								<option value="{$vo.id}" selected>{$vo.name}</option>
+								<option data-tokens="{$vo.name}" value="{$vo.id}" selected>{$vo.name}</option>
 							<else/>
-								<option value="{$vo.id}">{$vo.name}</option>
+								<option data-tokens="{$vo.name}" value="{$vo.id}">{$vo.name}</option>
 							</if>
 						</volist>
 					</notempty>
                 </select>
-                <select class="form-control" name="city_id">
+                <select class="selectpicker" data-live-search="true" name="city_id">
                 	<option value="0">城市</option>
                 	<notempty name="_city">
 						<volist name="_city" id="vo" >
 							<if condition="$vo.id eq $_condition['_city_id']">
-								<option value="{$vo.id}" selected>{$vo.name}</option>
+								<option data-tokens="{$vo.name}" value="{$vo.id}" selected>{$vo.name}</option>
 							<else/>
-								<option value="{$vo.id}">{$vo.name}</option>
+								<option data-tokens="{$vo.name}" value="{$vo.id}">{$vo.name}</option>
 							</if>
 						</volist>
 					</notempty>
                 </select>
-                <select class="form-control" name="store_id">
+                <select class="selectpicker" data-live-search="true" name="store_id">
                 	<option value="0">门店</option>
                 	<notempty name="_store">
 						<volist name="_store" id="vo" >
 							<if condition="$vo.id eq $_condition['_store_id']">
-								<option value="{$vo.id}" selected>{$vo.name}</option>
+								<option data-tokens="{$vo.name}" value="{$vo.id}" selected>{$vo.name}</option>
 							<else/>
-								<option value="{$vo.id}">{$vo.name}</option>
+								<option data-tokens="{$vo.name}" value="{$vo.id}">{$vo.name}</option>
 							</if>
 						</volist>
 					</notempty>
                 </select>
+              	
                 <input type="text" class="form-control" name="phone" placeholder="联系电话" value="{$_condition._phone}"/>
                 <div class="form-group">
                 <div class='input-group date' id='startTime'>
@@ -65,60 +67,64 @@
                     </span>
                 </div>
             </div>
-                <button type="submit" class="btn btn-link"><i class="btn-search"></i></button>
+                <button type="submit" class="btn btn-link">
+              		<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                </button>
     			<a class="sch-btn" href="javascript:;" id="search" url="{:U('index')}"></a>
     		</div>
-    	</div>
-    </div>
     </form>
+    <div class="row">
+    	<div class="div_10"></div>
+    </div>
     <!-- 数据列表 -->
-    <div class="data-table table-striped">
-	<table class="">
-    <thead>
-        <tr>
-		<th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
-		<th class="">ID</th>
-		<th class="">门店</th>
-		<th class="">单号</th>
-		<th class="">车牌号</th>
-		<th class="">客户名称</th>
-		<th class="">状态</th>
-		<th class="">应收金额</th>
-		<th class="">实收金额</th>
-		<th class="">日期</th>
-		<th class="">操作员</th>
-		<th class="">行驶里程</th>
-		<th class="">操作</th>
-		</tr>
-    </thead>
-    <tbody>
-		<notempty name="_list">
-		<volist name="_list" id="vo">
-		<tr>
-            <td><input class="ids" type="checkbox" name="id[]" value="{$vo.id}" /></td>
-            <td>{$vo.id} </td>
-            <td>{$vo.district_name}|{$vo.city_name}|{$vo.store_name}</td>
-            <td>{$vo.order_no}</td>
-            <td>{$vo.car_number} </td>
-			<td>{$vo.car_owner} </td>
-			<td>{$vo.order_status_name}</td>
-			<td>{$vo.purchase_amount}</td>
-			<td>{$vo.pay_amount}</td>
-			<td><span>{$vo.create_time}</span></td>
-			<td>{$vo.creator_name}</td>
-			<td>{$vo.driving_distance}</td>
-			
-			<td>
-				<a href="{:U('Order/detail?id='.$vo['id'])}" target="_blank">查看</a>
-				<a href="{:U('Order/detail?id='.$vo['id'].'&print=1')}" target="_blank">打印</a>
-            </td>
-		</tr>
-		</volist>
-		<else/>
-		<td colspan="9" class="text-center"> aOh! 暂时还没有内容! </td>
-		</notempty>
-	</tbody>
-    </table>
+    <div class="row">
+		<table class="table">
+	    <thead>
+	        <tr>
+			<th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
+			<th class="">ID</th>
+			<th class="">门店 | 城市 ｜大区</th>
+			<th class="">单号</th>
+			<th class="">车牌号</th>
+			<th class="">客户名称</th>
+			<th class="">状态</th>
+			<th class="">应收金额</th>
+			<th class="">实收金额</th>
+			<th class="">日期</th>
+			<th class="">操作员</th>
+			<th class="">行驶里程</th>
+			<th class="">操作</th>
+			</tr>
+	    </thead>
+	    <tbody>
+			<notempty name="_list">
+			<volist name="_list" id="vo">
+			<tr>
+	            <td><input class="ids" type="checkbox" name="id[]" value="{$vo.id}" /></td>
+	            <td>{$vo.id} </td>
+	            <td>{$vo.store_name} | {$vo.city_name} | {$vo.district_name}</td>
+	            <td>{$vo.order_no}</td>
+	            <td>{$vo.car_number} </td>
+				<td>{$vo.car_owner} </td>
+				<td>{$vo.order_status_name}</td>
+				<td>{$vo.purchase_amount}</td>
+				<td>{$vo.pay_amount}</td>
+				<td><span>{$vo.create_time}</span></td>
+				<td>{$vo.creator_name}</td>
+				<td>{$vo.driving_distance}</td>
+				
+				<td>
+					<a href="{:U('Order/detail?id='.$vo['id'])}" target="_blank">查看</a>
+					<a href="{:U('Order/detail?id='.$vo['id'].'&print=1')}" target="_blank">打印</a>
+	            </td>
+			</tr>
+			</volist>
+			<else/>
+			<td colspan="9" class="text-center"> aOh! 暂时还没有内容! </td>
+			</notempty>
+		</tbody>
+	    </table>
+	</div>
 	</div>
     <div class="page">
         {$_page}
@@ -127,6 +133,7 @@
 
 <block name="script">
 	<script src="__STATIC__/bootstrap/js/bootstrap.min.js"></script>
+	<script src="__STATIC__/bootstrap-select/js/bootstrap-select.min.js"></script>
 	<script src="__STATIC__/bootstrap/js/moment.js"></script>
 	<script src="__STATIC__/bootstrap/js/bootstrap-datetimepicker.min.js"></script>
 	<script src="__STATIC__/thinkbox/jquery.thinkbox.js"></script>
@@ -154,6 +161,8 @@
 	});
 	
 	$(function(){
+		$('.selectpicker').selectpicker();
+		
 		$('input[name=start_time]').datetimepicker({
 			format: 'YYYY-MM-DD',
 		});

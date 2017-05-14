@@ -6,50 +6,10 @@
 	<div class="main-title">
 		<h2>{$meta_title}</h2>
 	</div>
-	<!--  <div class="cf">
-		
-		<div class="fl">
-            <a class="btn" href="{:U('Store/add')}">新 增</a>
-            <button class="btn ajax-post" url="{:U('Store/changeStatus',array('method'=>'enabled'))}" target-form="ids">启 用</button>
-            <button class="btn ajax-post" url="{:U('Store/changeStatus',array('method'=>'disabled'))}" target-form="ids">禁 用</button>
-            <button class="btn ajax-post confirm" url="{:U('Store/del')}" target-form="ids">删 除</button>
-        </div>-->
-
-        <!-- 高级搜索 -->
-		<!--<div class="search-form fr cf">
-			<div class="sleft">
-				<select class="select" name="district_id">
-                	<option value="0">大区</option>
-                	<notempty name="_district">
-						<volist name="_district" id="vo" >
-							<if condition="$vo.id eq $_district_id">
-								<option value="{$vo.id}" selected>{$vo.name}</option>
-							<else/>
-								<option value="{$vo.id}">{$vo.name}</option>
-							</if>
-						</volist>
-					</notempty>
-                </select>
-                <select class="select" name="city_id">
-                	<option value="0">城市</option>
-                	<notempty name="_city">
-						<volist name="_city" id="vo" >
-							<if condition="$vo.id eq $_city_id">
-								<option value="{$vo.id}" selected>{$vo.name}</option>
-							<else/>
-								<option value="{$vo.id}">{$vo.name}</option>
-							</if>
-							
-						</volist>
-					</notempty>
-                </select>				
-			</div>
-			<a class="sch-btn" href="javascript:;" id="search" url="{:U('index')}"><i class="btn-search"></i></a>
-		</div>
-    </div>-->
     
+    <div class="container－fluid">
     <form class="form-inline" method="post" action="{:U('index')}" role="form">
-    <div class="container">
+    
     	<div class="row">
     		<div class="form-group">
     			<a class="btn" href="{:U('Store/add')}">新 增</a>
@@ -57,26 +17,26 @@
            		<button class="btn ajax-post" url="{:U('Store/changeStatus',array('method'=>'disabled'))}" target-form="ids">禁 用</button>
            		<button class="btn ajax-post confirm" url="{:U('Store/del')}" target-form="ids">删 除</button>
             
-    			<select class="form-control" name="district_id" {$_condition._disabled}>
+    			<select class="selectpicker" data-live-search="true" name="district_id">
                 	<option value="0">大区</option>
                 	<notempty name="_district">
 						<volist name="_district" id="vo" >
 							<if condition="$vo.id eq $_condition['_district_id']">
-								<option value="{$vo.id}" selected>{$vo.name}</option>
+								<option data-tokens="{$vo.name}" value="{$vo.id}" selected>{$vo.name}</option>
 							<else/>
-								<option value="{$vo.id}">{$vo.name}</option>
+								<option data-tokens="{$vo.name}" value="{$vo.id}">{$vo.name}</option>
 							</if>
 						</volist>
 					</notempty>
                 </select>
-                <select class="form-control" name="city_id" {$_condition._disabled}>
+                <select class="selectpicker" data-live-search="true" name="city_id">
                 	<option value="0">城市</option>
                 	<notempty name="_city">
 						<volist name="_city" id="vo" >
 							<if condition="$vo.id eq $_condition['_city_id']">
-								<option value="{$vo.id}" selected>{$vo.name}</option>
+								<option data-tokens="{$vo.name}" value="{$vo.id}" selected>{$vo.name}</option>
 							<else/>
-								<option value="{$vo.id}">{$vo.name}</option>
+								<option data-tokens="{$vo.name}" value="{$vo.id}">{$vo.name}</option>
 							</if>
 						</volist>
 					</notempty>
@@ -86,12 +46,15 @@
     			<a class="sch-btn" href="javascript:;" id="search" url="{:U('index')}"></a>
     		</div>
     	</div>
-    </div>
     </form>
     
+    <div class="row">
+    	<div class="div_10"></div>
+    </div>
+    
     <!-- 数据列表 -->
-    <div class="data-table table-striped">
-	<table class="">
+    <div class="row">
+	<table class="table">
     <thead>
         <tr>
 		<th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
@@ -135,9 +98,13 @@
     <div class="page">
         {$_page}
     </div>
+    </div>
 </block>
 
 <block name="script">
+	<script src="__STATIC__/bootstrap/js/bootstrap.min.js"></script>
+	<script src="__STATIC__/bootstrap-select/js/bootstrap-select.min.js"></script>
+	<script type="text/javascript" src="__STATIC__/js/district.js"></script>
 	<script type="text/javascript">
 	//搜索功能
 	$("#search").click(function(){
@@ -162,7 +129,9 @@
     //导航高亮
     highlight_subnav('{:U('Store/index')}');
     $(function(){
-    	$("select[name=district_id]").change(function(){
+    	$('.selectpicker').selectpicker();
+    	
+    	/* $("select[name=district_id]").change(function(){
     		var district_id = $(this).val();
     		var url = Think.U('Admin/District/list_by_type','type=2&pid='+district_id);
 
@@ -174,7 +143,7 @@
     			}
     		    
     		 });
-    	});
+    	}); */
     	
     });
 	</script>

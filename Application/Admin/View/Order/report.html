@@ -7,47 +7,12 @@
 		<h2>{$meta_title}</h2>
 	</div>
 	
-    <form class="form-inline" method="post" action="{:U('report_detail')}" role="form">
-    <div class="container">
+	<div class="container-fluid">
+    	<form class="form-inline" method="post" action="{:U('report_detail')}" role="form">
+    
     	<div class="row">
+    	<div class="col-sm-12">
     		<div class="form-group">
-    			<!-- <select class="form-control" name="district_id">
-                	<option value="0">大区</option>
-                	<notempty name="_district">
-						<volist name="_district" id="vo" >
-							<if condition="$vo.id eq $_condition['_district_id']">
-								<option value="{$vo.id}" selected>{$vo.name}</option>
-							<else/>
-								<option value="{$vo.id}">{$vo.name}</option>
-							</if>
-						</volist>
-					</notempty>
-                </select>
-                <select class="form-control" name="city_id">
-                	<option value="0">城市</option>
-                	<notempty name="_city">
-						<volist name="_city" id="vo" >
-							<if condition="$vo.id eq $_condition['_city_id']">
-								<option value="{$vo.id}" selected>{$vo.name}</option>
-							<else/>
-								<option value="{$vo.id}">{$vo.name}</option>
-							</if>
-						</volist>
-					</notempty>
-                </select>
-                <select class="form-control" name="store_id">
-                	<option value="0">门店</option>
-                	<notempty name="_store">
-						<volist name="_store" id="vo" >
-							<if condition="$vo.id eq $_condition['_store_id']">
-								<option value="{$vo.id}" selected>{$vo.name}</option>
-							<else/>
-								<option value="{$vo.id}">{$vo.name}</option>
-							</if>
-						</volist>
-					</notempty>
-                </select> -->
-                <div class="form-group">
                 <div class='input-group date' id='startTime'>
                     <input type='text' class="form-control" name="start_time" placeholder="开始时间" value="{$condition._start_time}"/>
                     <!--  -->
@@ -78,28 +43,33 @@
 					</notempty>
 	        	</select>
         	</div>
-                <button type="submit" class="btn btn-link"><i class="btn-search"></i></button>
-    		</div>
+            <button type="submit" class="btn btn-link"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
     	</div>
-    </div>
+    	</div>
     
-    <div class="container">
-    	<div class="row col-sm-6">
-    		<notempty name="_list">
-			<volist name="_list" id="vo" key="district_id">
-    		<ul class="list-group">
-			    <li class="list-group-item active"><input class="check-group" type="checkbox" value="{$district_id}"/> {$vo.district_name}</li>
-			   	<volist name="vo" id="store" key="key">
-			   	<if condition="$key neq 'district_namf'">
-			    	<li class="list-group-item"><input type="checkbox" class="ids" group='{$district_id}' name="ids[]" value="{$store.store_id}">{$store.store_name}</li>
-  				</if>
-			    </volist>
-			</ul>
-			</volist>
-			</notempty>
-		</div>
-    </div>
-    </form>
+    	<div class="row">
+    		<div class="div_10"></div>
+   		</div>
+    
+    	<div class="row">
+    		<div class="col-sm-6">
+    		
+	    		<notempty name="_list">
+				<volist name="_list" id="vo" key="district_id">
+	    		<ul class="list-group">
+				    <li class="list-group-item active"><input class="check-group" type="checkbox" value="{$district_id}"/> {$vo.district_name}</li>
+				   	<volist name="vo" id="store" key="key">
+				   	<if condition="$key neq 'district_namf'">
+				    	<li class="list-group-item"><input type="checkbox" class="ids" group='{$district_id}' name="ids[]" value="{$store.store_id}">{$store.store_name}</li>
+	  				</if>
+				    </volist>
+				</ul>
+				</volist>
+				</notempty>
+			</div>
+    	</div>
+    	</form>
+    	</div>
 </block>
 
 <block name="script">

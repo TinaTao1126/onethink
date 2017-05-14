@@ -1,21 +1,22 @@
 <extend name="Public/base" />
 
 <block name="body">
-	<link href="__STATIC__/bootstrap/css/bootstrap.css" rel="stylesheet">
+    
 	<!-- 标题栏 -->
 	<div class="main-title">
 		<h2>{$meta_title}</h2>
 	</div>
 	
-    <form class="form-inline" method="post" action="{:U('index')}" role="form">
-    <div class="container">
+	<div class="container-fluid">
+    	<form class="form-inline" method="post" action="{:U('index')}" role="form">
     	<div class="row">
+    	<div class="col-sm-12">
     		<div class="form-group">
     			<a class="btn" href="{:U('Order/add')}">开单</a>
     			<input type="text" class="form-control" name="owner_name" placeholder="客户姓名" value="{$_condition._owner_name}"/>
     			<input type="text" class="form-control" name="phone" placeholder="联系电话" value="{$_condition._phone}"/>
     			<!--  <input type="text" class="form-control" name="car_number" placeholder="车牌" value="{$_condition._car_number}"/>-->
-    			
+    			<!-- 
     			<select class="form-control" name="district_id" {$_condition._disabled}>
                 	<option value="0">大区</option>
                 	<notempty name="_district">
@@ -40,6 +41,7 @@
 						</volist>
 					</notempty>
                 </select>
+                 
                 <select class="form-control" name="store_id" {$_condition._disabled}>
                 	<option value="0">门店</option>
                 	<notempty name="_store">
@@ -51,125 +53,179 @@
 							</if>
 						</volist>
 					</notempty>
+                </select>-->
+                <select class="selectpicker" data-live-search="true" name="district_id">
+                	<option value="0">大区</option>
+                	<notempty name="_district">
+						<volist name="_district" id="vo" >
+							<if condition="$vo.id eq $_condition['_district_id']">
+								<option data-tokens="{$vo.name}" value="{$vo.id}" selected>{$vo.name}</option>
+							<else/>
+								<option data-tokens="{$vo.name}" value="{$vo.id}">{$vo.name}</option>
+							</if>
+						</volist>
+					</notempty>
                 </select>
-                <button type="submit" class="btn btn-link"><i class="btn-search"></i></button>
+                <select class="selectpicker" data-live-search="true" name="city_id">
+                	<option value="0">城市</option>
+                	<notempty name="_city">
+						<volist name="_city" id="vo" >
+							<if condition="$vo.id eq $_condition['_city_id']">
+								<option data-tokens="{$vo.name}" value="{$vo.id}" selected>{$vo.name}</option>
+							<else/>
+								<option data-tokens="{$vo.name}" value="{$vo.id}">{$vo.name}</option>
+							</if>
+						</volist>
+					</notempty>
+                </select>
+                <select class="selectpicker" data-live-search="true" name="store_id">
+                	<option value="0">门店</option>
+                	<notempty name="_store">
+						<volist name="_store" id="vo" >
+							<if condition="$vo.id eq $_condition['_store_id']">
+								<option data-tokens="{$vo.name}" value="{$vo.id}" selected>{$vo.name}</option>
+							<else/>
+								<option data-tokens="{$vo.name}" value="{$vo.id}">{$vo.name}</option>
+							</if>
+						</volist>
+					</notempty>
+                </select>
+              	<button type="submit" class="btn btn-link">
+              		<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                </button>
     			<a class="sch-btn" href="javascript:;" id="search" url="{:U('index')}"></a>
     		</div>
     	</div>
     </div>
     </form>
-    <!-- 数据列表 -->
-    <div class="data-table table-striped">
-	<table class="">
-    <thead>
-        <tr>
-		<th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
-		<th class="">ID</th>
-		<th class="">单号</th>
-		<th class="">车牌号</th>
-		<th class="">客户名称</th>
-		<th class="">工位</th>
-		<th class="">状态</th>
-		<th class="">应收金额</th>
-		<th class="">实收金额</th>
-		<th class="">日期</th>
-		<th class="">操作员</th>
-		<th class="">行驶里程</th>
-		<th class="">操作</th>
-		</tr>
-    </thead>
-    <tbody>
-		<notempty name="_list">
-		<volist name="_list" id="vo">
-		<tr>
-            <td><input class="ids" type="checkbox" name="id[]" value="{$vo.id}" /></td>
-            <td>{$vo.id} </td>
-            <td>{$vo.order_no}</td>
-            <td>{$vo.car_number} </td>
-			<td>{$vo.car_owner} </td>
-			<td>{$vo.station_name}</td>
-			<td>{$vo.order_status_name}</td>
-			<td>{$vo.purchase_amount}</td>
-			<td>{$vo.pay_amount}</td>
-			<td><span>{$vo.create_time}</span></td>
-			<td>{$vo.creator_name}</td>
-			<td>{$vo.driving_distance}</td>
-			
-			<td><if condition="$vo.order_status eq 100">
-				<a href="{:U('Order/edit?id='.$vo['id'])}">开单</a>
-				<else/>
-				<a href="{:U('Order/detail?id='.$vo['id'])}" target="_blank">查看</a>
-				<a href="{:U('Order/edit?id='.$vo['id'])}">编辑</a>
-				<a href="" data-toggle="modal" data-target="#settlement" id="{$vo['id']}" purchase_amount="{$vo.purchase_amount}">结算</a>
-				<a href="{:U('Order/detail?id='.$vo['id'].'&print=1')}" target="_blank">打印</a>
-				<a href="{:U('Order/del?id='.$vo['id'])}" class="ajax-get">删除</a>
-				
-				</if>
-				
-                </td>
-		</tr>
-		</volist>
-		<else/>
-		<td colspan="9" class="text-center"> aOh! 暂时还没有内容! </td>
-		</notempty>
-	</tbody>
-    </table>
-	</div>
-    <div class="page">
-        {$_page}
+    <div class="row">
+    	<div class="div_10"></div>
     </div>
     
+    <!-- 数据列表 -->
+    <div class="row">
+	    <div class="col-sm-12">
+			<table class="table table-striped table-bordered">
+		    <thead>
+		        <tr>
+				<th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
+				<th class="">ID</th>
+				<th class="">单号</th>
+				<th class="">车牌号</th>
+				<th class="">客户名称</th>
+				<th class="">工位</th>
+				<th class="">状态</th>
+				<th class="">应收金额</th>
+				<th class="">实收金额</th>
+				<th class="">日期</th>
+				<th class="">操作员</th>
+				<th class="">行驶里程</th>
+				<th class="">操作</th>
+				</tr>
+		    </thead>
+		    <tbody>
+				<notempty name="_list">
+				<volist name="_list" id="vo">
+				<tr>
+		            <td><input class="ids" type="checkbox" name="id[]" value="{$vo.id}" /></td>
+		            <td>{$vo.id} </td>
+		            <td>{$vo.order_no}</td>
+		            <td>{$vo.car_number} </td>
+					<td>{$vo.car_owner} </td>
+					<td>{$vo.station_name}</td>
+					<td>{$vo.order_status_name}</td>
+					<td>{$vo.purchase_amount}</td>
+					<td>{$vo.pay_amount}</td>
+					<td><span>{$vo.create_time}</span></td>
+					<td>{$vo.creator_name}</td>
+					<td>{$vo.driving_distance}</td>
+					
+					<td><if condition="$vo.order_status eq 100">
+						<a href="{:U('Order/edit?id='.$vo['id'])}">开单</a>
+						<else/>
+						<a href="{:U('Order/detail?id='.$vo['id'])}" target="_blank">查看</a>
+						<a href="{:U('Order/edit?id='.$vo['id'])}">编辑</a>
+						<a href="" data-toggle="modal" data-target="#settlement" id="{$vo['id']}" purchase_amount="{$vo.purchase_amount}">结算</a>
+						<a href="{:U('Order/detail?id='.$vo['id'].'&print=1')}" target="_blank">打印</a>
+						<a href="{:U('Order/del?id='.$vo['id'])}" class="ajax-get">删除</a>
+						
+						</if>
+						
+		                </td>
+				</tr>
+				</volist>
+				<else/>
+				<td colspan="9" class="text-center"> aOh! 暂时还没有内容! </td>
+				</notempty>
+			</tbody>
+		    </table>
+		</div>
+	</div>
+	<div class="row">
+	    <div class="col-sm-12">
+		    <div class="page">
+		        {$_page}
+		    </div>
+	    </div>
+    </div>
+    </div>
+    
+    
+    <!-- 结算模态框 -->
     <div class="modal fade" id="settlement" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">  
-    <div class="modal-dialog" role="document">  
-        <div class="modal-content">  
-            <div class="modal-header">  
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">  
-                    <span aria-hidden="true">×</span>  
-                </button>  
-                <h4 class="modal-title" id="myModalLabel">结算</h4>  
-            </div>  
-            <form class="form-horizontal" role="form" id="settleForm" action="{:U('settle')}" method="post">
-            <div class="modal-body">  
-                <div class="form-group">
-					<label class="col-sm-2 control-label">应收金额</label>
-					<div class="col-sm-9">
-						<input type="text" name="purchase_amount" class="form-control" value="" readonly />
+    	<div class="modal-dialog" role="document">  
+	        <div class="modal-content">  
+	            <div class="modal-header">  
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">  
+	                    <span aria-hidden="true">×</span>  
+	                </button>  
+	                <h4 class="modal-title" id="myModalLabel">结算</h4>  
+	            </div>  
+	            <form class="form-horizontal" role="form" id="settleForm" action="{:U('settle')}" method="post">
+	            <div class="modal-body">  
+	                <div class="form-group">
+						<label class="col-sm-2 control-label">应收金额</label>
+						<div class="col-sm-9">
+							<input type="text" name="purchase_amount" class="form-control" value="" readonly />
+						</div>
 					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-sm-2 control-label">实收金额</label>
-					<div class="col-sm-9">
-						<input type="text" name="pay_amount" class="form-control" value="" placeholder=""/>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">实收金额</label>
+						<div class="col-sm-9">
+							<input type="text" name="pay_amount" class="form-control" value="" placeholder=""/>
+						</div>
 					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-sm-2 control-label">备注</label>
-					<div class="col-sm-9">
-						<textarea name="pay_remark" class="form-control" rows="3"></textarea>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">备注</label>
+						<div class="col-sm-9">
+							<textarea name="pay_remark" class="form-control" rows="3"></textarea>
+						</div>
 					</div>
-				</div>
-            </div>  
-            
-            
-            <div class="modal-footer">  
-            	<input type="hidden" name="id" />
-                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>  
-                <button type="button" onclick="settle()" class="ajax-post btn btn-primary">保存</button>  
-            </div>  
-            </form>
-        </div>  
-    </div>  
+	            </div>  
+	            
+	            
+	            <div class="modal-footer">  
+	            	<input type="hidden" name="id" />
+	                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>  
+	                <button type="button" onclick="settle()" class="ajax-post btn btn-primary">保存</button>  
+	            </div>  
+	            </form>
+	        </div>  
+    	</div>  
 	</div>  
 </block>
 
 <block name="script">
 	
 	<script src="__STATIC__/bootstrap/js/bootstrap.min.js"></script>
+	<script src="__STATIC__/bootstrap-select/js/bootstrap-select.min.js"></script>
 	<script src="__STATIC__/thinkbox/jquery.thinkbox.js"></script>
 	<script type="text/javascript" src="__STATIC__/js/district.js"></script>
 	<script type="text/javascript">
 	
 	$(function() {
+		$('.selectpicker').selectpicker();
+		
 		$('#settlement').on('show.bs.modal', function (event) {
 		 var a = $(event.relatedTarget) // a that triggered the modal
 		 //console.log(a);

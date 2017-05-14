@@ -19,10 +19,10 @@ $(function() {
 				
 				for ( var i = 0; i < data.length; i++) {
 					$("select[name=" + name + "]").append(
-							'<option value="' + data[i].id + '">' + data[i].name
+							'<option data-tokens="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name
 									+ '</option>');
 				}
-
+				$("select[name=" + name + "]").selectpicker('refresh')
 			} 
 			
 			if (child != '') {
@@ -38,6 +38,10 @@ $(function() {
 	});
 
 	$("select[name=city_id]").bind('change', function() {
+		if($("select[name=store_id]").length == 0) {
+			return;
+		}
+		
 		getDistrict(3, 'store_id', 'city_id', '');
 	});
 });

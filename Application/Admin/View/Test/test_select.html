@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>select sample</title>
+	<link href="__STATIC__/bootstrap/css/bootstrap.css" rel="stylesheet">
+	<link href="__STATIC__/bootstrap-select/css/bootstrap-select.css" rel="stylesheet">
+	
+	<script type="text/javascript" src="__STATIC__/jquery-2.0.3.min.js"></script>
+    <script src="__STATIC__/bootstrap/js/bootstrap.min.js"></script>
+    <script src="__STATIC__/bootstrap-select/js/bootstrap-select.min.js"></script>
+   
+    <script type="text/javascript" src="__STATIC__/js/district.js"></script>
+    
+    
+  </head>
+  <body>
+	
+	<select class="selectpicker" data-live-search="true">
+	  <option data-tokens="Hot Dog, Fries and a Soda">Hot Dog, Fries and a Soda</option>
+	  <option data-tokens="Burger, Shake and a Smile">Burger, Shake and a Smile</option>
+	  <option data-tokens="Sugar, Spice and all things nice">Sugar, Spice and all things nice</option>
+	</select>
+	
+	<select class="form-control" name="district_id" {$_condition._disabled}>
+                	<option value="0">大区</option>
+                	<notempty name="_district">
+						<volist name="_district" id="vo" >
+							<if condition="$vo.id eq $_condition['_district_id']">
+								<option value="{$vo.id}" selected>{$vo.name}</option>
+							<else/>
+								<option value="{$vo.id}">{$vo.name}</option>
+							</if>
+						</volist>
+					</notempty>
+                </select>
+                <select class="form-control" name="city_id" {$_condition._disabled}>
+                	<option value="0">城市</option>
+                	<notempty name="_city">
+						<volist name="_city" id="vo" >
+							<if condition="$vo.id eq $_condition['_city_id']">
+								<option value="{$vo.id}" selected>{$vo.name}</option>
+							<else/>
+								<option value="{$vo.id}">{$vo.name}</option>
+							</if>
+						</volist>
+					</notempty>
+                </select>
+                
+                <select class="selectpicker" data-live-search="true" name="store_id">
+                	<option value="0">门店</option>
+                	<notempty name="_store">
+						<volist name="_store" id="vo" >
+							<if condition="$vo.id eq $_condition['_store_id']">
+								<option data-tokens="{$vo.name}" value="{$vo.id}" selected>{$vo.name}</option>
+							<else/>
+								<option data-tokens="{$vo.name}" value="{$vo.id}">{$vo.name}</option>
+							</if>
+						</volist>
+					</notempty>
+                </select>
+  </body>
+  
+  <script>
+  $(function(){
+	 
+	  
+	  $('.selectpicker').selectpicker();
+	  
+  });
+  (function(){
+      var ThinkPHP = window.Think = {
+          "ROOT"   : "__ROOT__", //当前网站地址
+          "APP"    : "__APP__", //当前项目地址
+          "PUBLIC" : "__PUBLIC__", //项目公共目录地址
+          "DEEP"   : "{:C('URL_PATHINFO_DEPR')}", //PATHINFO分割符
+          "MODEL"  : ["{:C('URL_MODEL')}", "{:C('URL_CASE_INSENSITIVE')}", "{:C('URL_HTML_SUFFIX')}"],
+          "VAR"    : ["{:C('VAR_MODULE')}", "{:C('VAR_CONTROLLER')}", "{:C('VAR_ACTION')}"]
+      };
+      
+
+  })();
+  
+  </script>
+   <script type="text/javascript" src="__STATIC__/think.js"></script>
+</html>

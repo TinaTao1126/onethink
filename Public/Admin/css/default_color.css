@@ -134,10 +134,10 @@ a:hover{
 
 /* 表单组件
 ------------------------------------------ */
-.text,.textarea {
+/*.text,.textarea {
 	border-color: #eeeeee;
 	background-color: #fff;
-}
+}*/
 select {
 	border-color: #ccc;
 }
