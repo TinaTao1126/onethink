@@ -1,63 +1,68 @@
 <extend name="Public/base"/>
 
 <block name="body">
+<link href="__STATIC__/bootstrap/css/bootstrap.css" rel="stylesheet">
+
     <div class="main-title">
         <h2>{$meta_title}</h2>
     </div>
-    <form action="{:U()}" method="post" class="form-horizontal">
-        <div class="form-item">
-            <label class="item-label">门店名称</label>
-            <div class="controls">
-                <input type="text" class="text input-large" name="name" value="">
-            </div>
-        </div>
-        <div class="form-item">
-            <label class="item-label">门店地址</label>
-            <div class="controls">
-                <select class="form-control" name="district_id">
-                	<option value="0">大区</option>
-                	<notempty name="_district">
-						<volist name="_district" id="vo" >
-							<option value="{$vo.id}">{$vo.name}</option>
-						</volist>
-					</notempty>
-                </select>
-                <select class="form-control" name="city_id">
-                	<option value="0">城市</option>
-                </select>
-            </div>
-        </div>
-        <div class="form-item">
-            <label class="item-label">联系人</label>
-            <div class="controls">
-                <input type="text" class="text input-large" name="contact" value="">
-            </div>
-        </div>
-        <div class="form-item">
-            <label class="item-label">联系人电话</label>
-            <div class="controls">
-                <input type="text" class="text input-large" name="contact_number" value="">
-            </div>
-        </div>
-        <div class="form-item">
-            <label class="item-label">备注</label>
-            <div class="controls">
-                <textarea class="textarea input-large" name="remark"></textarea>
-            </div>
-        </div>
-        <div class="form-item">
-            <button class="btn submit-btn ajax-post" id="submit" type="submit" target-form="form-horizontal">确 定</button>
-            <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
-        </div>
-    </form>
+    <div class="container-fluid">
+	    <div class="row">
+		    <div class="col-sm-4">
+		    <form action="{:U()}" role="form" method="post" class="form">
+		        <div class="form-group">
+		            <label class="control-label">门店地址</label>
+		            <div class="select">
+		                <select class="selectpicker" data-live-search="true"  name="district_id">
+		                	<option value="0">大区</option>
+		                	<notempty name="_district">
+								<volist name="_district" id="vo" >
+									<option value="{$vo.id}">{$vo.name}</option>
+								</volist>
+							</notempty>
+		                </select>
+		                <select class="selectpicker" data-live-search="true"  name="city_id">
+		                	<option value="0">城市</option>
+		                </select>
+		            </div>
+		        </div>
+		        <div class="form-group">
+		            <label class="control-label">门店名称</label>
+		            <input type="text" class="form-control" name="name" value="">
+		        </div>
+		        <div class="form-group">
+		            <label class="control-label">联系人</label>
+		            <input type="text" class="form-control" name="contact" value="">
+		        </div>
+		        <div class="form-group">
+		            <label class="control-label">联系人电话</label>
+		            <input type="text" class="form-control" name="contact_number" value="">
+		        </div>
+		        <div class="form-group">
+		            <label class="control-label">备注</label>
+		            <textarea class="form-control" name="remark"></textarea>
+		        </div>
+		        <div class="form-group">
+		            <button class="btn submit-btn ajax-post" id="submit" type="submit" target-form="form-horizontal">确 定</button>
+		            <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+		        </div>
+		    </form>
+    		</div>
+   		</div>
+    </div>
 </block>
 
 <block name="script">
+<script src="__STATIC__/bootstrap/js/bootstrap.min.js"></script>
+<script src="__STATIC__/bootstrap-select/js/bootstrap-select.min.js"></script>
+
 <script type="text/javascript" src="__STATIC__/js/district.js"></script>
     <script type="text/javascript">
         //导航高亮
         highlight_subnav('{:U('Store/index')}');
-        
+        $(function(){
+        	$('.selectpicker').selectpicker();
+    	});
        
     </script>
 </block>

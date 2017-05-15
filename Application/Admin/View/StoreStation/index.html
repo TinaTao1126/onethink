@@ -59,8 +59,9 @@
 			<a class="sch-btn" href="javascript:;" id="search" url="{:U('index')}"><i class="btn-search"></i></a>
 		</div>
     </div>-->
+    <div class="container－fluid">
     <form class="form-inline" method="post" action="{:U('index')}" role="form">
-    <div class="container">
+    
     	<div class="row">
     		<div class="form-group">
     			<a class="btn" href="{:U('StoreStation/add')}">新 增</a>
@@ -68,7 +69,7 @@
            		 <button class="btn ajax-post" url="{:U('StoreStation/changeStatus',array('method'=>'disabled'))}" target-form="ids">禁 用</button>
            		 <button class="btn ajax-post confirm" url="{:U('StoreStation/del')}" target-form="ids">删 除</button>
             
-    			<select class="form-control" name="district_id" {$_condition._disabled}>
+    			<select class="selectpicker" data-live-search="true" name="district_id" {$_condition._disabled}>
                 	<option value="0">大区</option>
                 	<notempty name="_district">
 						<volist name="_district" id="vo" >
@@ -80,7 +81,7 @@
 						</volist>
 					</notempty>
                 </select>
-                <select class="form-control" name="city_id" {$_condition._disabled}>
+                <select class="selectpicker" data-live-search="true" name="city_id" {$_condition._disabled}>
                 	<option value="0">城市</option>
                 	<notempty name="_city">
 						<volist name="_city" id="vo" >
@@ -92,7 +93,7 @@
 						</volist>
 					</notempty>
                 </select>
-                <select class="form-control" name="store_id" {$_condition._disabled}>
+                <select class="selectpicker" data-live-search="true" name="store_id" {$_condition._disabled}>
                 	<option value="0">门店</option>
                 	<notempty name="_store">
 						<volist name="_store" id="vo" >
@@ -104,15 +105,21 @@
 						</volist>
 					</notempty>
                 </select>
-                <button type="submit" class="btn btn-link"><i class="btn-search"></i></button>
+                <button type="submit" class="btn btn-link">
+              		<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                </button>
     			<a class="sch-btn" href="javascript:;" id="search" url="{:U('index')}"></a>
     		</div>
     	</div>
-    </div>
     </form>
+    
+    <div class="row">
+    	<div class="div_10"></div>
+    </div>
+    
     <!-- 数据列表 -->
-    <div class="data-table table-striped">
-	<table class="">
+    <div class="row">
+	<table class="table">
     <thead>
         <tr>
 		<th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
@@ -160,9 +167,12 @@
     <div class="page">
         {$_page}
     </div>
+    </div>
 </block>
 
 <block name="script">
+<script src="__STATIC__/bootstrap/js/bootstrap.min.js"></script>
+<script src="__STATIC__/bootstrap-select/js/bootstrap-select.min.js"></script>
 <script type="text/javascript" src="__STATIC__/js/district.js"></script>
 
 	<script type="text/javascript">
@@ -185,6 +195,10 @@
 			$("#search").click();
 			return false;
 		}
+	});
+	
+	$(function(){
+    	$('.selectpicker').selectpicker();
 	});
     //导航高亮
     highlight_subnav('{:U('StoreStation/index')}');

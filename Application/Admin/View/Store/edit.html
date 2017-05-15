@@ -1,75 +1,81 @@
 <extend name="Public/base"/>
 
 <block name="body">
+<link href="__STATIC__/bootstrap/css/bootstrap.css" rel="stylesheet">
+ 
     <div class="main-title">
-        <h2>修改门店信息</h2>
+        <h2>{$meta_title}</h2>
     </div>
-    <form action="{:U()}" method="post" class="form-horizontal">
-        <div class="form-item">
-            <label class="item-label">门店名称</label>
-            <div class="controls">
-                <input type="text" class="text input-large" name="name" value="{$data.name}">
-            </div>
-        </div>
-        <div class="form-item">
-            <label class="item-label">门店地址</label>
-            <div class="controls">
-                <select class="select" name="district_id">
-                	<notempty name="_district">
-						<volist name="_district" id="vo" >
-							<if condition="$vo.id eq $_district_id">
-								<option value="{$vo.id}" selected>{$vo.name}</option>
-							<else/>
-								<option value="{$vo.id}">{$vo.name}</option>
-							</if>
-						</volist>
-					</notempty>
-                </select>
-                <select class="select" name="city_id">
-                	<notempty name="_city">
-						<volist name="_city" id="vo" >
-							<if condition="$vo.id eq $_city_id">
-								<option value="{$vo.id}" selected>{$vo.name}</option>
-							<else/>
-								<option value="{$vo.id}">{$vo.name}</option>
-							</if>
-						</volist>
-					</notempty>
-                </select>
-            </div>
-        </div>
-        <div class="form-item">
-            <label class="item-label">联系人</label>
-            <div class="controls">
-                <input type="text" class="text input-large" name="contact" value="{$data.contact}">
-            </div>
-        </div>
-        <div class="form-item">
-            <label class="item-label">联系人电话</label>
-            <div class="controls">
-                <input type="text" class="text input-large" name="contact_number" value="{$data.contact_number}">
-            </div>
-        </div>
-        <div class="form-item">
-            <label class="item-label">备注</label>
-            <div class="controls">
-                <textarea class="textarea input-large" name="remark">{$data.remark}</textarea>
-            </div>
-        </div>
-        <div class="form-item">
-        	<input type="hidden" name="id" value="{$data.id|default=''}">
-            <button class="btn submit-btn ajax-post" id="submit" type="submit" target-form="form-horizontal">确 定</button>
-            <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
-        </div>
-    </form>
+    <div class="container-fluid">
+	    <div class="row">
+		    <div class="col-sm-4">
+		    <form action="{:U()}" method="post" class="form-horizontal">
+		        
+		        <div class="form-group">
+		            <label class="control-label">门店地址</label>
+		            <div class="select">
+		                <select class="selectpicker" data-live-search="true" name="district_id">
+		                	<notempty name="_district">
+								<volist name="_district" id="vo" >
+									<if condition="$vo.id eq $_district_id">
+										<option value="{$vo.id}" selected>{$vo.name}</option>
+									<else/>
+										<option value="{$vo.id}">{$vo.name}</option>
+									</if>
+								</volist>
+							</notempty>
+		                </select>
+		                <select class="selectpicker" data-live-search="true" name="city_id">
+		                	<notempty name="_city">
+								<volist name="_city" id="vo" >
+									<if condition="$vo.id eq $_city_id">
+										<option value="{$vo.id}" selected>{$vo.name}</option>
+									<else/>
+										<option value="{$vo.id}">{$vo.name}</option>
+									</if>
+								</volist>
+							</notempty>
+		                </select>
+		            </div>
+		        </div>
+		        <div class="form-group">
+		            <label class="control-label">门店名称</label>
+		            <input type="text" class="form-control" name="name" value="{$data.name}">
+		        </div>
+		        <div class="form-group">
+		            <label class="control-label">联系人</label>
+		            <input type="text" class="form-control" name="contact" value="{$data.contact}">
+		        </div>
+		        <div class="form-group">
+		            <label class="control-label">联系人电话</label>
+		            <input type="text" class="form-control" name="contact_number" value="{$data.contact_number}">
+		        </div>
+		        <div class="form-group">
+		            <label class="control-label">备注</label>
+		            <textarea class="form-control" name="remark">{$data.remark}</textarea>
+		        </div>
+		        <div class="form-group">
+		        	<input type="hidden" name="id" value="{$data.id|default=''}">
+		            <button class="btn submit-btn ajax-post" id="submit" type="submit" target-form="form-horizontal">确 定</button>
+		            <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+		        </div>
+		    </form>
+    		</div>
+    	</div>
+    </div>
 </block>
 
 <block name="script">
+<script src="__STATIC__/bootstrap/js/bootstrap.min.js"></script>
+<script src="__STATIC__/bootstrap-select/js/bootstrap-select.min.js"></script>
 <script type="text/javascript" src="__STATIC__/js/district.js"></script>
 <script type="text/javascript" charset="utf-8">
 	//Think.setValue('type',{$type|default=1});
     //导航高亮
     highlight_subnav('{:U('Store/index')}');
    
+    $(function(){
+    	$('.selectpicker').selectpicker();
+	});
 </script>
 </block>
