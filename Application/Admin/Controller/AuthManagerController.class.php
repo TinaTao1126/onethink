@@ -142,6 +142,7 @@ class AuthManagerController extends AdminController{
         $this->assign('node_list',  $node_list);
         $this->assign('auth_group', $auth_group);
         $this->assign('this_group', $auth_group[(int)$_GET['group_id']]);
+       // print_r($main_rules);
         $this->meta_title = '访问授权';
         $this->display('managergroup');
     }

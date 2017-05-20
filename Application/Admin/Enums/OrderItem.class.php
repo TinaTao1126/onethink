@@ -4,26 +4,26 @@ namespace Admin\Enums;
 
 class OrderItem {
     public static  $ITEM_TYPE =array(
-        array(
+        1=>array(
             "id"=>1,
     		"name"=>'洗车',
+            "en_name"=>'cleaning_amount'
         ),
-        array(
+        2=>array(
     	   "id"=>2,
             "name"=>'快修',
+            "en_name"=>'repair_amount'
          ),
-    	array(
+    	3=>array(
     	   "id"=>3,
-    	    "name"=>"保养"
+    	    "name"=>"保养",
+    	    "en_name"=>'maintain_amount'
         ),
-        array(
+        4=>array(
     	   "id"=>4,
-            "name"=>'装饰美容'
+            "name"=>'装饰美容',
+            "en_name"=>'beauty_amount'
         )
-    );
-    
-    public static  $ALL_ITEM_TYPE_ID =array(
-    		1,2,3,4
     );
     
     public static $ITEM_TYPE_1 = 1;

@@ -1,6 +1,7 @@
 <extend name="Public/base"/>
 
 <block name="body">
+<link href="__STATIC__/bootstrap/css/bootstrap.css" rel="stylesheet">
     <div class="main-title">
         <h2><present name="data">[ {$data.title} ] 子</present>菜单管理 </h2>
     </div>
@@ -21,7 +22,7 @@
 
     <div class="data-table table-striped">
         <form class="ids">
-            <table>
+            <table class="table">
                 <thead>
                     <tr>
                         <th class="row-selected">
